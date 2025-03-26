@@ -1,20 +1,16 @@
 import Head from "next/head";
 import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Nunito } from "next/font/google";
 import styles from "@/styles/login.module.css";
 import { Button, Container, Row, Col, Form } from 'react-bootstrap'; // Importa componentes de React-Bootstrap
 import  "bootstrap/dist/css/bootstrap.min.css"
 import {Flex,Box} from "@/components/layout"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const nunito = Nunito({
+  variable: "--font-nunito",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export default function Home() {
   return (
@@ -25,24 +21,74 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className={styles.container}>
-        <div className={styles.login_header}></div>
-        <div className={styles.body_container}>
-          <div className={styles.login_form}>
-            <h1>Bienvenido</h1>
+      <div className={`${styles.container} ${nunito.variable}`}>
+      {/* Header */}
+      <div className={styles.header}>
+      <h2 className={styles.title_header}>TECBANK | PORTAL CLIENTES</h2>
+      </div>
 
-            <div className={styles.input_field}>
-              <input type="text" placeholder="Usuario" />
-            </div>
+      {/* Body */}
+      <div className={styles.body}>
+        <div className={styles.formContainer}>
+          <div className={styles.logoContainer}>
+            <img
+              className={styles.logo}
+              src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
+              alt="Your Company"
+            />
+            <h3 className={styles.title}>Inicio de sesión</h3>
+          </div>
 
-            <div className={styles.input_field}>
-              <input type="password" placeholder="Contraseña" />
-            </div>
+          <div className={styles.formContent}>
+            <form className={styles.form} action="#" method="POST">
+              <div>
+                <label htmlFor="email" className={styles.label}>Email address</label>
+                <div className={styles.inputWrapper}>
+                  <input
+                    type="username "
+                    name="username "
+                    id="username "
+                    autoComplete="username "
+                    required
+                    className={styles.input}
+                  />
+                </div>
+              </div>
 
-            <button className={styles.login_button}>Iniciar sesión</button>
+              <div>
+                <div className={styles.passwordWrapper}>
+                  <label htmlFor="password" className={styles.label}>Password</label>
+                  <div className={styles.forgotPasswordLink}>
+                    <a href="#" className={styles.link}>Olvidaste la contraseña?</a>
+                  </div>
+                </div>
+                <div className={styles.inputWrapper}>
+                  <input
+                    type="password"
+                    name="password"
+                    id="password"
+                    autoComplete="current-password"
+                    required
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <button type="submit" className={styles.submitButton}>
+                  Sign in
+                </button>
+              </div>
+            </form>
+
+            <p className={styles.notMember}>
+              No tienes cuenta?
+              <a href="#" className={styles.link}>Regístrate aquí</a>
+            </p>
           </div>
         </div>
       </div>
+    </div>
     </>
   );
 }
