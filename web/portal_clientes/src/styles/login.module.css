@@ -24,25 +24,31 @@
 /* Área del cuerpo (centrado sin scroll) */
 .login_form {
     display: flex;
-    justify-content: center;
-    align-items: start;
+    flex-direction: column; /* Acomoda los elementos en columna */
+    justify-content: space-around;
+    align-items: center;
     width: 42.5vw;
     height: 60.44vh;
     background-color: #FAFAFF;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     border-radius: 12px;
+
 }
 
-.fullHeightRow {
-    height: 100%; /* Keeps the Row at 100% height */
-    border: 2px solid #ff0000; /* Adds a black 2-pixel border */
-}
-
-.fullHeightColumn {
-    height: 100%; /* Keeps the Row at 100% height */
-    border: 2px solid #47e6ff; /* Adds a black 2-pixel border */
-}
-
-.containerFull {
-    height: 100vh; /* Define el contenedor principal con la altura de la ventana */
+.login_button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20.5vw;
+    height: 9.18vh;
+    flex-shrink: 0;
+    background-color: #170A1C;
+    border-radius: 8px;
+    color: #FFFFFA;
+    font-family: 'Nunito', sans-serif;
+    font-size: 30px;
+    font-weight: 400;
+    line-height: normal;
+    cursor: pointer;
+    border: none;
 }

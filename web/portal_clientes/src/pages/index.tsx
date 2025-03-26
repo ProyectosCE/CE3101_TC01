@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import styles from "@/styles/login.module.css";
 import { Button, Container, Row, Col, Form } from 'react-bootstrap'; // Importa componentes de React-Bootstrap
 import  "bootstrap/dist/css/bootstrap.min.css"
+import {Flex,Box} from "@/components/layout"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,16 +25,24 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <div className={styles.container}>
+        <div className={styles.login_header}></div>
+        <div className={styles.body_container}>
+          <div className={styles.login_form}>
+            <h1>Bienvenido</h1>
 
-        <div className={styles.container}>
-            <div className={styles.login_header}></div>
-            <div className={styles.body_container}>
-                <div className={styles.login_form}>
-                a
-                </div>
+            <div className={styles.input_field}>
+              <input type="text" placeholder="Usuario" />
             </div>
-        </div>
 
+            <div className={styles.input_field}>
+              <input type="password" placeholder="Contraseña" />
+            </div>
+
+            <button className={styles.login_button}>Iniciar sesión</button>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
