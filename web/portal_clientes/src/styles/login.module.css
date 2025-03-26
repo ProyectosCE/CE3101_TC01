@@ -1,0 +1,48 @@
+/* Contenedor principal que ocupa toda la pantalla */
+.container {
+    display: grid;
+    grid-template-rows: 11.13vh 1fr; /* Header fijo y el resto flexible */
+    height: 100vh; /* Ocupa todo el alto de la ventana */
+    width: 100vw; /* Ocupa todo el ancho */
+}
+
+/* Header con altura proporcional */
+.login_header {
+    background-color: #00072D;
+    display: flex;
+    align-items: center; /* Centra el contenido verticalmente */
+    padding: 0 1rem; /* Ajusta el espacio lateral */
+}
+
+/* Fila del cuerpo (centrado total) */
+.body_container {
+    display: flex;
+    justify-content: center; /* Centrar horizontalmente */
+    align-items: center; /* Centrar verticalmente */
+}
+
+/* Área del cuerpo (centrado sin scroll) */
+.login_form {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    width: 42.5vw;
+    height: 60.44vh;
+    background-color: #FAFAFF;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+}
+
+.fullHeightRow {
+    height: 100%; /* Keeps the Row at 100% height */
+    border: 2px solid #ff0000; /* Adds a black 2-pixel border */
+}
+
+.fullHeightColumn {
+    height: 100%; /* Keeps the Row at 100% height */
+    border: 2px solid #47e6ff; /* Adds a black 2-pixel border */
+}
+
+.containerFull {
+    height: 100vh; /* Define el contenedor principal con la altura de la ventana */
+}
