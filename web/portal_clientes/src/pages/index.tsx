@@ -75,9 +75,12 @@ export default function Home() {
               </div>
 
               <div>
-                <button type="submit" className={styles.submitButton}>
-                  Sign in
-                </button>
+              <Button 
+  type="submit" 
+  className={`${styles.submitButton} btn btn-primary btn-lg w-100`}
+>
+  Iniciar sesión
+</Button>
               </div>
             </form>
 
