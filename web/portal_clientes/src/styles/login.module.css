@@ -227,7 +227,7 @@
       max-width: 500px; /* Limitar el ancho máximo */
       min-width: 400;
       height: auto; /* Permitir altura ajustable */
-      padding: 5rem; /* Padding más grande en pantallas grandes */
+      padding: 1rem; /* Padding más grande en pantallas grandes */
     }
   
     .logo {
@@ -263,7 +263,7 @@
       max-width: 500px; /* Limitar el ancho máximo */
       min-width: 400;
       height: auto; /* Permitir altura ajustable */
-      padding: 5rem; /* Padding más grande en pantallas grandes */
+      padding: 1rem; /* Padding más grande en pantallas grandes */
     }
   
     .logo {

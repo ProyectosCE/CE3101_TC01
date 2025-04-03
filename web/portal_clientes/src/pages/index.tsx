@@ -33,7 +33,7 @@ export default function Home() {
           <div className={styles.logoContainer}>
             <img
               className={styles.logo}
-              src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
+              src="/TECBANK_LOGO.png"
               alt="Your Company"
             />
             <h3 className={styles.title}>Inicio de sesión</h3>
