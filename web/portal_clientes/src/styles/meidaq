@@ -1,0 +1,112 @@
+/* Media Queries para pantallas pequeñas */
+  @media (max-width: 768px) {
+    .formContainer {
+      width: 80vw; /* Aumentar el ancho del formulario para pantallas pequeñas */
+      height: auto; /* Permitir que el formulario tenga una altura ajustable */
+      padding: 1rem; /* Añadir padding para que no se quede pegado a los bordes */
+    }
+  
+    .logo {
+      height: 2rem; /* Ajustar tamaño del logo */
+    }
+  
+    .title {
+      font-size: 1.125rem; /* Reducir tamaño del título */
+    }
+  
+    .formContent {
+      margin-top: 1.5rem; /* Reducir margen superior */
+    }
+  
+    .form {
+      gap: 1.25rem; /* Reducir el espacio entre los campos del formulario */
+    }
+  
+    .input {
+      font-size: 0.875rem; /* Reducir tamaño de fuente en inputs */
+    }
+  
+    .submitButton {
+      padding: 0.75rem; /* Ajustar padding del botón */
+    }
+  
+    .notMember {
+      font-size: 0.75rem; /* Reducir tamaño de fuente en el texto de usuario no registrado */
+    }
+  
+    .notMember a {
+      font-size: 0.75rem; /* Reducir tamaño de fuente en el enlace */
+    }
+  }
+
+
+   /* Media Queries para pantallas más grandes */
+   @media (min-width: 769px) {
+    .formContainer {
+      width: 80vw; /* Ajustar el ancho para que no sea muy grande */
+      max-width: 500px; /* Limitar el ancho máximo */
+      min-width: 400;
+      height: auto; /* Permitir altura ajustable */
+      padding: 5rem; /* Padding más grande en pantallas grandes */
+    }
+  
+    .logo {
+      height: 3rem; /* Aumentar el tamaño del logo */
+    }
+  
+    .title {
+      font-size: 1.5rem; /* Aumentar tamaño de fuente en pantallas grandes */
+    }
+  
+    .formContent {
+      max-width: 24rem; /* Aumentar el tamaño máximo del formulario */
+    }
+  
+    .input {
+      font-size: 1rem; /* Mantener el tamaño de fuente en inputs para pantallas grandes */
+    }
+  
+    .submitButton {
+      font-size: 1.125rem; /* Aumentar tamaño de fuente en el botón */
+    }
+  
+    .notMember {
+      font-size: 1rem; /* Aumentar tamaño de fuente en el texto de usuario no registrado */
+    }
+  }
+
+
+  /* Media Queries para pantallas más grandes */
+  @media (min-width: 1024px) {
+    .formContainer {
+      width: 50vw; /* Ajustar el ancho para que no sea muy grande */
+      max-width: 500px; /* Limitar el ancho máximo */
+      min-width: 400;
+      height: auto; /* Permitir altura ajustable */
+      padding: 5rem; /* Padding más grande en pantallas grandes */
+    }
+  
+    .logo {
+      height: 3rem; /* Aumentar el tamaño del logo */
+    }
+  
+    .title {
+      font-size: 1.5rem; /* Aumentar tamaño de fuente en pantallas grandes */
+    }
+  
+    .formContent {
+      max-width: 24rem; /* Aumentar el tamaño máximo del formulario */
+    }
+  
+    .input {
+      font-size: 1rem; /* Mantener el tamaño de fuente en inputs para pantallas grandes */
+    }
+  
+    .submitButton {
+      font-size: 1.125rem; /* Aumentar tamaño de fuente en el botón */
+    }
+  
+    .notMember {
+      font-size: 1rem; /* Aumentar tamaño de fuente en el texto de usuario no registrado */
+    }
+  }

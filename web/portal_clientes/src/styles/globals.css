@@ -1,7 +1,19 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-nunito: 'Nunito', sans-serif;
+  --primary-color: #00072D;
+  --primary-hover: #39446D;
+  --link-color: #1D264D;
+  --link-hover: #7180AC;
+  --text-dark: #1A202C;
+  --text-light: #DAEBFD;
+  --bg-light: #FAFAFF;
+  --border-color: #E2E8F0;
+  --focus-color: #3182CE;
 }
+
+
 
 @media (prefers-color-scheme: dark) {
   :root {

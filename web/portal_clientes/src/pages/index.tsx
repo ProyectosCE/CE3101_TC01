@@ -9,8 +9,7 @@ import {Flex,Box} from "@/components/layout"
 const nunito = Nunito({
   variable: "--font-nunito",
   subsets: ["latin"],
-});
-
+})
 
 export default function Home() {
   return (
@@ -21,49 +20,49 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className={`${styles.container} ${nunito.variable}`}>
+      <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
-      <h2 className={styles.title_header}>TECBANK | PORTAL CLIENTES</h2>
+        <h2 className={styles.title_header}>TECBANK | PORTAL CLIENTES</h2>
       </div>
-
+      
       {/* Body */}
       <div className={styles.body}>
         <div className={styles.formContainer}>
           <div className={styles.logoContainer}>
             <img
               className={styles.logo}
-              src="/TECBANK_LOGO.png"
+              src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
               alt="Your Company"
             />
             <h3 className={styles.title}>Inicio de sesión</h3>
           </div>
-
+          
           <div className={styles.formContent}>
-            <form className={styles.form} action="#" method="POST">
+            <Form className={styles.form} action="#" method="POST">
               <div>
-                <label htmlFor="email" className={styles.label}>Usuario</label>
+                <Form.Label htmlFor="username" className={styles.label}>Usuario</Form.Label>
                 <div className={styles.inputWrapper}>
-                  <input
-                    type="username "
-                    name="username "
-                    id="username "
-                    autoComplete="username "
+                  <Form.Control
+                    type="text"
+                    name="username"
+                    id="username"
+                    autoComplete="username"
                     required
                     className={styles.input}
                   />
                 </div>
               </div>
-
+              
               <div>
                 <div className={styles.passwordWrapper}>
-                  <label htmlFor="password" className={styles.label}>Contraseña</label>
+                  <Form.Label htmlFor="password" className={styles.label}>Contraseña</Form.Label>
                   <div className={styles.forgotPasswordLink}>
                     <a href="#" className={styles.link}>Olvidaste la contraseña?</a>
                   </div>
                 </div>
                 <div className={styles.inputWrapper}>
-                  <input
+                  <Form.Control
                     type="password"
                     name="password"
                     id="password"
@@ -73,19 +72,16 @@ export default function Home() {
                   />
                 </div>
               </div>
-
+              
               <div>
-              <Button 
-  type="submit" 
-  className={`${styles.submitButton} btn btn-primary btn-lg w-100`}
->
-  Iniciar sesión
-</Button>
+                <Button type="submit" className={styles.submitButton}>
+                  Sign in
+                </Button>
               </div>
-            </form>
-
+            </Form>
+            
             <p className={styles.notMember}>
-              No tienes cuenta? 
+              No tienes cuenta?
               <a href="#" className={styles.link}> Regístrate aquí</a>
             </p>
           </div>
