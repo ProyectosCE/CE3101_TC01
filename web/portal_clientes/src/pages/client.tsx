@@ -5,11 +5,12 @@ import AccountList from "@/components/AccountList";
 import TransactionList from "@/components/TransactionList";
 import CreditCardList from "@/components/CreditCardList";
 import CreditCardTransactionList from "@/components/CreditCardTransactionList";
+import TransactionOptions from "@/components/TransactionOptions";
 import { Card, Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function Client() {
-  const [view, setView] = useState("main"); // "main", "accounts", "transactions", "creditCards", "creditCardTransactions"
+  const [view, setView] = useState("main"); // "main", "accounts", "transactions", "creditCards", "creditCardTransactions", "sendMoney"
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [selectedCard, setSelectedCard] = useState(null);
 
@@ -75,7 +76,7 @@ export default function Client() {
             <h1 className={styles.title}>Portal de Clientes</h1>
             <Container>
               <Row className={styles.cardRow}>
-                <Col md={4}>
+                <Col md={3}>
                   <Card className={styles.card} onClick={() => setView("accounts")}>
                     <Card.Body>
                       <Card.Title>Cuentas</Card.Title>
@@ -85,7 +86,7 @@ export default function Client() {
                     </Card.Body>
                   </Card>
                 </Col>
-                <Col md={4}>
+                <Col md={3}>
                   <Card className={styles.card} onClick={() => setView("creditCards")}>
                     <Card.Body>
                       <Card.Title>Tarjetas de Crédito</Card.Title>
@@ -95,12 +96,22 @@ export default function Client() {
                     </Card.Body>
                   </Card>
                 </Col>
-                <Col md={4}>
+                <Col md={3}>
                   <Card className={styles.card}>
                     <Card.Body>
                       <Card.Title>Préstamos</Card.Title>
                       <Card.Text>
                         Revisa el estado de tus préstamos y realiza pagos en línea.
+                      </Card.Text>
+                    </Card.Body>
+                  </Card>
+                </Col>
+                <Col md={3}>
+                  <Card className={styles.card} onClick={() => setView("sendMoney")}>
+                    <Card.Body>
+                      <Card.Title>Enviar Dinero</Card.Title>
+                      <Card.Text>
+                        Realiza transferencias a cuentas IBAN o SINPE Móvil.
                       </Card.Text>
                     </Card.Body>
                   </Card>
@@ -136,6 +147,9 @@ export default function Client() {
             transactions={creditCardTransactions}
             onBack={() => setView("creditCards")}
           />
+        )}
+        {view === "sendMoney" && (
+          <TransactionOptions onBack={() => setView("main")} accounts={accounts} />
         )}
       </div>
     </>
