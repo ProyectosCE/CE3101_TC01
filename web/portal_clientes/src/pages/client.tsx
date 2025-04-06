@@ -3,12 +3,15 @@ import { SetStateAction, useState } from "react";
 import styles from "@/styles/client.module.css";
 import AccountList from "@/components/AccountList";
 import TransactionList from "@/components/TransactionList";
+import CreditCardList from "@/components/CreditCardList";
+import CreditCardTransactionList from "@/components/CreditCardTransactionList";
 import { Card, Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function Client() {
-  const [view, setView] = useState("main"); // "main", "accounts", "transactions"
+  const [view, setView] = useState("main"); // "main", "accounts", "transactions", "creditCards", "creditCardTransactions"
   const [selectedAccount, setSelectedAccount] = useState(null);
+  const [selectedCard, setSelectedCard] = useState(null);
 
   const accounts = [
     { number: "123456789", currency: "Colones", balance: 500000 },
@@ -21,9 +24,41 @@ export default function Client() {
     { name: "Pago Servicios", type: "debito", date: "2023-09-30", time: "18:00", amount: -15000 },
   ];
 
+  const creditCards = [
+    {
+      number: "1234567812345678",
+      brand: "Visa",
+      currency: "Colones",
+      limit: 1000000,
+      minPayment: 25000,
+      cutoffDate: "2023-10-15",
+      paymentDate: "2023-10-30",
+    },
+    {
+      number: "8765432187654321",
+      brand: "MasterCard",
+      currency: "Dólares",
+      limit: 2000,
+      minPayment: 50,
+      cutoffDate: "2023-10-10",
+      paymentDate: "2023-10-25",
+    },
+  ];
+
+  const creditCardTransactions = [
+    { name: "Compra Electrónica", amount: -500 },
+    { name: "Pago Mensual", amount: 1000 },
+    { name: "Compra Ropa", amount: -200 },
+  ];
+
   const handleAccountClick = (account: SetStateAction<null>) => {
     setSelectedAccount(account);
     setView("transactions");
+  };
+
+  const handleCardClick = (card: SetStateAction<null>) => {
+    setSelectedCard(card);
+    setView("creditCardTransactions");
   };
 
   return (
@@ -51,7 +86,7 @@ export default function Client() {
                   </Card>
                 </Col>
                 <Col md={4}>
-                  <Card className={styles.card}>
+                  <Card className={styles.card} onClick={() => setView("creditCards")}>
                     <Card.Body>
                       <Card.Title>Tarjetas de Crédito</Card.Title>
                       <Card.Text>
@@ -86,6 +121,20 @@ export default function Client() {
             account={selectedAccount}
             transactions={transactions}
             onBack={() => setView("accounts")}
+          />
+        )}
+        {view === "creditCards" && (
+          <CreditCardList
+            creditCards={creditCards}
+            onCardClick={handleCardClick}
+            onBack={() => setView("main")}
+          />
+        )}
+        {view === "creditCardTransactions" && selectedCard && (
+          <CreditCardTransactionList
+            card={selectedCard}
+            transactions={creditCardTransactions}
+            onBack={() => setView("creditCards")}
           />
         )}
       </div>
