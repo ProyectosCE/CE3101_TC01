@@ -39,3 +39,27 @@
   font-size: 1rem;
   color: var(--text-dark);
 }
+
+.backButton {
+  margin-top: 1rem;
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.backButton:hover {
+  background-color: var(--primary-hover);
+}
+
+.table {
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.table tbody tr:hover {
+  cursor: pointer;
+  background-color: var(--hover-bg);
+}
