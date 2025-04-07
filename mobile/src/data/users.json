@@ -1,0 +1,28 @@
+[
+    {
+      "id_cliente": "1",
+      "Nombre_Completo": "Juan Pérez",
+      "Cedula": "112345678",
+      "direccion": "San José, Costa Rica",
+      "telefono": "8888-0000",
+      "ingreso_mensual": 850000,
+      "tipo_cliente": "Fisico",
+      "usuario": "juanp",
+      "password": "1234",
+      "cuentas": [
+        {
+          "id": "c1",
+          "tipo": "Debito",
+          "numero": "123456789",
+          "saldo": 1200000
+        },
+        {
+          "id": "c2",
+          "tipo": "Credito",
+          "numero": "987654321",
+          "saldo": 300000
+        }
+      ]
+    }
+  ]
+  
