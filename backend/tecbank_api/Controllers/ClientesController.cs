@@ -47,5 +47,29 @@ namespace tecbank_api.Controllers
 
             return Ok(resultado);
         }
+
+        [HttpPost]
+        public IActionResult Post([FromBody] Cliente new_Cliente)
+        {
+            // Validar que el tipo_cliente
+            var tipos = _tipoClienteService.GetAll();
+            var tipoEncontrado = tipos.FirstOrDefault(t => t.tipo == new_Cliente.tipo_id);
+
+            if (tipoEncontrado == null)
+            {
+                return BadRequest($"El tipo de cliente '{new_Cliente.tipo_id}' no existe.");
+            }
+            new_Cliente.tipo_cliente = tipoEncontrado;
+
+            // Asignar un nuevo id_cliente
+            var clientes = _clienteService.GetAll(); 
+            new_Cliente.id_cliente = clientes.Any() ? clientes.Max(c => c.id_cliente) + 1 : 1; // Incrementar el id_cliente previo
+
+            // Guardar el cliente 
+            _clienteService.Add(new_Cliente);
+
+            return CreatedAtAction(nameof(Get), new { id = new_Cliente.id_cliente }, new_Cliente);
+        }
+
     }
 }

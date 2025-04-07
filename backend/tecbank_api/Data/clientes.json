@@ -2,14 +2,16 @@
   {
     "id_cliente": 1,
     "cedula": "12345678",
-    "direccion": "San José",
+    "direccion": "San Jose",
     "telefono": "8888-8888",
     "ingreso_mensual": 1200,
     "usuario": "juan123",
     "password": "abc123",
     "nombre": "Juan",
-    "apellido1": "Pérez",
-    "apellido2": "González",
-    "tipo_id": "FISICO"
+    "apellido1": "Perez",
+    "apellido2": "Gonzales",
+    "nombre_completo": "Juan Perez Gonzales",
+    "tipo_id": "FISICO",
+    "tipo_cliente": null
   }
 ]

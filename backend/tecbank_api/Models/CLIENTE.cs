@@ -17,7 +17,7 @@
 
         // Foreign key to Tipo_Cliente
         public string tipo_id { get; set; }
-        public Tipo_Cliente tipo_cliente { get; set;}
+        public Tipo_Cliente? tipo_cliente { get; set;}
 
     }
 }
