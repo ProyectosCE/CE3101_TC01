@@ -18,6 +18,7 @@ namespace tecbank_api.Controllers
             _tipoClienteService = new JsonDataService<Tipo_Cliente>("Data/tipo_clientes.json");
         }
 
+        // Metodo GET para obtener todos los clientes
         [HttpGet]
         public IActionResult Get()
         {
@@ -48,6 +49,24 @@ namespace tecbank_api.Controllers
             return Ok(resultado);
         }
 
+        // Metodo GET para obtener nombre completo por ID (atributo compuesto)
+        [HttpGet("nombreCompleto/{id}")]
+        public IActionResult GetNombreCompleto(int id)
+        {
+            var cliente = _clienteService.GetAll().FirstOrDefault(c => c.id_cliente == id);
+
+            if (cliente == null)
+            {
+                return NotFound($"Cliente con ID {id} no encontrado.");
+            }
+
+            // Obtener el nombre completo
+            var nombreCompleto = cliente.nombre_completo;
+
+            return Ok(new { nombreCompleto });
+        }
+
+        // Metodo Post para crear un nuevo cliente
         [HttpPost]
         public IActionResult Post([FromBody] Cliente new_Cliente)
         {
