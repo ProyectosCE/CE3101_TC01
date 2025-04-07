@@ -49,9 +49,6 @@ namespace tecbank_api.Services
         Restriction:
             Depende de la existencia y validez del archivo JSON en la ruta especificada.
 
-        Example:
-            N/A
-
         Problems:
             Ningún problema conocido durante la implementación de este método.
 
@@ -75,10 +72,6 @@ namespace tecbank_api.Services
 
         Restriction:
             Sobrescribe el archivo JSON con la lista proporcionada. Si el archivo es grande, puede haber implicaciones en el rendimiento.
-
-        Example:
-            N/A
-
         Problems:
             Ningún problema conocido durante la implementación de este método.
 
@@ -91,6 +84,24 @@ namespace tecbank_api.Services
             File.WriteAllText(_filePath, json);
         }
 
+        /* Function: Add
+            Añade un nuevo elemento de tipo T al archivo JSON.
+
+        Params:
+            - item: T - El nuevo elemento de tipo T a añadir.
+
+        Returns:
+            - void: No retorna ningún valor.
+
+        Restriction:
+            Depende de la existencia del archivo JSON. Si el archivo no existe, se crea automáticamente.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
         public void Add(T item)
         {
             var items = GetAll();
