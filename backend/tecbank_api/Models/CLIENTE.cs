@@ -1,5 +1,38 @@
 ﻿namespace tecbank_api.Models
 {
+
+    /* Class: Cliente
+        Representa a un cliente en el sistema con sus detalles personales y de contacto.
+
+    Attributes:
+        - id_cliente: int - Identificador único del cliente.
+        - cedula: string - Cédula de identidad del cliente.
+        - direccion: string - Dirección física del cliente.
+        - telefono: string - Número de teléfono del cliente.
+        - ingreso_mensual: double - Ingreso mensual del cliente.
+        - usuario: string - Nombre de usuario del cliente.
+        - password: string - Contraseña del cliente.
+        - nombre: string - Primer nombre del cliente.
+        - apellido1: string - Primer apellido del cliente.
+        - apellido2: string - Segundo apellido del cliente.
+        - tipo_id: string - Identificador del tipo de cliente (clave foránea).
+        - tipo_cliente: Tipo_Cliente? - Tipo de cliente asociado (opcional).
+
+    Constructor:
+        - Cliente: Constructor predeterminado de la clase Cliente. No recibe parámetros y asigna valores por defecto.
+
+    Methods:
+        - nombre_completo: Devuelve el nombre completo del cliente concatenando su nombre y apellidos. 
+        Tipo: string
+        Descripción: Retorna el nombre completo del cliente en formato "Nombre Apellido1 Apellido2".
+
+    Problems:
+        Ningún problema conocido durante la implementación de esta clase.
+
+    References:
+        N/A
+    */
+
     public class Cliente
     {
         public int id_cliente { get; set; }
