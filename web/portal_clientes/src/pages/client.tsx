@@ -1,155 +1,124 @@
 import Head from "next/head";
-import { SetStateAction, useState } from "react";
+import { useState } from "react";
 import styles from "@/styles/client.module.css";
-import AccountList from "@/components/AccountList";
-import TransactionList from "@/components/TransactionList";
-import CreditCardList from "@/components/CreditCardList";
-import CreditCardTransactionList from "@/components/CreditCardTransactionList";
-import TransactionOptions from "@/components/TransactionOptions";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMoneyCheckDollar, faCreditCard, faHandHoldingDollar, faMoneyBillTransfer } from "@fortawesome/free-solid-svg-icons";
 import { Card, Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function Client() {
-  const [view, setView] = useState("main"); // "main", "accounts", "transactions", "creditCards", "creditCardTransactions", "sendMoney"
-  const [selectedAccount, setSelectedAccount] = useState(null);
-  const [selectedCard, setSelectedCard] = useState(null);
+  const [activePage, setActivePage] = useState("principal");
 
-  const accounts = [
-    { number: "123456789", currency: "Colones", balance: 500000 },
-    { number: "987654321", currency: "Dólares", balance: 1200 },
-  ];
-
-  const transactions = [
-    { name: "Compra Supermercado", type: "debito", date: "2023-10-01", time: "14:30", amount: -25000 },
-    { name: "Pago Nómina", type: "credito", date: "2023-10-01", time: "09:00", amount: 500000 },
-    { name: "Pago Servicios", type: "debito", date: "2023-09-30", time: "18:00", amount: -15000 },
-  ];
-
-  const creditCards = [
-    {
-      number: "1234567812345678",
-      brand: "Visa",
-      currency: "Colones",
-      limit: 1000000,
-      minPayment: 25000,
-      cutoffDate: "2023-10-15",
-      paymentDate: "2023-10-30",
-    },
-    {
-      number: "8765432187654321",
-      brand: "MasterCard",
-      currency: "Dólares",
-      limit: 2000,
-      minPayment: 50,
-      cutoffDate: "2023-10-10",
-      paymentDate: "2023-10-25",
-    },
-  ];
-
-  const creditCardTransactions = [
-    { name: "Compra Electrónica", amount: -500 },
-    { name: "Pago Mensual", amount: 1000 },
-    { name: "Compra Ropa", amount: -200 },
-  ];
-
-  const handleAccountClick = (account: SetStateAction<null>) => {
-    setSelectedAccount(account);
-    setView("transactions");
-  };
-
-  const handleCardClick = (card: SetStateAction<null>) => {
-    setSelectedCard(card);
-    setView("creditCardTransactions");
+  const handleNavigation = (page) => {
+    setActivePage(page);
   };
 
   return (
     <>
       <Head>
-        <title>Client - TECBANK CLIENTES</title>
-        <meta name="description" content="Client page" />
+        <title>Portal Clientes - TECBANK</title>
+        <meta name="description" content="Portal de Clientes de TECBANK" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className={styles.container}>
-        {view === "main" && (
-          <>
-            <h1 className={styles.title}>Portal de Clientes</h1>
-            <Container>
-              <Row className={styles.cardRow}>
-                <Col md={3}>
-                  <Card className={styles.card} onClick={() => setView("accounts")}>
-                    <Card.Body>
-                      <Card.Title>Cuentas</Card.Title>
-                      <Card.Text>
+        {/* Header */}
+        <header className={styles.header}>
+          <h1 className={styles.logo}>TECBANK</h1>
+          <nav className={styles.nav}>
+            <button
+              className={`${styles.navButton} ${activePage === "principal" ? styles.active : ""}`}
+              onClick={() => handleNavigation("principal")}
+            >
+              Principal
+            </button>
+            <button
+              className={`${styles.navButton} ${activePage === "cuentas" ? styles.active : ""}`}
+              onClick={() => handleNavigation("cuentas")}
+            >
+              Cuentas
+            </button>
+            <button
+              className={`${styles.navButton} ${activePage === "tarjetas" ? styles.active : ""}`}
+              onClick={() => handleNavigation("tarjetas")}
+            >
+              Tarjetas
+            </button>
+            <button
+              className={`${styles.navButton} ${activePage === "prestamos" ? styles.active : ""}`}
+              onClick={() => handleNavigation("prestamos")}
+            >
+              Préstamos
+            </button>
+            <button
+              className={`${styles.navButton} ${activePage === "transferencias" ? styles.active : ""}`}
+              onClick={() => handleNavigation("transferencias")}
+            >
+              Transferencias
+            </button>
+          </nav>
+        </header>
+
+        {/* Main Content */}
+        {activePage === "principal" && (
+          <Container>
+            <Row className={styles.cardRow}>
+              <Col xs={12} sm={5} className={styles.cardCol}>
+                <Card className={styles.card}>
+                  <Card.Body className={styles.cardBody}>
+                    <div className={styles.cardTextContainer}>
+                      <Card.Title className={styles.cardTitle}>Cuentas</Card.Title>
+                      <Card.Text className={styles.cardDescription}>
                         Administra tus cuentas bancarias de forma rápida y segura.
                       </Card.Text>
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col md={3}>
-                  <Card className={styles.card} onClick={() => setView("creditCards")}>
-                    <Card.Body>
-                      <Card.Title>Tarjetas de Crédito</Card.Title>
-                      <Card.Text>
+                    </div>
+                    <FontAwesomeIcon icon={faMoneyCheckDollar} className={styles.icon} />
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col xs={12} sm={5} className={styles.cardCol}>
+                <Card className={styles.card}>
+                  <Card.Body className={styles.cardBody}>
+                    <div className={styles.cardTextContainer}>
+                      <Card.Title className={styles.cardTitle}>Tarjetas</Card.Title>
+                      <Card.Text className={styles.cardDescription}>
                         Consulta y gestiona tus tarjetas de crédito fácilmente.
                       </Card.Text>
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col md={3}>
-                  <Card className={styles.card}>
-                    <Card.Body>
-                      <Card.Title>Préstamos</Card.Title>
-                      <Card.Text>
+                    </div>
+                    <FontAwesomeIcon icon={faCreditCard} className={styles.icon} />
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+            <Row className={styles.cardRow}>
+              <Col xs={12} sm={5} className={styles.cardCol}>
+                <Card className={styles.card}>
+                  <Card.Body className={styles.cardBody}>
+                    <div className={styles.cardTextContainer}>
+                      <Card.Title className={styles.cardTitle}>Préstamos</Card.Title>
+                      <Card.Text className={styles.cardDescription}>
                         Revisa el estado de tus préstamos y realiza pagos en línea.
                       </Card.Text>
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col md={3}>
-                  <Card className={styles.card} onClick={() => setView("sendMoney")}>
-                    <Card.Body>
-                      <Card.Title>Enviar Dinero</Card.Title>
-                      <Card.Text>
-                        Realiza transferencias a cuentas IBAN o SINPE Móvil.
+                    </div>
+                    <FontAwesomeIcon icon={faHandHoldingDollar} className={styles.icon} />
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col xs={12} sm={5} className={styles.cardCol}>
+                <Card className={styles.card}>
+                  <Card.Body className={styles.cardBody}>
+                    <div className={styles.cardTextContainer}>
+                      <Card.Title className={styles.cardTitle}>Transferencias</Card.Title>
+                      <Card.Text className={styles.cardDescription}>
+                        Realiza transferencias de forma rápida y segura.
                       </Card.Text>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              </Row>
-            </Container>
-          </>
-        )}
-        {view === "accounts" && (
-          <AccountList
-            accounts={accounts}
-            onAccountClick={handleAccountClick}
-            onBack={() => setView("main")}
-          />
-        )}
-        {view === "transactions" && selectedAccount && (
-          <TransactionList
-            account={selectedAccount}
-            transactions={transactions}
-            onBack={() => setView("accounts")}
-          />
-        )}
-        {view === "creditCards" && (
-          <CreditCardList
-            creditCards={creditCards}
-            onCardClick={handleCardClick}
-            onBack={() => setView("main")}
-          />
-        )}
-        {view === "creditCardTransactions" && selectedCard && (
-          <CreditCardTransactionList
-            card={selectedCard}
-            transactions={creditCardTransactions}
-            onBack={() => setView("creditCards")}
-          />
-        )}
-        {view === "sendMoney" && (
-          <TransactionOptions onBack={() => setView("main")} accounts={accounts} />
+                    </div>
+                    <FontAwesomeIcon icon={faMoneyBillTransfer} className={styles.icon} />
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </Container>
         )}
       </div>
     </>

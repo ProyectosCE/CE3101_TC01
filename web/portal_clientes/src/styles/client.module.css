@@ -4,6 +4,46 @@
   min-height: 100vh;
 }
 
+.header {
+  background-color: var(--primary-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  color: #fff;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.navButton {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.navButton:hover {
+  background-color: var(--primary-hover);
+}
+
+.active {
+  background-color: #fff;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
 .title {
   text-align: center;
   font-size: 2rem;
@@ -14,15 +54,55 @@
 
 .cardRow {
   display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.cardCol {
+  display: flex;
   justify-content: center;
-  gap: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .card {
+  width: 100%;
+  max-width: 400px; /* Increase the card size */
   border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease-in-out;
+  text-align: left; /* Align text to the left */
+  padding: 1.5rem; /* Add more padding for larger cards */
+}
+
+.cardBody {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+
+.cardTextContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.cardTitle {
+  font-size: 1.5rem; /* Slightly larger title */
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.cardDescription {
+  font-size: 1rem;
+  color: var(--text-dark);
+  margin-top: auto;
+  text-align: left; /* Ensure description text is aligned to the left */
 }
 
 .card:hover {
@@ -33,11 +113,18 @@
   font-size: 1.25rem;
   font-weight: bold;
   color: var(--primary-color);
+  margin-top: 1rem;
 }
 
 .card-text {
   font-size: 1rem;
   color: var(--text-dark);
+}
+
+.icon {
+  font-size: 3.5rem; /* Slightly larger icon */
+  color: var(--primary-color);
+  margin-left: 1rem;
 }
 
 .backButton {
