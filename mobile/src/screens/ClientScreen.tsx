@@ -19,7 +19,7 @@ const options = [
     id: 'cards',
     label: 'Mis Tarjetas',
     icon: <FontAwesome5 name="credit-card" size={24} color="#10264D" />,
-    screen: '', // Pendiente implementación
+    screen: 'Cards', 
   },
   {
     id: 'loans',

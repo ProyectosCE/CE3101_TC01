@@ -1,80 +1,142 @@
-// Se importa React como dependencia principal
-import React from 'react';
-
-// Se importan componentes visuales de React Native
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-
-// Se importa el tipo de navegación stack desde las rutas principales
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+} from 'react-native';
+import { useAuth } from '../context/AuthContext';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { FontAwesome5 } from '@expo/vector-icons';
 
-// Se importa el contexto de autenticación para obtener el cliente logueado
-import { useAuth } from '../context/AuthContext';
-
-// Se definen las props esperadas por esta pantalla desde el stack de navegación
 type Props = NativeStackScreenProps<RootStackParamList, 'Accounts'>;
 
-// Componente principal que muestra las cuentas del cliente
-export default function AccountsScreen({ navigation }: Props) {
-  // Se accede al cliente actual desde el contexto de autenticación
-  const { cliente } = useAuth();
+// Habilitar animaciones en Android
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
-  // Si no hay cliente o no tiene cuentas, se muestra un mensaje de error o acceso denegado
-  if (!cliente || !cliente.cuentas) {
+export default function AccountsScreen({ navigation }: Props) {
+  const { cliente } = useAuth();
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  if (!cliente) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>No autorizado o sin cuentas</Text>
+        <Text style={styles.title}>No autorizado</Text>
       </View>
     );
   }
 
-  // Se filtran las cuentas válidas (que tengan tipo definido)
-  const cuentasValidas = cliente.cuentas.filter((c) => c && typeof c.tipo === 'string');
+  const cuentasDebito = cliente.cuentas.filter((c) => c.tipo === 'Debito');
+  const cuentasCredito = cliente.cuentas.filter((c) => c.tipo === 'Credito');
+  const tarjetasDebito = cliente.tarjetas.debito;
+  const tarjetasCredito = cliente.tarjetas.credito;
 
-  // Se separan las cuentas por tipo
-  const cuentasDebito = cuentasValidas.filter((c) => c.tipo === 'Debito');
-  const cuentasCredito = cuentasValidas.filter((c) => c.tipo === 'Credito');
+  const toggleExpand = (id: string) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setExpandedId((prev) => (prev === id ? null : id));
+  };
 
-  // Función para renderizar una lista de cuentas, según su tipo
-  const renderCuenta = (tipo: 'Debito' | 'Credito') => (
-    <FlatList
-      data={tipo === 'Debito' ? cuentasDebito : cuentasCredito}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          style={styles.card}
-          // Al presionar una cuenta, se navega a los detalles de la misma
-          onPress={() =>
-            navigation.navigate('AccountDetails', { accountId: item.id })
-          }
-        >
-          <Text style={styles.cuentaTipo}>{item.tipo}</Text>
-          <Text style={styles.numero}>Número: {item.numero}</Text>
-          <Text>Saldo: ₡{item.saldo.toLocaleString()}</Text>
-        </TouchableOpacity>
-      )}
-    />
-  );
+  const renderCuenta = (cuenta: any) => {
+    const isExpanded = expandedId === cuenta.id;
+    const tarjetasAsociadas = tarjetasDebito.filter((t) => t.cuenta_asociada === cuenta.numero);
 
-  // Se muestra la interfaz con las secciones de cuentas
+    return (
+      <TouchableOpacity
+        key={cuenta.id}
+        style={styles.card}
+        onPress={() => toggleExpand(cuenta.id)}
+      >
+        <View style={styles.headerRow}>
+          <FontAwesome5
+            name={cuenta.tipo === 'Debito' ? 'money-check-alt' : 'credit-card'}
+            size={22}
+            color="#2DCCD3"
+            style={{ marginRight: 10 }}
+          />
+          <View>
+            <Text style={styles.cuentaTipo}>{cuenta.tipo}</Text>
+            <Text style={styles.numero}>Número: {cuenta.numero}</Text>
+            <Text>
+              Saldo:{' '}
+              {cuenta.currency === 'Dolares'
+                ? `$${cuenta.saldo.toFixed(2)}`
+                : `₡${cuenta.saldo.toLocaleString()}`}
+            </Text>
+          </View>
+        </View>
+
+        {isExpanded && cuenta.tipo === 'Debito' && (
+          <View style={styles.details}>
+            <Text style={styles.sectionTitle}>Movimientos</Text>
+            {cuenta.movimientos?.length ? (
+              cuenta.movimientos.map((mov: any, idx: number) => (
+                <Text key={idx} style={styles.movement}>
+                  {mov.fecha} - {mov.descripcion}:{' '}
+                  {mov.tipo === 'deposito' ? '+' : '-'}
+                  {cuenta.currency === 'Dolares'
+                    ? `$${mov.monto.toFixed(2)}`
+                    : `₡${mov.monto.toLocaleString()}`}
+                </Text>
+              ))
+            ) : (
+              <Text style={styles.noData}>Sin movimientos registrados</Text>
+            )}
+
+            <Text style={styles.sectionTitle}>Tarjetas Débito Asociadas</Text>
+            {tarjetasAsociadas.length ? (
+              tarjetasAsociadas.map((t) => (
+                <Text key={t.id} style={styles.movement}>
+                  **** **** **** {t.numero.slice(-4)} - Saldo: ₡{t.saldo.toLocaleString()}
+                </Text>
+              ))
+            ) : (
+              <Text style={styles.noData}>Sin tarjetas asociadas</Text>
+            )}
+          </View>
+        )}
+
+        {isExpanded && cuenta.tipo === 'Credito' && (
+          <View style={styles.details}>
+            <Text style={styles.sectionTitle}>Movimientos de tarjeta de crédito</Text>
+            {tarjetasCredito[0]?.movimientos?.length ? (
+              tarjetasCredito[0].movimientos.map((mov: any, idx: number) => (
+                <Text key={idx} style={styles.movement}>
+                  {mov.fecha} - {mov.descripcion}: ₡{mov.monto.toLocaleString()}
+                </Text>
+              ))
+            ) : (
+              <Text style={styles.noData}>Sin movimientos registrados</Text>
+            )}
+          </View>
+        )}
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Cuentas de {cliente.Nombre_Completo}</Text>
 
       <Text style={styles.subTitle}>Tarjetas de Débito</Text>
-      {renderCuenta('Debito')}
+      {cuentasDebito.map(renderCuenta)}
 
       <Text style={styles.subTitle}>Tarjetas de Crédito</Text>
-      {renderCuenta('Credito')}
+      {cuentasCredito.map(renderCuenta)}
     </View>
   );
 }
 
-// Estilos visuales de la pantalla
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E5F1FB', // Color de fondo según la paleta TecBank
+    backgroundColor: '#E5F1FB',
     padding: 20,
   },
   title: {
@@ -97,7 +159,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 12,
     borderLeftWidth: 5,
-    borderLeftColor: '#2DCCD3', // Borde izquierdo de color para distinguir
+    borderLeftColor: '#2DCCD3',
   },
   cuentaTipo: {
     fontWeight: 'bold',
@@ -108,5 +170,29 @@ const styles = StyleSheet.create({
   numero: {
     fontSize: 15,
     marginBottom: 2,
+  },
+  details: {
+    marginTop: 10,
+  },
+  sectionTitle: {
+    fontWeight: '600',
+    fontSize: 15,
+    marginTop: 10,
+    color: '#39446D',
+  },
+  movement: {
+    fontSize: 14,
+    color: '#333',
+    marginTop: 4,
+  },
+  noData: {
+    fontSize: 13,
+    color: '#777',
+    fontStyle: 'italic',
+    marginTop: 4,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

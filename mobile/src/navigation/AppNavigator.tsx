@@ -10,6 +10,9 @@ import ClientScreen from '../screens/ClientScreen';
 import AccountsScreen from '../screens/AccountsScreen';
 import AccountDetailsScreen from '../screens/AccountDetailsScreen';
 import TransactionsScreen from '../screens/TransactionsScreen';
+import CardsScreen from '../screens/CardsScreen'; // Nueva pantalla agregada
+import PayCardScreen from '../screens/PayCardScreen'; //  Pantalla de pago agregada
+import TransferScreen from '../screens/TransactionsScreen';
 
 /**
  * Definición de tipos para las rutas y parámetros de navegacion
@@ -23,7 +26,10 @@ export type RootStackParamList = {
   Client: undefined;
   Accounts: undefined;
   AccountDetails: { accountId: string };
-  Transactions: { accountId: string };
+  Transactions: undefined;
+  Cards: undefined; // Tipo de ruta para Mis Tarjetas
+  PayCard: { cardId: string }; // Tipo de ruta para pago de tarjeta
+
 };
 
 // Creamos la instancia del navegador
@@ -107,8 +113,18 @@ export default function AppNavigator() {
         />
         <Stack.Screen 
           name="Transactions" 
-          component={TransactionsScreen} 
-          options={{ title: 'Transacciones' }} 
+          component={TransferScreen} 
+          options={{ title: 'Transferencias' }} 
+        />
+        <Stack.Screen 
+          name="Cards" 
+          component={CardsScreen} 
+          options={{ title: 'Tarjetas' }} 
+        />
+        <Stack.Screen 
+          name="PayCard" 
+          component={PayCardScreen} 
+          options={{ title: 'Pagar Tarjeta' }} 
         />
       </Stack.Navigator>
     </NavigationContainer>
