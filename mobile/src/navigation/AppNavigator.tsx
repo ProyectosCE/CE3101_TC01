@@ -2,7 +2,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Image } from 'react-native'; // Para mostrar el logo en el header
+import { Image, View, Text } from 'react-native'; // Para mostrar el logo en el header
 
 // Importación de todas las pantallas de la aplicación
 import LoginScreen from '../screens/LoginScreen';
@@ -51,15 +51,13 @@ export default function AppNavigator() {
         }}
       >
         {/* 
-          Pantalla de 
-
+          Pantalla de login con logo como título
         */}
         <Stack.Screen 
           name="Login" 
           component={LoginScreen} 
           options={{
             headerTitle: () => (
-              
               <Image 
                 source={require('../../assets/logo-tecbank.png')} 
                 style={{ 
@@ -82,7 +80,20 @@ export default function AppNavigator() {
         <Stack.Screen 
           name="Client" 
           component={ClientScreen} 
-          options={{ title: 'Inicio' }} // Título personalizado
+          options={{
+            headerTitle: () => (
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Image
+                  source={require('../../assets/logo-tecbank.png')}
+                  style={{ width: 30, height: 30, marginRight: 10 }}
+                />
+                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>
+                  TECBANK
+                </Text>
+              </View>
+            ),
+            headerTitleAlign: 'center',
+          }}
         />
         <Stack.Screen 
           name="Accounts" 
