@@ -1,198 +1,97 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  LayoutAnimation,
-  Platform,
-  UIManager,
-} from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, LayoutAnimation, Platform, UIManager } from 'react-native';
 import { useAuth } from '../context/AuthContext';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/AppNavigator';
-import { FontAwesome5 } from '@expo/vector-icons';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Accounts'>;
-
-// Habilitar animaciones en Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-export default function AccountsScreen({ navigation }: Props) {
+const AccountsScreen = () => {
   const { cliente } = useAuth();
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [expandedAccountId, setExpandedAccountId] = useState<string | null>(null);
 
-  if (!cliente) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.title}>No autorizado</Text>
-      </View>
-    );
-  }
-
-  const cuentasDebito = cliente.cuentas.filter((c) => c.tipo === 'Debito');
-  const cuentasCredito = cliente.cuentas.filter((c) => c.tipo === 'Credito');
-  const tarjetasDebito = cliente.tarjetas.debito;
-  const tarjetasCredito = cliente.tarjetas.credito;
+  const formatCurrency = (amount: number, currency: string) => {
+    return currency === 'Dolares'
+      ? `$${amount.toFixed(2)}`
+      : `₡${amount.toFixed(2)}`;
+  };
 
   const toggleExpand = (id: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setExpandedId((prev) => (prev === id ? null : id));
-  };
-
-  const renderCuenta = (cuenta: any) => {
-    const isExpanded = expandedId === cuenta.id;
-    const tarjetasAsociadas = tarjetasDebito.filter((t) => t.cuenta_asociada === cuenta.numero);
-
-    return (
-      <TouchableOpacity
-        key={cuenta.id}
-        style={styles.card}
-        onPress={() => toggleExpand(cuenta.id)}
-      >
-        <View style={styles.headerRow}>
-          <FontAwesome5
-            name={cuenta.tipo === 'Debito' ? 'money-check-alt' : 'credit-card'}
-            size={22}
-            color="#2DCCD3"
-            style={{ marginRight: 10 }}
-          />
-          <View>
-            <Text style={styles.cuentaTipo}>{cuenta.tipo}</Text>
-            <Text style={styles.numero}>Número: {cuenta.numero}</Text>
-            <Text>
-              Saldo:{' '}
-              {cuenta.currency === 'Dolares'
-                ? `$${cuenta.saldo.toFixed(2)}`
-                : `₡${cuenta.saldo.toLocaleString()}`}
-            </Text>
-          </View>
-        </View>
-
-        {isExpanded && cuenta.tipo === 'Debito' && (
-          <View style={styles.details}>
-            <Text style={styles.sectionTitle}>Movimientos</Text>
-            {cuenta.movimientos?.length ? (
-              cuenta.movimientos.map((mov: any, idx: number) => (
-                <Text key={idx} style={styles.movement}>
-                  {mov.fecha} - {mov.descripcion}:{' '}
-                  {mov.tipo === 'deposito' ? '+' : '-'}
-                  {cuenta.currency === 'Dolares'
-                    ? `$${mov.monto.toFixed(2)}`
-                    : `₡${mov.monto.toLocaleString()}`}
-                </Text>
-              ))
-            ) : (
-              <Text style={styles.noData}>Sin movimientos registrados</Text>
-            )}
-
-            <Text style={styles.sectionTitle}>Tarjetas Débito Asociadas</Text>
-            {tarjetasAsociadas.length ? (
-              tarjetasAsociadas.map((t) => (
-                <Text key={t.id} style={styles.movement}>
-                  **** **** **** {t.numero.slice(-4)} - Saldo: ₡{t.saldo.toLocaleString()}
-                </Text>
-              ))
-            ) : (
-              <Text style={styles.noData}>Sin tarjetas asociadas</Text>
-            )}
-          </View>
-        )}
-
-        {isExpanded && cuenta.tipo === 'Credito' && (
-          <View style={styles.details}>
-            <Text style={styles.sectionTitle}>Movimientos de tarjeta de crédito</Text>
-            {tarjetasCredito[0]?.movimientos?.length ? (
-              tarjetasCredito[0].movimientos.map((mov: any, idx: number) => (
-                <Text key={idx} style={styles.movement}>
-                  {mov.fecha} - {mov.descripcion}: ₡{mov.monto.toLocaleString()}
-                </Text>
-              ))
-            ) : (
-              <Text style={styles.noData}>Sin movimientos registrados</Text>
-            )}
-          </View>
-        )}
-      </TouchableOpacity>
-    );
+    setExpandedAccountId(prev => (prev === id ? null : id));
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Cuentas de {cliente.Nombre_Completo}</Text>
+      <Text style={styles.welcome}>Bienvenido, {cliente?.Nombre_Completo}</Text>
 
-      <Text style={styles.subTitle}>Tarjetas de Débito</Text>
-      {cuentasDebito.map(renderCuenta)}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Tus Cuentas</Text>
+        <FlatList
+          data={cliente?.cuentas}
+          renderItem={({ item }) => {
+            const isExpanded = expandedAccountId === item.id;
+            const movimientos = item.movimientos ?? [];
 
-      <Text style={styles.subTitle}>Tarjetas de Crédito</Text>
-      {cuentasCredito.map(renderCuenta)}
+            return (
+              <TouchableOpacity
+                style={styles.card}
+                onPress={() => toggleExpand(item.id)}
+              >
+                <Text style={styles.accountLabel}>Cuenta {item.numero.slice(-4)} ({item.tipo})</Text>
+                <Text>{item.currency}</Text>
+                <Text style={styles.balance}>{formatCurrency(item.saldo, item.currency)}</Text>
+
+                {isExpanded && (
+                  <View style={styles.movimientos}>
+                    <Text style={styles.movTitle}>Movimientos:</Text>
+                    {movimientos.length > 0 ? (
+                      movimientos.map((mov, index) => (
+                        <View key={index} style={styles.movRow}>
+                          <Text style={styles.movFecha}>{mov.fecha}</Text>
+                          <Text style={styles.movDesc}>{mov.descripcion}</Text>
+                          <Text style={styles.movMonto}>
+                            {mov.monto >= 0 ? '+' : '-'}{formatCurrency(Math.abs(mov.monto), item.currency)}
+                          </Text>
+                        </View>
+                      ))
+                    ) : (
+                      <Text style={styles.movEmpty}>Sin movimientos registrados</Text>
+                    )}
+                  </View>
+                )}
+              </TouchableOpacity>
+            );
+          }}
+          keyExtractor={(item) => item.id}
+        />
+      </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#E5F1FB',
-    padding: 20,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    color: '#1B396A',
-    textAlign: 'center',
-  },
-  subTitle: {
-    fontSize: 18,
-    marginTop: 20,
-    marginBottom: 10,
-    color: '#1B396A',
-    fontWeight: '600',
-  },
+  container: { flex: 1, padding: 20, backgroundColor: '#FAFAFF' },
+  welcome: { fontSize: 24, fontWeight: 'bold', color: '#10264D', marginBottom: 20 },
+  section: { marginBottom: 25 },
+  sectionTitle: { fontSize: 18, fontWeight: '600', color: '#39446D', marginBottom: 10 },
   card: {
     backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderRadius: 10,
-    marginBottom: 12,
-    borderLeftWidth: 5,
-    borderLeftColor: '#2DCCD3',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 15,
+    borderLeftWidth: 4,
+    borderLeftColor: '#7180AC',
   },
-  cuentaTipo: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginBottom: 4,
-    color: '#2DCCD3',
-  },
-  numero: {
-    fontSize: 15,
-    marginBottom: 2,
-  },
-  details: {
-    marginTop: 10,
-  },
-  sectionTitle: {
-    fontWeight: '600',
-    fontSize: 15,
-    marginTop: 10,
-    color: '#39446D',
-  },
-  movement: {
-    fontSize: 14,
-    color: '#333',
-    marginTop: 4,
-  },
-  noData: {
-    fontSize: 13,
-    color: '#777',
-    fontStyle: 'italic',
-    marginTop: 4,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
+  accountLabel: { fontSize: 16, fontWeight: 'bold', color: '#39446D' },
+  balance: { fontSize: 16, fontWeight: 'bold', color: '#10264D', marginTop: 5 },
+  movimientos: { marginTop: 10 },
+  movTitle: { fontWeight: '600', color: '#39446D', marginBottom: 5 },
+  movRow: { marginBottom: 5 },
+  movFecha: { fontSize: 12, color: '#555' },
+  movDesc: { fontSize: 14 },
+  movMonto: { fontSize: 14, fontWeight: 'bold' },
+  movEmpty: { fontSize: 13, color: '#999', fontStyle: 'italic' },
 });
+
+export default AccountsScreen;

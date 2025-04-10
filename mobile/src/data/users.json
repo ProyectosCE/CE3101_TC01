@@ -15,6 +15,7 @@
         "currency": "Dolares",
         "tipo": "Debito",
         "numero": "123456789",
+        "iban": "CR05152020010234567890",
         "saldo": 1200.5,
         "movimientos": [
           {
@@ -36,6 +37,7 @@
         "currency": "Colones",
         "tipo": "Credito",
         "numero": "987654321",
+        "iban": "CR05152020019876543210",
         "saldo": 300000
       }
     ],
@@ -116,6 +118,7 @@
         "currency": "Colones",
         "tipo": "Debito",
         "numero": "222233334444",
+        "iban": "CR05152020012222333344",
         "saldo": 700000,
         "movimientos": [
           {
@@ -198,6 +201,7 @@
         "currency": "Colones",
         "tipo": "Debito",
         "numero": "333344445555",
+        "iban": "CR05152020013333444455",
         "saldo": 1500000,
         "movimientos": []
       }
