@@ -7,7 +7,6 @@ import { Ionicons, FontAwesome5, MaterialIcons, Entypo } from '@expo/vector-icon
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Client'>;
 
-// Opciones del menú principal
 const options = [
   {
     id: 'accounts',
@@ -19,13 +18,13 @@ const options = [
     id: 'cards',
     label: 'Mis Tarjetas',
     icon: <FontAwesome5 name="credit-card" size={24} color="#10264D" />,
-    screen: 'Cards', 
+    screen: 'Cards',
   },
   {
     id: 'loans',
     label: 'Mis Préstamos',
     icon: <MaterialIcons name="attach-money" size={28} color="#10264D" />,
-    screen: '', // Pendiente implementación
+    screen: 'Loans',
   },
   {
     id: 'transactions',
@@ -39,15 +38,12 @@ export default function ClientScreen({ navigation }: Props) {
   const { cliente } = useAuth();
 
   const handleNavigate = (screen: string) => {
-    if (screen) {
-      navigation.navigate(screen as any);
-    }
+    navigation.navigate(screen as any);
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Bienvenido, {cliente?.Nombre_Completo}</Text>
-
       <FlatList
         data={options}
         keyExtractor={(item) => item.id}

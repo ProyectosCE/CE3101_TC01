@@ -80,7 +80,8 @@
     },
     "prestamos": [
       {
-        "id": "p1",
+        "id": "prestamo-vivienda",
+        "nombre": "Préstamo Vivienda",
         "monto": 10000,
         "saldo_pendiente": 7500,
         "tasa_interes": 12.5,
@@ -163,7 +164,8 @@
     },
     "prestamos": [
       {
-        "id": "p2",
+        "id": "prestamo-vehiculo",
+        "nombre": "Préstamo Vehículo",
         "monto": 8000,
         "saldo_pendiente": 6000,
         "tasa_interes": 10.5,
