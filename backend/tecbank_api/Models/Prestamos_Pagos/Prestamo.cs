@@ -28,5 +28,8 @@ namespace tecbank_api.Models.Prestamos_Pagos
         [JsonIgnore]
         public List<Mora> moras { get; set; } = new();
 
+        [JsonIgnore]
+        public List<Pago> pagos { get; set; } = new();
+
     }
 }

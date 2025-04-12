@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using tecbank_api.Models.Prestamos_Pagos;
 
 namespace tecbank_api.Models.Asesores
 {
@@ -14,6 +15,9 @@ namespace tecbank_api.Models.Asesores
         public string id_rol { get; set; }
         [JsonIgnore]
         public Rol? rol { get; set; }
+
+        [JsonIgnore]
+        public List<Prestamo> prestamos { get; set; } = new();
 
     }
 }

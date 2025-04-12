@@ -22,5 +22,8 @@ namespace tecbank_api.Models.Clientes_Cuentas
         public string id_moneda { get; set; }
         [JsonIgnore]
         public Moneda? moneda { get; set; }
+
+        [JsonIgnore]
+        public List<Transaccion> transacciones { get; set; } = new();
     }
 }

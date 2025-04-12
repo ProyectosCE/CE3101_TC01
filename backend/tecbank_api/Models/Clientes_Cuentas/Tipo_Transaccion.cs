@@ -2,13 +2,12 @@
 
 namespace tecbank_api.Models.Clientes_Cuentas
 {
-    public class Tipo_Cuenta
+    public class Tipo_Transaccion
     {
-        public string tipo_cuenta { get; set; } // ID
+        public string tipo_transaccion { get; set; } // ID
         public string descripcion { get; set; }
 
-
         [JsonIgnore]
-        public List<Cuenta> cuentas { get; set; } = new();
+        public List<Transaccion> transacciones { get; set; } = new();
     }
 }
