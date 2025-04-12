@@ -1,4 +1,6 @@
-﻿namespace tecbank_api.Models
+﻿using System.Text.Json.Serialization;
+
+namespace tecbank_api.Models
 {
 
     /* Class: Cliente
@@ -50,7 +52,11 @@
 
         // Foreign key to Tipo_Cliente
         public string tipo_id { get; set; }
+        [JsonIgnore]
         public Tipo_Cliente? tipo_cliente { get; set;}
 
+
+        [JsonIgnore]
+        public List<Prestamo> prestamos { get; set; } = new();
     }
 }
