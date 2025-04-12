@@ -1,6 +1,8 @@
 ﻿using System.Text.Json.Serialization;
+using tecbank_api.Models.Prestamos_Pagos;
+using tecbank_api.Models.Tarjetas;
 
-namespace tecbank_api.Models
+namespace tecbank_api.Models.Clientes_Cuentas
 {
 
     /* Class: Cliente
@@ -61,5 +63,8 @@ namespace tecbank_api.Models
 
         [JsonIgnore]
         public List<Tarjeta> tarjetas { get; set; } = new();
+
+        [JsonIgnore]
+        public List<Cuenta> cuentas { get; set; } = new();
     }
 }

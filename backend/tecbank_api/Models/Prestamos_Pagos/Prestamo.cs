@@ -1,6 +1,8 @@
 ﻿using System.Text.Json.Serialization;
+using tecbank_api.Models.Asesores;
+using tecbank_api.Models.Clientes_Cuentas;
 
-namespace tecbank_api.Models
+namespace tecbank_api.Models.Prestamos_Pagos
 {
     public class Prestamo
     {

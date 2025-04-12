@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace tecbank_api.Models
+namespace tecbank_api.Models.Clientes_Cuentas
 {
 /* Class: Tipo_Cliente
     Representa el tipo de cliente en el sistema, con su descripción y la lista de clientes asociados.

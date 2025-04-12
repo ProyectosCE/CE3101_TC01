@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace tecbank_api.Models
+namespace tecbank_api.Models.Prestamos_Pagos
 {
     public class Tipo_Pago
     {
