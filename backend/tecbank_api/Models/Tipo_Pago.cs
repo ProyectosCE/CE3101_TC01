@@ -1,0 +1,13 @@
+﻿using System.Text.Json.Serialization;
+
+namespace tecbank_api.Models
+{
+    public class Tipo_Pago
+    {
+        public string tipo_pago { get; set; }
+        public string descripcion { get; set; }
+
+        [JsonIgnore]
+        public List<Pago> pagos { get; set; } = new();
+    }
+}
