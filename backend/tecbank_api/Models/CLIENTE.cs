@@ -58,5 +58,8 @@ namespace tecbank_api.Models
 
         [JsonIgnore]
         public List<Prestamo> prestamos { get; set; } = new();
+
+        [JsonIgnore]
+        public List<Tarjeta> tarjetas { get; set; } = new();
     }
 }
