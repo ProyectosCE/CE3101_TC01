@@ -1,5 +1,18 @@
+/**
+ * Pantalla para el pago de una tarjeta de crédito asociada.
+ * Permite al usuario ingresar un monto, validar la disponibilidad de fondos en su cuenta
+ * asociada y registrar el movimiento tanto en la tarjeta como en la cuenta.
+ */
+
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Alert,
+  StyleSheet
+} from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { useAuth } from '../context/AuthContext';
@@ -12,14 +25,21 @@ export default function PayCardScreen({ route, navigation }: Props) {
     saveCreditCardMovement,
     updateAccountBalance,
   } = useAuth();
+
   const { cardId } = route.params;
   const [monto, setMonto] = useState('');
 
+  // Busca la tarjeta de crédito por su ID
   const tarjeta = cliente?.tarjetas.credito.find((t) => t.id === cardId);
+
+  // Obtiene la cuenta asociada a la tarjeta (si existe)
   const cuentaAsociada = tarjeta?.cuenta_asociada
     ? cliente?.cuentas.find((c) => c.id === tarjeta.cuenta_asociada)
     : null;
 
+  /**
+   * Si no se encuentra la tarjeta, se muestra un mensaje de error
+   */
   if (!tarjeta) {
     return (
       <View style={styles.container}>
@@ -28,8 +48,13 @@ export default function PayCardScreen({ route, navigation }: Props) {
     );
   }
 
+  /**
+   * Procesa el pago de la tarjeta validando el monto y la cuenta asociada.
+   * Realiza las actualizaciones necesarias en saldos y movimientos.
+   */
   const handlePago = () => {
     const valor = parseFloat(monto);
+
     if (isNaN(valor) || valor <= 0) {
       Alert.alert('Error', 'Ingrese un monto válido');
       return;
@@ -60,7 +85,7 @@ export default function PayCardScreen({ route, navigation }: Props) {
       tipo: 'pago',
     };
 
-    // Movimiento positivo (reducción de deuda) en tarjeta
+    // Movimiento negativo en tarjeta (disminuye la deuda)
     const movimientoTarjeta = {
       fecha,
       descripcion: `Pago desde cuenta ${cuentaAsociada.numero}`,
@@ -68,10 +93,8 @@ export default function PayCardScreen({ route, navigation }: Props) {
       tipo: 'pago',
     };
 
-    // Registrar en tarjeta y cuenta
+    // Actualiza tarjeta de crédito y cuenta
     saveCreditCardMovement(tarjeta.id, movimientoTarjeta, cuentaAsociada.id);
-
-    // Reducir saldo en cuenta asociada
     updateAccountBalance(cuentaAsociada.id, cuentaAsociada.saldo - valor);
 
     Alert.alert('Pago exitoso', `Se ha pagado ₡${valor.toLocaleString()}`, [
@@ -106,6 +129,9 @@ export default function PayCardScreen({ route, navigation }: Props) {
   );
 }
 
+/**
+ * Estilos visuales de la pantalla
+ */
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -1,21 +1,50 @@
+/**
+ * @file AccountsScreen.tsx
+ *
+ * @description Pantalla que muestra las cuentas del cliente, permitiendo expandir cada cuenta
+ * para visualizar los movimientos asociados. Incluye animaciones al expandir.
+ *
+ * @author TecBank
+ */
+
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, LayoutAnimation, Platform, UIManager } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 
+// Habilita animaciones en Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
+/**
+ * Pantalla AccountsScreen.
+ *
+ * Muestra una lista de cuentas del cliente autenticado, con opción de expandir para ver movimientos.
+ *
+ * @returns JSX.Element
+ */
 const AccountsScreen = () => {
   const { cliente } = useAuth();
   const [expandedAccountId, setExpandedAccountId] = useState<string | null>(null);
 
+  /**
+   * Formatea el valor monetario según la moneda.
+   *
+   * @param amount Monto numérico.
+   * @param currency Moneda ('Dolares' o 'Colones').
+   * @returns Cadena con el valor formateado.
+   */
   const formatCurrency = (amount: number, currency: string) => {
     return currency === 'Dolares'
       ? `$${amount.toFixed(2)}`
       : `₡${amount.toFixed(2)}`;
   };
 
+  /**
+   * Alterna la expansión de la tarjeta de cuenta para mostrar u ocultar movimientos.
+   *
+   * @param id ID de la cuenta seleccionada.
+   */
   const toggleExpand = (id: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpandedAccountId(prev => (prev === id ? null : id));
@@ -27,8 +56,10 @@ const AccountsScreen = () => {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Tus Cuentas</Text>
+
         <FlatList
           data={cliente?.cuentas}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => {
             const isExpanded = expandedAccountId === item.id;
             const movimientos = item.movimientos ?? [];
@@ -63,13 +94,13 @@ const AccountsScreen = () => {
               </TouchableOpacity>
             );
           }}
-          keyExtractor={(item) => item.id}
         />
       </View>
     </View>
   );
 };
 
+// Estilos de la pantalla
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#FAFAFF' },
   welcome: { fontSize: 24, fontWeight: 'bold', color: '#10264D', marginBottom: 20 },

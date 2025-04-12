@@ -1,3 +1,10 @@
+/**
+ * @file TransactionsScreen.tsx
+ * @description Pantalla para realizar transferencias tipo IBAN o SINPE móvil.
+ * Permite seleccionar una cuenta de origen, ingresar destino, monto, motivo y realizar la operación.
+ * Se registran los movimientos en las cuentas y tarjetas asociadas.
+ */
+
 import React, { useState } from 'react';
 import {
   View,
@@ -14,9 +21,12 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Transactions'>;
-
 type TransferType = 'IBAN' | 'SINPE';
 
+/**
+ * Pantalla que gestiona las transferencias entre cuentas.
+ * @param navigation Navegación de React Navigation
+ */
 export default function TransactionsScreen({ navigation }: Props) {
   const {
     cliente,
@@ -44,6 +54,10 @@ export default function TransactionsScreen({ navigation }: Props) {
 
   const cuentasOrigen = cliente.cuentas;
 
+  /**
+   * Ejecuta una transferencia validando los campos requeridos.
+   * Registra movimientos en cuenta origen y destino, así como tarjetas asociadas.
+   */
   const handleTransfer = async () => {
     const montoNum = parseFloat(monto);
     const fecha = new Date().toISOString().split('T')[0];
@@ -51,6 +65,7 @@ export default function TransactionsScreen({ navigation }: Props) {
     const isIBAN = transferType === 'IBAN';
     const destino = isIBAN ? ibanDestino.trim().toUpperCase() : telefonoDestino.trim();
 
+    // Validación de campos
     if (!transferType || !selectedAccountId || !destino || !monto.trim() || !motivoTrim) {
       Alert.alert('Error', 'Todos los campos son obligatorios');
       return;
@@ -82,6 +97,7 @@ export default function TransactionsScreen({ navigation }: Props) {
       return;
     }
 
+    // Buscar cuenta destino
     const allUsers = require('../data/users.json');
     let cuentaDestino: any = null;
 
@@ -117,16 +133,18 @@ export default function TransactionsScreen({ navigation }: Props) {
       tipo: motivoTrim,
     };
 
+    // Simulación de espera de transacción
     setLoading(true);
     await new Promise((res) => setTimeout(res, 1000));
 
+    // Actualización de saldos y movimientos
     cuentaOrigen.saldo -= montoNum;
     cuentaDestino.saldo += montoNum;
 
     updateAccountBalance(cuentaOrigen.id, cuentaOrigen.saldo);
     saveTransaction(cuentaOrigen.id, movimientoOrigen);
 
-    // Guardar movimiento en tarjeta de débito origen (si aplica)
+    // Registrar movimientos en tarjetas asociadas si existen
     const tarjetaDebitoOrigen = cliente.tarjetas.debito.find(
       (t) => t.cuenta_asociada === cuentaOrigen.id
     );
@@ -134,7 +152,6 @@ export default function TransactionsScreen({ navigation }: Props) {
       saveDebitCardMovement(tarjetaDebitoOrigen.id, movimientoOrigen, cuentaOrigen.id);
     }
 
-    // Guardar movimiento en tarjeta de crédito origen (si aplica)
     const tarjetaCreditoOrigen = cliente.tarjetas.credito.find(
       (t) => t.cuenta_asociada === cuentaOrigen.id
     );
@@ -142,7 +159,6 @@ export default function TransactionsScreen({ navigation }: Props) {
       saveCreditCardMovement(tarjetaCreditoOrigen.id, movimientoOrigen, cuentaOrigen.id);
     }
 
-    // Guardar movimiento en tarjeta de débito destino (si aplica)
     for (const user of allUsers) {
       const tarjetaDebitoDestino = user.tarjetas?.debito?.find(
         (t: any) => t.cuenta_asociada === cuentaDestino.id
@@ -166,6 +182,9 @@ export default function TransactionsScreen({ navigation }: Props) {
     navigation.goBack();
   };
 
+  /**
+   * Renderiza visualmente una cuenta de origen.
+   */
   const renderCuenta = ({ item }: { item: any }) => (
     <TouchableOpacity
       style={[styles.cuentaBox, item.id === selectedAccountId && styles.cuentaSeleccionada]}
@@ -176,6 +195,7 @@ export default function TransactionsScreen({ navigation }: Props) {
     </TouchableOpacity>
   );
 
+  // Vista principal
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Nueva Transferencia</Text>

@@ -1,16 +1,38 @@
+/**
+ * File: AccountDetailsScreen.tsx
+ * Description: Pantalla que muestra el detalle de las cuentas del cliente autenticado, incluyendo sus movimientos y tarjetas de débito asociadas.
+ * Author: [Tu nombre o equipo]
+ */
+
 import React from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 
+/**
+ * Muestra los detalles de las cuentas del cliente, incluyendo movimientos y tarjetas de débito asociadas.
+ */
 const AccountDetailsScreen = () => {
   const { cliente } = useAuth();
 
+  /**
+   * Formatea el monto a la moneda local según el tipo de cuenta.
+   *
+   * @param amount El monto numérico.
+   * @param currency La moneda ('Colones' o 'Dolares').
+   * @returns Monto formateado como string.
+   */
   const formatCurrency = (amount: number, currency: string) => {
     return currency === 'Dolares'
       ? `$${amount.toFixed(2)}`
       : `₡${amount.toFixed(2)}`;
   };
 
+  /**
+   * Obtiene las tarjetas de débito asociadas a una cuenta.
+   *
+   * @param cuentaId ID de la cuenta.
+   * @returns Lista de tarjetas de débito asociadas.
+   */
   const getTarjetasDebitoAsociadas = (cuentaId: string) => {
     return cliente?.tarjetas.debito.filter(t => t.cuenta_asociada === cuentaId) || [];
   };
@@ -21,8 +43,10 @@ const AccountDetailsScreen = () => {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Tus Cuentas</Text>
+
         <FlatList
           data={cliente?.cuentas}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => {
             const movimientosCuenta = item.movimientos ?? [];
             const tarjetasAsociadas = getTarjetasDebitoAsociadas(item.id);
@@ -37,7 +61,7 @@ const AccountDetailsScreen = () => {
                   {formatCurrency(item.saldo, item.currency)}
                 </Text>
 
-                {/* Movimientos de cuenta */}
+                {/* Sección de movimientos de cuenta */}
                 <View style={styles.movimientos}>
                   <Text style={styles.movTitle}>Movimientos:</Text>
                   {movimientosCuenta.length > 0 ? (
@@ -46,7 +70,8 @@ const AccountDetailsScreen = () => {
                         <Text style={styles.movFecha}>{mov.fecha}</Text>
                         <Text style={styles.movDesc}>{mov.descripcion}</Text>
                         <Text style={styles.movMonto}>
-                          {mov.monto >= 0 ? '+' : '-'}{formatCurrency(Math.abs(mov.monto), item.currency)}
+                          {mov.monto >= 0 ? '+' : '-'}
+                          {formatCurrency(Math.abs(mov.monto), item.currency)}
                         </Text>
                       </View>
                     ))
@@ -55,7 +80,7 @@ const AccountDetailsScreen = () => {
                   )}
                 </View>
 
-                {/* Tarjetas asociadas */}
+                {/* Sección de tarjetas de débito asociadas */}
                 {tarjetasAsociadas.length > 0 && (
                   <View style={styles.tarjetasAsociadas}>
                     <Text style={styles.movTitle}>Tarjetas de Débito Asociadas:</Text>
@@ -64,13 +89,15 @@ const AccountDetailsScreen = () => {
                         <Text style={styles.tarjetaLabel}>
                           • Tarjeta ****{tarjeta.numero.slice(-4)} (Saldo: ₡{tarjeta.saldo.toLocaleString()})
                         </Text>
+
                         {tarjeta.movimientos?.length > 0 ? (
                           tarjeta.movimientos.map((mov, index) => (
                             <View key={`mov-tarj-${tarjeta.id}-${index}`} style={styles.movRow}>
                               <Text style={styles.movFecha}>{mov.fecha}</Text>
                               <Text style={styles.movDesc}>{mov.descripcion}</Text>
                               <Text style={styles.movMonto}>
-                                {mov.monto >= 0 ? '+' : '-'}{formatCurrency(Math.abs(mov.monto), item.currency)}
+                                {mov.monto >= 0 ? '+' : '-'}
+                                {formatCurrency(Math.abs(mov.monto), item.currency)}
                               </Text>
                             </View>
                           ))
@@ -84,7 +111,6 @@ const AccountDetailsScreen = () => {
               </View>
             );
           }}
-          keyExtractor={(item) => item.id}
         />
       </View>
     </View>
@@ -96,7 +122,14 @@ const styles = StyleSheet.create({
   welcome: { fontSize: 24, fontWeight: 'bold', color: '#10264D', marginBottom: 20 },
   section: { marginBottom: 25 },
   sectionTitle: { fontSize: 18, fontWeight: '600', color: '#39446D', marginBottom: 10 },
-  card: { backgroundColor: '#FFFFFF', padding: 15, borderRadius: 8, marginBottom: 15, borderLeftWidth: 4, borderLeftColor: '#7180AC' },
+  card: {
+    backgroundColor: '#FFFFFF',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 15,
+    borderLeftWidth: 4,
+    borderLeftColor: '#7180AC',
+  },
   accountLabel: { fontSize: 16, fontWeight: 'bold', color: '#39446D' },
   balance: { fontSize: 16, fontWeight: 'bold', color: '#10264D', marginTop: 5 },
   movimientos: { marginTop: 10 },

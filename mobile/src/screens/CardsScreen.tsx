@@ -1,3 +1,10 @@
+/**
+ * CardsScreen
+ *
+ * Pantalla que muestra las tarjetas de crédito y débito del cliente autenticado.
+ * Permite ver detalles de cada tarjeta, movimientos asociados y pagar tarjetas de crédito.
+ */
+
 import React, { useState } from 'react';
 import {
   View,
@@ -16,16 +23,21 @@ import { RootStackParamList } from '../navigation/AppNavigator';
 import { useAuth } from '../context/AuthContext';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 
+// Habilitar animaciones en Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
+/**
+ * Componente principal que renderiza la lista de tarjetas del cliente.
+ */
 export default function CardsScreen() {
   const { cliente } = useAuth();
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
   const [showMovimientosId, setShowMovimientosId] = useState<string | null>(null);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
+  // Manejo de error por si no hay cliente autenticado
   if (!cliente) {
     return (
       <View style={styles.container}>
@@ -34,22 +46,45 @@ export default function CardsScreen() {
     );
   }
 
+  /**
+   * Retorna la cuenta asociada a una tarjeta por su ID.
+   *
+   * @param cuentaId - ID de la cuenta a buscar
+   * @returns cuenta asociada
+   */
   const getCuentaAsociada = (cuentaId: string) => {
     return cliente.cuentas.find((c) => c.id === cuentaId);
   };
 
+  // Unifica tarjetas de débito y crédito para renderizar
   const tarjetas = [...cliente.tarjetas.debito, ...cliente.tarjetas.credito];
 
+  /**
+   * Alterna la expansión de los detalles de una tarjeta.
+   *
+   * @param id - ID de la tarjeta
+   */
   const toggleCard = (id: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpandedCardId(prev => (prev === id ? null : id));
-    setShowMovimientosId(null); // Ocultar movimientos al colapsar
+    setShowMovimientosId(null); // Oculta los movimientos al cerrar
   };
 
+  /**
+   * Alterna la visibilidad de los movimientos de una tarjeta.
+   *
+   * @param cardId - ID de la tarjeta
+   */
   const toggleMovimientos = (cardId: string) => {
     setShowMovimientosId(prev => (prev === cardId ? null : cardId));
   };
 
+  /**
+   * Renderiza los movimientos de una tarjeta.
+   *
+   * @param movimientos - Lista de movimientos
+   * @returns JSX.Element
+   */
   const renderMovimientos = (movimientos: any[]) => (
     <View style={{ marginTop: 10 }}>
       <Text style={styles.movTitle}>Movimientos:</Text>
@@ -74,6 +109,12 @@ export default function CardsScreen() {
     </View>
   );
 
+  /**
+   * Renderiza una tarjeta de débito o crédito.
+   *
+   * @param tarjeta - Objeto tarjeta
+   * @returns JSX.Element
+   */
   const renderTarjeta = (tarjeta: any) => {
     const isExpanded = expandedCardId === tarjeta.id;
     const isCredito = tarjeta.tipo === 'Credito';
@@ -152,6 +193,7 @@ export default function CardsScreen() {
   );
 }
 
+// Estilos visuales
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FAFAFF', padding: 20 },
   title: { fontSize: 24, color: '#10264D', fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },

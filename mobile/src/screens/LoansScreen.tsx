@@ -1,3 +1,10 @@
+/**
+ * File: LoansScreen.tsx
+ * Description: Pantalla para visualizar y gestionar préstamos del cliente.
+ * Permite realizar pagos normales (cuotas) y extraordinarios, reflejando los movimientos
+ * y actualizando saldos en tiempo real. Incluye confirmaciones visuales.
+ */
+
 import React, { useState } from 'react';
 import {
   View,
@@ -10,12 +17,21 @@ import {
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 
+/**
+ * Componente principal de la pantalla de préstamos.
+ * Muestra préstamos activos y permite realizar pagos normales o extraordinarios.
+ */
 export default function LoansScreen() {
   const { cliente, updateAccountBalance, saveTransaction } = useAuth();
+
+  // Monto del pago extraordinario ingresado por el usuario
   const [montoExtraordinario, setMontoExtraordinario] = useState('');
+  // Cuenta seleccionada para realizar pagos
   const [cuentaSeleccionada, setCuentaSeleccionada] = useState<string | null>(null);
+  // Control de visibilidad de mensaje de éxito
   const [successMessageVisible, setSuccessMessageVisible] = useState(false);
 
+  // Validación de sesión activa
   if (!cliente) {
     return (
       <View style={styles.container}>
@@ -24,11 +40,20 @@ export default function LoansScreen() {
     );
   }
 
+  /**
+   * Muestra el mensaje visual de éxito por 2 segundos.
+   */
   const mostrarMensajeExito = () => {
     setSuccessMessageVisible(true);
     setTimeout(() => setSuccessMessageVisible(false), 2000);
   };
 
+  /**
+   * Maneja el pago normal (de cuota) a un préstamo específico.
+   *
+   * @param prestamo - Objeto préstamo al que se paga.
+   * @param cuota - Cuota pendiente a pagar.
+   */
   const handlePagoNormal = (prestamo: any, cuota: any) => {
     const cuenta = cliente.cuentas.find(c => c.id === cuentaSeleccionada);
     if (!cuenta || cuenta.saldo < cuota.monto) {
@@ -55,6 +80,11 @@ export default function LoansScreen() {
     mostrarMensajeExito();
   };
 
+  /**
+   * Maneja el pago extraordinario a un préstamo.
+   *
+   * @param prestamo - Objeto préstamo al que se aplica el pago extraordinario.
+   */
   const handlePagoExtraordinario = (prestamo: any) => {
     const monto = parseFloat(montoExtraordinario);
     if (isNaN(monto) || monto <= 0) {
@@ -86,6 +116,11 @@ export default function LoansScreen() {
     mostrarMensajeExito();
   };
 
+  /**
+   * Renderiza visualmente un préstamo con sus cuotas e inputs de pago.
+   *
+   * @param item - Objeto préstamo.
+   */
   const renderPrestamo = ({ item: prestamo }: any) => (
     <View style={styles.card}>
       <Text style={styles.label}>
@@ -94,6 +129,7 @@ export default function LoansScreen() {
       <Text style={styles.text}>Saldo pendiente: ₡{prestamo.saldo_pendiente.toLocaleString()}</Text>
       <Text style={styles.text}>Tasa: {prestamo.tasa_interes}%</Text>
       <Text style={styles.subTitle}>Cuotas</Text>
+
       {prestamo.cuotas.map((cuota: any) => (
         <View key={cuota.numero} style={styles.cuotaBox}>
           <Text style={styles.cuotaText}>
@@ -123,6 +159,7 @@ export default function LoansScreen() {
     </View>
   );
 
+  // Render principal
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Mis Préstamos</Text>
@@ -164,6 +201,7 @@ export default function LoansScreen() {
   );
 }
 
+// Estilos y diseño
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FAFAFF', padding: 20 },
   title: {

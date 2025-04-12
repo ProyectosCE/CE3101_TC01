@@ -14,7 +14,8 @@ import { RootStackParamList } from '../navigation/AppNavigator';
 import { useAuth } from '../context/AuthContext';
 
 /**
- * Paleta de colores corporativos de TecBank
+ * Colors
+ * Paleta de colores corporativa utilizada en la app.
  */
 const COLORS = {
   primary: '#10264D',
@@ -27,7 +28,15 @@ const COLORS = {
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 /**
- * Componente de pantalla de Login
+ * LoginScreen Component
+ * 
+ * Pantalla inicial de autenticación. Permite al usuario ingresar su cédula y contraseña para autenticarse.
+ * 
+ * Navegación:
+ * - Redirige a ClientScreen si las credenciales son válidas.
+ * 
+ * Hooks:
+ * - useAuth(): para manejar login y estado global de usuario autenticado.
  */
 export default function LoginScreen({ navigation }: Props) {
   const [cedula, setCedula] = useState('');
@@ -37,7 +46,12 @@ export default function LoginScreen({ navigation }: Props) {
   const { login } = useAuth();
 
   /**
-   * Valida los campos del formulario
+   * validateFields
+   * 
+   * Valida que los campos de cédula y contraseña no estén vacíos.
+   * También valida el formato de la cédula (exactamente 9 dígitos).
+   * 
+   * @returns boolean - true si todos los campos son válidos.
    */
   const validateFields = () => {
     if (!cedula.trim() || !password.trim()) {
@@ -53,7 +67,10 @@ export default function LoginScreen({ navigation }: Props) {
   };
 
   /**
-   * Maneja el proceso de autenticación
+   * handleLogin
+   * 
+   * Lógica principal para procesar el inicio de sesión.
+   * Valida campos, intenta login con contexto global, y redirige si es exitoso.
    */
   const handleLogin = async () => {
     if (!validateFields()) return;
@@ -62,7 +79,7 @@ export default function LoginScreen({ navigation }: Props) {
     try {
       const success = await login(cedula, password);
       if (success) {
-        navigation.replace('Client'); // Navegación después de login exitoso
+        navigation.replace('Client');
       } else {
         Alert.alert('Error', 'Credenciales incorrectas');
       }
@@ -79,6 +96,7 @@ export default function LoginScreen({ navigation }: Props) {
         <Text style={styles.title}>TECBANK</Text>
         <Text style={styles.subtitle}>Portal de clientes</Text>
         
+        {/* Formulario de ingreso */}
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
@@ -112,6 +130,7 @@ export default function LoginScreen({ navigation }: Props) {
           </View>
         </View>
 
+        {/* Botón de ingreso */}
         <TouchableOpacity 
           style={styles.loginButton}
           onPress={handleLogin}
@@ -128,6 +147,9 @@ export default function LoginScreen({ navigation }: Props) {
   );
 }
 
+/**
+ * Estilos para la pantalla de login.
+ */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
