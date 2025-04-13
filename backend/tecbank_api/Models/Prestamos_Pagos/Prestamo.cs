@@ -19,7 +19,7 @@ namespace tecbank_api.Models.Prestamos_Pagos
         public Cliente? cliente { get; set; }
 
         // Foreign key to Asesor
-        public string id_asesor { get; set; }
+        public int id_asesor { get; set; }
         [JsonIgnore]
         public Asesor? asesor { get; set; }
 

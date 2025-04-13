@@ -1,0 +1,12 @@
+[
+  {
+    "id_prestamo": 123,
+    "tasa_interes": 0,
+    "fecha_inicio": "2025-04-13T07:11:36.757Z",
+    "fecha_final": "2025-04-13T07:11:36.757Z",
+    "monto_original": 500,
+    "saldo": 0,
+    "id_cliente": 1,
+    "id_asesor": 0
+  }
+]
