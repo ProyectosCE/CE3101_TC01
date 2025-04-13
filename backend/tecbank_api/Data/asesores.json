@@ -1,0 +1,10 @@
+[
+  {
+    "id_asesor": 0,
+    "nombre": "string",
+    "cedula": "string",
+    "fecha_nacimiento": "2025-04-13T06:56:04.265Z",
+    "monto_meta": 0,
+    "id_rol": "ASESOR"
+  }
+]

@@ -3,7 +3,7 @@ using tecbank_api.Models.Asesores;
 using tecbank_api.Models.Clientes_Cuentas;
 using tecbank_api.Services;
 
-namespace tecbank_api.Controllers
+namespace tecbank_api.Controllers.Asesores
 {
     [ApiController]
     [Route("api/[controller]")]
