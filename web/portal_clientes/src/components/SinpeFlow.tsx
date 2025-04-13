@@ -12,7 +12,10 @@ export default function SinpeFlow({ onBack }) {
 
   useEffect(() => {
     const currentStep = parseInt(query.step || "1", 10);
-    if (currentStep > step + 1) {
+    if ((currentStep === 2 && step !== 1) || (currentStep === 3 && step !== 2)) {
+      // Prevent accessing step 2 or 3 directly via URL
+      router.push(`/client?page=transferencias&type=sinpe&step=1`);
+    } else if (currentStep > step + 1) {
       // Prevent skipping steps
       router.push(`/client?page=transferencias&type=sinpe&step=${step}`);
     } else {
