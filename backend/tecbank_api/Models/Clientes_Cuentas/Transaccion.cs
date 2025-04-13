@@ -8,6 +8,8 @@ namespace tecbank_api.Models.Clientes_Cuentas
         public string estado { get; set; }
         public DateTime fecha_hora { get; set; }
         public string descripcion { get; set; }
+        public double monto { get; set; }
+        public string moneda { get; set; }
 
         // Foreign key to Cuenta
         public int numero_cuenta { get; set; }

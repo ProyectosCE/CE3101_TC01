@@ -1,0 +1,10 @@
+[
+  {
+    "tipo_transaccion": "PENDIENTE",
+    "descripcion": "Transaccion pendiente"
+  },
+  {
+    "tipo_transaccion": "COMPLETADO",
+    "descripcion": "Transaccion completado"
+  }
+]

@@ -1,20 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using tecbank_api.Models.Asesores;
-using tecbank_api.Models.Clientes_Cuentas;
 using tecbank_api.Services;
 
 namespace tecbank_api.Controllers.Asesores
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class RolCrontolller : ControllerBase
+    public class RolCrontroller : ControllerBase
     {
         private readonly JsonDataService<Rol> _tipoRol;
 
         // Constructor
-        public RolCrontolller()
+        public RolCrontroller()
         {
             _tipoRol = new JsonDataService<Rol>("Data/roles.json");
+        }
+
+        [HttpGet]
+        public IActionResult Get()
+        {
+            var roles = _tipoRol.GetAll();
+            return Ok(roles);
         }
 
         [HttpPost]
