@@ -2,7 +2,7 @@
 using tecbank_api.Services;
 using tecbank_api.Models.Clientes_Cuentas;
 
-namespace tecbank_api.Controllers
+namespace tecbank_api.Controllers.Clientes_Cuentas
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -11,12 +11,14 @@ namespace tecbank_api.Controllers
         private readonly JsonDataService<Cuenta> _cuentaService;
         private readonly JsonDataService<Cliente> _clienteService;
         private readonly JsonDataService<Moneda> _monedaService;
+        private readonly JsonDataService<Tipo_Cuenta> _tipoCuentaService;
 
         public CuentaController()
         {
             _cuentaService = new JsonDataService<Cuenta>("Data/cuentas.json");
             _clienteService = new JsonDataService<Cliente>("Data/clientes.json");
             _monedaService = new JsonDataService<Moneda>("Data/monedas.json");
+            _tipoCuentaService = new JsonDataService<Tipo_Cuenta>("Data/tipo_cuentas.json");
         }
 
         [HttpGet]
@@ -57,6 +59,15 @@ namespace tecbank_api.Controllers
             {
                 return NotFound($"No existe una moneda con el código {cuenta.moneda}");
             }
+
+            // Validar existencia del tipo de cuenta
+            var tiposCuentas = _tipoCuentaService.GetAll();
+            var tipoCuentaExistente = tiposCuentas.Any(tc => tc.tipo_cuenta == cuenta.id_tipo_cuenta);
+            if (!tipoCuentaExistente)
+            {
+                return NotFound($"No existe un tipo de cuenta con el código {cuenta.tipo_cuenta}");
+            }
+
 
             _cuentaService.Add(cuenta);
             return CreatedAtAction(nameof(Post), new { id = cuenta.numero_cuenta }, cuenta);

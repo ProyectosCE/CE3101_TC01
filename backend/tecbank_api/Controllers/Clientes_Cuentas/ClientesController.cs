@@ -2,7 +2,7 @@
 using tecbank_api.Models.Clientes_Cuentas;
 using tecbank_api.Services;
 
-namespace tecbank_api.Controllers
+namespace tecbank_api.Controllers.Clientes_Cuentas
 {
 
     /* Class: ClientesController
