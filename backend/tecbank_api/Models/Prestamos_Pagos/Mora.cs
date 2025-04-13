@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using tecbank_api.Models.Prestamos_Pagos;
 
 namespace tecbank_api.Models
 {

@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 using tecbank_api.Models.Prestamos_Pagos;
-using tecbank_api.Models.Tarjetas;
 
 namespace tecbank_api.Models.Clientes_Cuentas
 {

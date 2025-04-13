@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using tecbank_api.Models;
+using tecbank_api.Models.Clientes_Cuentas;
 using tecbank_api.Services;
 
 namespace tecbank_api.Controllers
