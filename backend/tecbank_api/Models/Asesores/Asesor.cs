@@ -1,10 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using tecbank_api.Models.Prestamos_Pagos;
 
 namespace tecbank_api.Models.Asesores
 {
     public class Asesor
     {
+        [Key]
         public int id_asesor { get; set; }
         public string nombre { get; set; }
         public string cedula { get; set; }

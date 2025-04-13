@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 
 namespace tecbank_api.Services
 {
@@ -108,5 +109,42 @@ namespace tecbank_api.Services
             items.Add(item);
             SaveAll(items);
         }
+
+        public void Remove(T item)
+        {
+            var items = GetAll();
+            items.Remove(item);
+            SaveAll(items);
+        }
+
+        public void Update(T item)
+        {
+            var items = GetAll();
+
+            // Buscar la propiedad marcada con [Key]
+            var keyProperty = typeof(T).GetProperties()
+                .FirstOrDefault(prop => Attribute.IsDefined(prop, typeof(KeyAttribute)));
+
+            if (keyProperty == null)
+                throw new InvalidOperationException($"La clase {typeof(T).Name} no tiene una propiedad marcada con [Key].");
+
+            var itemKey = keyProperty.GetValue(item);
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                var existingKey = keyProperty.GetValue(items[i]);
+                if (Equals(existingKey, itemKey))
+                {
+                    items[i] = item;
+                    SaveAll(items);
+                    return;
+                }
+            }
+
+            throw new InvalidOperationException("No se encontró el elemento a actualizar.");
+        }
+
+
+
     }
 }

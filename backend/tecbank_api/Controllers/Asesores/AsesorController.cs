@@ -47,6 +47,10 @@ namespace tecbank_api.Controllers.Asesores
                 return NotFound($"No existe un rol con el ID {asesor.id_rol}");
             }
 
+            // Agregar datos adicionales
+            asesor.id_asesor = asesores.Any() ? asesores.Max(a => a.id_asesor) + 1 : 1; // Incrementar el id_asesor previo
+
+
             _asesorService.Add(asesor);
             return CreatedAtAction(nameof(Post), new { id = asesor.id_asesor }, asesor);
         }

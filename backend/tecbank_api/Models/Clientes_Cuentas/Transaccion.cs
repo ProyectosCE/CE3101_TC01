@@ -1,9 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace tecbank_api.Models.Clientes_Cuentas
 {
     public class Transaccion
     {
+        [Key]
         public int id_transaccion { get; set; } // ID
         public string estado { get; set; }
         public DateTime fecha_hora { get; set; }

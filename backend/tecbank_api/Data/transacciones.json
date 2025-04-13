@@ -1,0 +1,22 @@
+[
+  {
+    "id_transaccion": 1,
+    "estado": "COMPLETADO",
+    "fecha_hora": "2025-04-13T22:40:41.217Z",
+    "descripcion": "deposito",
+    "monto": 1000,
+    "moneda": "COLON",
+    "numero_cuenta": 12345678,
+    "id_tipo_transaccion": "DEPOSITO"
+  },
+  {
+    "id_transaccion": 2,
+    "estado": "COMPLETADO",
+    "fecha_hora": "2025-04-13T22:44:30.221Z",
+    "descripcion": "retiro",
+    "monto": 500,
+    "moneda": "COLON",
+    "numero_cuenta": 12345678,
+    "id_tipo_transaccion": "RETIRO"
+  }
+]

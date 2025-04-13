@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace tecbank_api.Models.Clientes_Cuentas
 {
@@ -25,6 +26,7 @@ namespace tecbank_api.Models.Clientes_Cuentas
 
     public class Tipo_Cliente
     {
+        [Key]
         public string tipo { get; set; }
 
         public string descripcion { get; set; }

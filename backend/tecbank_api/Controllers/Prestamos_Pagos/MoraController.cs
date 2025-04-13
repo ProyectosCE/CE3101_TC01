@@ -60,8 +60,11 @@ namespace tecbank_api.Controllers.Prestamos_Pagos
             {
                 return NotFound($"No existe un cliente con el ID {prestamoExistente.id_cliente}");
             }
+
+            // Agregar datos adicionales
             mora.cedula = clienteExistente.cedula;
             mora.nombre_completo = clienteExistente.nombre_completo;
+            mora.id_mora = moras.Any() ? moras.Max(m => m.id_mora) + 1 : 1; // Incrementar el id_mora previo
 
 
             _moraService.Add(mora);

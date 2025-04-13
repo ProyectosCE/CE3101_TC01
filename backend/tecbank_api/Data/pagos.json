@@ -1,8 +1,8 @@
 [
   {
-    "fecha": "2025-04-13T07:12:22.887Z",
-    "monto": 0,
-    "id_prestamo": 123,
+    "fecha": "2025-04-13T21:36:18.546Z",
+    "monto": 100,
+    "id_prestamo": 2,
     "id_tipo_pago": "NORMAL"
   }
 ]

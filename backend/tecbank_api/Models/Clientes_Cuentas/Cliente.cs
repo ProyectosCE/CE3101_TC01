@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using tecbank_api.Models.Prestamos_Pagos;
 
 namespace tecbank_api.Models.Clientes_Cuentas
@@ -38,6 +39,7 @@ namespace tecbank_api.Models.Clientes_Cuentas
 
     public class Cliente
     {
+        [Key]
         public int id_cliente { get; set; }
         public string cedula { get; set; }
         public string direccion { get; set; }

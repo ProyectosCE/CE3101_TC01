@@ -1,12 +1,22 @@
 [
   {
-    "id_prestamo": 123,
-    "tasa_interes": 0,
-    "fecha_inicio": "2025-04-13T07:11:36.757Z",
-    "fecha_final": "2025-04-13T07:11:36.757Z",
-    "monto_original": 500,
-    "saldo": 0,
+    "id_prestamo": 1,
+    "tasa_interes": 5,
+    "fecha_inicio": "2025-04-13T21:30:46.68Z",
+    "fecha_final": "2025-04-13T21:30:46.68Z",
+    "monto_original": 100,
+    "saldo": 50,
     "id_cliente": 1,
-    "id_asesor": 0
+    "id_asesor": 1
+  },
+  {
+    "id_prestamo": 2,
+    "tasa_interes": 10,
+    "fecha_inicio": "2025-04-13T21:30:46.68Z",
+    "fecha_final": "2025-04-13T21:30:46.68Z",
+    "monto_original": 200,
+    "saldo": 100,
+    "id_cliente": 3,
+    "id_asesor": 1
   }
 ]

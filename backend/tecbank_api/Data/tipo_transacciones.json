@@ -1,10 +1,14 @@
 [
   {
-    "tipo_transaccion": "PENDIENTE",
-    "descripcion": "Transaccion pendiente"
+    "tipo_transaccion": "RETIRO",
+    "descripcion": "Retiro de dinero"
   },
   {
-    "tipo_transaccion": "COMPLETADO",
-    "descripcion": "Transaccion completado"
+    "tipo_transaccion": "DEPOSITO",
+    "descripcion": "Deposito de dinero"
+  },
+  {
+    "tipo_transaccion": "TRANSFERENCIA",
+    "descripcion": "Transferencia de dinero"
   }
 ]

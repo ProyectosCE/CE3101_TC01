@@ -1,10 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using tecbank_api.Models.Clientes_Cuentas;
 
 namespace tecbank_api.Models
 {
     public class Tarjeta
     {
+        [Key]
         public int numero_tarjeta { get; set; } // id
         public int cvc { get; set; }
         public DateTime fecha_vencimiento { get; set; }

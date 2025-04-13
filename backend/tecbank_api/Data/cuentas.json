@@ -1,18 +1,26 @@
 [
   {
     "numero_cuenta": 12345678,
-    "descripcion": "string",
-    "monto": 0,
+    "descripcion": "Cuenta corriente",
+    "monto": 500,
     "id_cliente": 1,
     "id_tipo_cuenta": "CORRIENTE",
-    "id_moneda": "DOLAR"
+    "id_moneda": "COLON"
   },
   {
-    "numero_cuenta": 12312,
-    "descripcion": "string",
+    "numero_cuenta": 87654321,
+    "descripcion": "Cuenta ahorros",
     "monto": 0,
     "id_cliente": 2,
     "id_tipo_cuenta": "AHORROS",
+    "id_moneda": "DOLAR"
+  },
+  {
+    "numero_cuenta": 1239876,
+    "descripcion": "Cuenta corriente",
+    "monto": 0,
+    "id_cliente": 3,
+    "id_tipo_cuenta": "CORRIENTE",
     "id_moneda": "EURO"
   }
 ]

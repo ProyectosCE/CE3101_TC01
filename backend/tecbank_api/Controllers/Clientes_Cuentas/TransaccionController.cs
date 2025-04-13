@@ -26,44 +26,69 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             return Ok(transacciones);
         }
 
-        [HttpPost]
-        public IActionResult Post([FromBody] Transaccion nuevaTransaccion)
+        [HttpPost("deposito")]
+        public IActionResult Deposito([FromBody] Transaccion transaccion)
         {
-            if (nuevaTransaccion == null)
+            var (cuenta, tipo, error) = ValidarTransaccion(transaccion);
+            if (error != null) return BadRequest(error);
+
+            if (tipo.tipo_transaccion != "DEPOSITO")
+                return BadRequest("El tipo de transacción no es válido para este endpoint.");
+
+            transaccion.id_transaccion = _transaccionService.GetAll().Any() ? _transaccionService.GetAll().Max(t => t.id_transaccion) + 1 : 1;
+
+            if (transaccion.estado == "COMPLETADO")
             {
-                return BadRequest("La transacción no puede ser nula.");
+                cuenta.monto += transaccion.monto;
+                _cuentaService.Update(cuenta);
+                
             }
 
-            // Validar que la cuenta exista
-            var cuenta = _cuentaService.GetAll().FirstOrDefault(c => c.numero_cuenta == nuevaTransaccion.numero_cuenta);
-            if (cuenta == null)
-            {
-                return NotFound($"No se encontró la cuenta con número {nuevaTransaccion.numero_cuenta}.");
-            }
-
-            // Validar que el tipo de transacción exista
-            var tipoTransaccion = _tipoTransaccionService.GetAll().FirstOrDefault(t => t.tipo_transaccion == nuevaTransaccion.id_tipo_transaccion);
-            if (tipoTransaccion == null)
-            {
-                return NotFound($"No se encontró el tipo de transacción con ID {nuevaTransaccion.id_tipo_transaccion}.");
-            }
-
-            //Validar que la moneda de la transaccion coincida con la moneda de la cuenta
-            var moneda = _cuentaService.GetAll().FirstOrDefault(c => c.id_moneda == nuevaTransaccion.moneda);
-            if (moneda == null)
-            {
-                return NotFound($"No se encontró la moneda con ID {nuevaTransaccion.moneda}.");
-            }
-
-            // Asignar valores adicionales
-            nuevaTransaccion.id_transaccion = _transaccionService.GetAll().Count + 1; // Generar un ID único
-
-            // Guardar la transacción
-            _transaccionService.Add(nuevaTransaccion);
-
-            return CreatedAtAction(nameof(Get), new { id = nuevaTransaccion.id_transaccion }, nuevaTransaccion);
+            _transaccionService.Add(transaccion);
+            return CreatedAtAction(nameof(Get), new { id = transaccion.id_transaccion }, transaccion);
         }
 
+        [HttpPost("retiro")]
+        public IActionResult Retiro([FromBody] Transaccion transaccion)
+        {
+            var (cuenta, tipo, error) = ValidarTransaccion(transaccion);
+            if (error != null) return BadRequest(error);
+
+            if (tipo.tipo_transaccion != "RETIRO")
+                return BadRequest("El tipo de transacción no es válido para este endpoint.");
+
+            if (cuenta.monto < transaccion.monto)
+                return BadRequest("Fondos insuficientes para realizar el retiro.");
+
+            transaccion.id_transaccion = _transaccionService.GetAll().Any() ? _transaccionService.GetAll().Max(t => t.id_transaccion) + 1 : 1;
+
+            if (transaccion.estado == "COMPLETADO")
+            {
+                cuenta.monto -= transaccion.monto;
+                _cuentaService.Update(cuenta);
+            }
+
+            _transaccionService.Add(transaccion);
+
+            return CreatedAtAction(nameof(Get), new { id = transaccion.id_transaccion }, transaccion);
+        }
+
+
+        private (Cuenta cuenta, Tipo_Transaccion tipo, string error) ValidarTransaccion(Transaccion transaccion)
+        {
+            var cuenta = _cuentaService.GetAll().FirstOrDefault(c => c.numero_cuenta == transaccion.numero_cuenta);
+            if (cuenta == null)
+                return (null, null, $"No se encontró la cuenta con número {transaccion.numero_cuenta}.");
+
+            var tipo = _tipoTransaccionService.GetAll().FirstOrDefault(t => t.tipo_transaccion == transaccion.id_tipo_transaccion);
+            if (tipo == null)
+                return (null, null, $"No se encontró el tipo de transacción con ID {transaccion.id_tipo_transaccion}.");
+
+            if (cuenta.id_moneda != transaccion.moneda)
+                return (null, null, "La moneda de la transacción no coincide con la de la cuenta.");
+
+            return (cuenta, tipo, null);
+        }
     }
 }
 

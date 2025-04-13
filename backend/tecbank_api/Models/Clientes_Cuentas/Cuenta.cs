@@ -1,9 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace tecbank_api.Models.Clientes_Cuentas
 {
     public class Cuenta
     {
+        [Key]
         public int numero_cuenta { get; set; } // id
         public string descripcion { get; set; }
         public double monto { get; set; }

@@ -49,6 +49,11 @@ namespace tecbank_api.Controllers.Prestamos_Pagos
             {
                 return NotFound($"No existe un cliente con el ID {prestamo.id_cliente}");
             }
+
+            // Asignar datos adicionales
+            var prestamos = _prestamoService.GetAll();
+            prestamo.id_prestamo = prestamos.Any() ? prestamos.Max(p => p.id_prestamo) + 1 : 1; // Incrementar el id_prestamo previo
+
             _prestamoService.Add(prestamo);
             return CreatedAtAction(nameof(Post), new { id = prestamo.id_prestamo }, prestamo);
         }
