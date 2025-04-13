@@ -1,0 +1,10 @@
+[
+  {
+    "id_mora": 0,
+    "cuotas_vencidas": 0,
+    "monto_adeudado": 0,
+    "cedula": "12345678",
+    "nombre_completo": "Juan Perez Gonzales",
+    "id_prestamo": 123
+  }
+]
