@@ -4,7 +4,7 @@ namespace tecbank_api.Models.Prestamos_Pagos
 {
     public class Pago
     {
-        public DateTime fecha { get; set; }
+        public DateOnly fecha { get; set; }
         public double monto { get; set; }
 
 

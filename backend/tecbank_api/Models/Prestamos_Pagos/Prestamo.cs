@@ -10,8 +10,8 @@ namespace tecbank_api.Models.Prestamos_Pagos
         [Key]
         public int id_prestamo { get; set; }
         public double tasa_interes { get; set; }
-        public DateTime fecha_inicio { get; set; }
-        public DateTime fecha_final { get; set; }
+        public DateOnly fecha_inicio { get; set; }
+        public DateOnly fecha_final { get; set; }
         public double monto_original { get; set; }
         public double saldo { get; set; }
 
