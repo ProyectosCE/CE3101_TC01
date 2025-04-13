@@ -11,7 +11,20 @@
     "apellido1": "Perez",
     "apellido2": "Gonzales",
     "nombre_completo": "Juan Perez Gonzales",
-    "tipo_id": "FISICO",
-    "tipo_cliente": null
+    "tipo_id": "FISICO"
+  },
+  {
+    "id_cliente": 2,
+    "cedula": "string",
+    "direccion": "string",
+    "telefono": "string",
+    "ingreso_mensual": 0,
+    "usuario": "string",
+    "password": "string",
+    "nombre": "string",
+    "apellido1": "string",
+    "apellido2": "string",
+    "nombre_completo": "string string string",
+    "tipo_id": "FISICO"
   }
 ]
