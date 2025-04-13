@@ -1,8 +1,14 @@
 import { Table, Button } from "react-bootstrap";
 import styles from "@/styles/client.module.css";
+import { useRouter } from "next/router";
 
 export default function CreditCardTransactionList({ card, transactions, onBack }) {
+  const router = useRouter();
   const totalSpent = transactions.reduce((sum, t) => sum + t.amount, 0);
+
+  const handleBack = () => {
+    onBack();
+  };
 
   return (
     <div>
@@ -36,7 +42,7 @@ export default function CreditCardTransactionList({ card, transactions, onBack }
           ))}
         </tbody>
       </Table>
-      <Button className={styles.backButton} onClick={onBack}>
+      <Button className={styles.backButton} onClick={() => router.back()}>
         Volver
       </Button>
     </div>

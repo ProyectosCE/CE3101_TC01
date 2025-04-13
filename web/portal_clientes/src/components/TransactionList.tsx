@@ -1,7 +1,10 @@
 import { Table, Button } from "react-bootstrap";
 import styles from "@/styles/client.module.css";
+import { useRouter } from "next/router";
 
-export default function TransactionList({ account, transactions, onBack }) {
+export default function TransactionList({ account, transactions, handleBack }) {
+  const router = useRouter();
+
   return (
     <div>
       <h1 className={styles.title}>Transacciones - Cuenta {account.number}</h1>
@@ -33,7 +36,7 @@ export default function TransactionList({ account, transactions, onBack }) {
           ))}
         </tbody>
       </Table>
-      <Button className={styles.backButton} onClick={onBack}>
+      <Button className={styles.backButton} onClick={() => router.back()}>
         Volver
       </Button>
     </div>

@@ -17,6 +17,10 @@ export default function CreditCardList({ creditCards, onCardClick }) {
     };
   }, [router]);
 
+  const handleBack = () => {
+    router.back();
+  };
+
   return (
     <div>
       <h1 className={styles.title}>Tarjetas de Crédito</h1>
@@ -29,7 +33,7 @@ export default function CreditCardList({ creditCards, onCardClick }) {
         </thead>
         <tbody>
           {creditCards.map((card) => (
-            <tr key={card.number} onClick={() => onCardClick(card)}>
+            <tr key={card.number} onClick={() => onCardClick(card.number)}>
               <td>***** {card.number.slice(-4)}</td>
               <td>{card.brand}</td>
             </tr>
