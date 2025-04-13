@@ -1,16 +1,38 @@
 import Head from "next/head";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import styles from "@/styles/client.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMoneyCheckDollar, faCreditCard, faHandHoldingDollar, faMoneyBillTransfer } from "@fortawesome/free-solid-svg-icons";
 import { Card, Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import AccountList from "@/components/AccountList";
+import CreditCardList from "@/components/CreditCardList";
+import TransactionOptions from "@/components/TransactionOptions";
+import SinpeFlow from "@/components/SinpeFlow";
+import IbanFlow from "@/components/IbanFlow";
 
 export default function Client() {
+  const router = useRouter();
+  const { query } = router;
   const [activePage, setActivePage] = useState("principal");
 
-  const handleNavigation = (page) => {
-    setActivePage(page);
+  useEffect(() => {
+    // Sync activePage with query.page, defaulting to "principal"
+    setActivePage(query.page || "principal");
+  }, [query.page]);
+
+  const handleNavigation = (page, additionalQuery = {}) => {
+    const queryString = new URLSearchParams(additionalQuery).toString();
+    router.push(`/client?page=${page}${queryString ? `&${queryString}` : ""}`);
+  };
+
+  const handleBack = () => {
+    if (query.type === "sinpe" || query.type === "iban") {
+      handleNavigation("transferencias");
+    } else {
+      router.push(`/client?page=principal`);
+    }
   };
 
   return (
@@ -64,7 +86,7 @@ export default function Client() {
           <Container>
             <Row className={styles.cardRow}>
               <Col xs={12} sm={5} className={styles.cardCol}>
-                <Card className={styles.card}>
+                <Card className={styles.card} onClick={() => handleNavigation("cuentas")}>
                   <Card.Body className={styles.cardBody}>
                     <div className={styles.cardTextContainer}>
                       <Card.Title className={styles.cardTitle}>Cuentas</Card.Title>
@@ -77,7 +99,7 @@ export default function Client() {
                 </Card>
               </Col>
               <Col xs={12} sm={5} className={styles.cardCol}>
-                <Card className={styles.card}>
+                <Card className={styles.card} onClick={() => handleNavigation("tarjetas")}>
                   <Card.Body className={styles.cardBody}>
                     <div className={styles.cardTextContainer}>
                       <Card.Title className={styles.cardTitle}>Tarjetas</Card.Title>
@@ -92,7 +114,7 @@ export default function Client() {
             </Row>
             <Row className={styles.cardRow}>
               <Col xs={12} sm={5} className={styles.cardCol}>
-                <Card className={styles.card}>
+                <Card className={styles.card} onClick={() => handleNavigation("prestamos")}>
                   <Card.Body className={styles.cardBody}>
                     <div className={styles.cardTextContainer}>
                       <Card.Title className={styles.cardTitle}>Préstamos</Card.Title>
@@ -105,7 +127,7 @@ export default function Client() {
                 </Card>
               </Col>
               <Col xs={12} sm={5} className={styles.cardCol}>
-                <Card className={styles.card}>
+                <Card className={styles.card} onClick={() => handleNavigation("transferencias")}>
                   <Card.Body className={styles.cardBody}>
                     <div className={styles.cardTextContainer}>
                       <Card.Title className={styles.cardTitle}>Transferencias</Card.Title>
@@ -119,6 +141,44 @@ export default function Client() {
               </Col>
             </Row>
           </Container>
+        )}
+
+        {activePage === "cuentas" && (
+          <AccountList
+            accounts={[
+              { number: "123456789", currency: "Colones", balance: 50000 },
+              { number: "987654321", currency: "Dólares", balance: 200 },
+            ]} // Replace with actual account data
+            onAccountClick={(account) => console.log(account)}
+            onBack={handleBack}
+          />
+        )}
+
+        {activePage === "tarjetas" && (
+          <CreditCardList
+            creditCards={[
+              { number: "1234123412341234", brand: "Visa" },
+              { number: "5678567856785678", brand: "MasterCard" },
+            ]} // Replace with actual credit card data
+            onCardClick={(card) => console.log(card)}
+            onBack={handleBack}
+          />
+        )}
+
+        {activePage === "transferencias" && !query.type && (
+          <TransactionOptions
+            onBack={handleBack}
+            onSinpe={() => handleNavigation("transferencias", { type: "sinpe", step: 1 })}
+            onIban={() => handleNavigation("transferencias", { type: "iban" })}
+          />
+        )}
+
+        {query.type === "sinpe" && (
+          <SinpeFlow onBack={handleBack} />
+        )}
+
+        {query.type === "iban" && (
+          <IbanFlow onBack={handleBack} />
         )}
       </div>
     </>

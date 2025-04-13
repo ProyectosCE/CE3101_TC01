@@ -3,7 +3,7 @@ import styles from "@/styles/client.module.css";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
-export default function CreditCardList({ creditCards, onCardClick }) {
+export default function AccountList({ accounts }) {
   const router = useRouter();
 
   useEffect(() => {
@@ -19,19 +19,21 @@ export default function CreditCardList({ creditCards, onCardClick }) {
 
   return (
     <div>
-      <h1 className={styles.title}>Tarjetas de Crédito</h1>
+      <h1 className={styles.title}>Cuentas</h1>
       <Table striped bordered hover>
         <thead>
           <tr>
-            <th>Número de Tarjeta</th>
-            <th>Marca</th>
+            <th>Número de Cuenta</th>
+            <th>Moneda</th>
+            <th>Monto Disponible</th>
           </tr>
         </thead>
         <tbody>
-          {creditCards.map((card) => (
-            <tr key={card.number} onClick={() => onCardClick(card)}>
-              <td>***** {card.number.slice(-4)}</td>
-              <td>{card.brand}</td>
+          {accounts.map((account) => (
+            <tr key={account.number} onClick={() => router.push(`/account/${account.number}`)}>
+              <td>{account.number}</td>
+              <td>{account.currency}</td>
+              <td>{account.currency === "Colones" ? `₡${account.balance}` : `$${account.balance}`}</td>
             </tr>
           ))}
         </tbody>

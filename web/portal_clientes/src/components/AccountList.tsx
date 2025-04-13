@@ -1,6 +1,7 @@
 import { Table, Button } from "react-bootstrap";
 import styles from "@/styles/client.module.css";
 
+
 export default function AccountList({ accounts, onAccountClick, onBack }) {
   return (
     <div>
