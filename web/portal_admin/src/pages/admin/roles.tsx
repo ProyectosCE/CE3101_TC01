@@ -36,8 +36,25 @@ const RolesPage = () => {
     setRoles([...roles, role]); // Directly add the full Role object
   };
 
-  const handleDeleteRole = (id_rol: string) => {
-    setRoles(roles.filter((r) => r.id_rol !== id_rol));
+  const handleDeleteRole = async (id_rol: string, descripcion: string) => {
+    const apiUrl = `${API_ENDPOINT}RolCrontroller?tipo=borrar`;
+    const roleData = { id_rol, descripcion };
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(roleData),
+      });
+
+      if (response.ok) {
+        window.location.reload(); // Reload the page on success
+      } else {
+        console.error('Error deleting role:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   const handleEditRole = (role: Role) => {

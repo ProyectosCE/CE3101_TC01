@@ -4,7 +4,7 @@ import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
 
 interface RoleTableProps {
   roles: Role[];
-  onDeleteRole: (id_rol: string) => void; // Updated to string
+  onDeleteRole: (id_rol: string, descripcion: string) => void; // Updated to include descripcion
   onEditRole: (role: Role) => void;
 }
 
@@ -36,7 +36,7 @@ const RoleTable = ({ roles, onDeleteRole, onEditRole }: RoleTableProps) => {
               </button>
               <button
                 className="btn btn-sm btn-outline-danger"
-                onClick={() => onDeleteRole(role.id_rol)}
+                onClick={() => onDeleteRole(role.id_rol, role.descripcion)} // Pass both id_rol and descripcion
               >
                 <FontAwesomeIcon icon={faTrash} /> Eliminar
               </button>
