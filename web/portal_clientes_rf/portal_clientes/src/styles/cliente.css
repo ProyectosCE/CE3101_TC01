@@ -1,0 +1,15 @@
+.cliente-layout {
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+.sidebar .nav-link:hover {
+  background-color: #343a40;
+  border-radius: 4px;
+}
