@@ -8,7 +8,10 @@ interface Tarjeta {
   monto_disponible: number | null;
   monto_credito: number | null;
   id_cliente: number;
-  id_tipo_tarjeta: string;
+  tipo: string;
+  marca: string;
+  numero_cuenta: number;
+  cedula: string;
 }
 
 const TarjetaTable = () => {
@@ -40,6 +43,9 @@ const TarjetaTable = () => {
           <tr>
             <th>Número</th>
             <th>Tipo</th>
+            <th>Marca</th>
+            <th>Cuenta Asociada</th>
+            <th>Cliente</th>
             <th>Expira</th>
             <th>Saldo/Crédito</th>
             <th>Acciones</th>
@@ -49,10 +55,18 @@ const TarjetaTable = () => {
           {tarjetas.map((tarjeta) => (
             <tr key={tarjeta.numero_tarjeta}>
               <td>{tarjeta.numero_tarjeta}</td>
-              <td>{tarjeta.id_tipo_tarjeta}</td>
+              <td>{tarjeta.tipo}</td>
+              <td>{tarjeta.marca}</td>
+              <td>
+                {tarjeta.tipo === 'DEBITO'
+                  ? `${tarjeta.numero_cuenta}`
+                  : `N/A`}
+    
+              </td>
+              <td>{tarjeta.cedula}</td>
               <td>{tarjeta.fecha_vencimiento}</td>
               <td>
-                {tarjeta.id_tipo_tarjeta === 'DEBITO'
+                {tarjeta.tipo === 'DEBITO'
                   ? `₡${tarjeta.monto_disponible?.toLocaleString() || '0.00'}`
                   : `₡${tarjeta.monto_credito?.toLocaleString() || '0.00'}`}
               </td>

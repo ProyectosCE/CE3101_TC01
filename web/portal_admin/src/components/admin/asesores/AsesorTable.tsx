@@ -1,5 +1,5 @@
 interface Asesor {
-  id_asesor: number;
+  id_asesor?: number; // Changed to optional
   nombre: string;
   cedula: string;
   fecha_nacimiento: string;
@@ -7,11 +7,16 @@ interface Asesor {
   id_rol: string;
 }
 
-const AsesorTable = ({ asesores }: { asesores: Asesor[] }) => {
+interface AsesorTableProps {
+  asesores: Asesor[];
+  onDeleteAsesor: (asesor: Asesor) => void;
+  onEditAsesor: (asesor: Asesor) => void;
+}
+
+const AsesorTable = ({ asesores, onDeleteAsesor, onEditAsesor }: AsesorTableProps) => {
   return (
     <div>
       <h5>Asesores registrados</h5>
-      <button className="btn btn-outline-info mb-3">Generar Reporte Mensual</button>
       <table className="table table-bordered">
         <thead className="table-light">
           <tr>
@@ -32,8 +37,18 @@ const AsesorTable = ({ asesores }: { asesores: Asesor[] }) => {
               <td>₡{asesor.monto_meta.toLocaleString()}</td>
               <td>{asesor.id_rol}</td>
               <td>
-                <button className="btn btn-sm btn-outline-primary me-2">Editar</button>
-                <button className="btn btn-sm btn-outline-danger">Eliminar</button>
+                <button
+                  className="btn btn-sm btn-outline-primary me-2"
+                  onClick={() => onEditAsesor(asesor)}
+                >
+                  Editar
+                </button>
+                <button
+                  className="btn btn-sm btn-outline-danger"
+                  onClick={() => onDeleteAsesor(asesor)}
+                >
+                  Eliminar
+                </button>
               </td>
             </tr>
           ))}

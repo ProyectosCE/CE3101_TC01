@@ -3,19 +3,42 @@ import AdminLayout from '@/components/admin/AdminLayout';
 import ClienteForm from '@/components/admin/clientes/ClienteForm';
 import ClienteTable from '@/components/admin/clientes/ClienteTable';
 
+type Cliente = {
+  id_cliente: number;
+  cedula: string;
+  direccion: string;
+  telefono: string;
+  ingreso_mensual: number;
+  usuario: string;
+  password: string;
+  nombre: string;
+  apellido1: string;
+  apellido2: string;
+  nombreCompleto: string;
+  tipo_id: string;
+};
+
 const ClientesPage = () => {
   const [showForm, setShowForm] = useState(false);
+  const [editingCliente, setEditingCliente] = useState<Cliente | null>(null); // Track the client being edited
 
   const handleAddClienteClick = () => {
     setShowForm(true);
   };
 
+  const handleEditCliente = (cliente: Cliente) => {
+    setEditingCliente(cliente);
+    setShowForm(true);
+  };
+
   const handleBackToList = () => {
     setShowForm(false);
+    setEditingCliente(null); // Clear the editing client
   };
 
   const handleFormSubmit = () => {
     setShowForm(false); // Close the form
+    setEditingCliente(null); // Clear the editing client
   };
 
   return (
@@ -30,14 +53,14 @@ const ClientesPage = () => {
               Añadir Cliente
             </button>
           </div>
-          <ClienteTable />
+          <ClienteTable onEditCliente={handleEditCliente} />
         </>
       ) : (
         <>
           <button className="btn btn-secondary mb-3" onClick={handleBackToList}>
             Volver a la Lista
           </button>
-          <ClienteForm onSubmit={handleFormSubmit} />
+          <ClienteForm onSubmit={handleFormSubmit} editingCliente={editingCliente} />
         </>
       )}
     </AdminLayout>

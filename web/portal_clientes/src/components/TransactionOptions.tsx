@@ -2,7 +2,13 @@ import { useRouter } from "next/router";
 import { Button, Card, Row, Col } from "react-bootstrap";
 import styles from "@/styles/client.module.css";
 
-export default function TransactionOptions({ onBack, onSinpe, onIban }) {
+interface TransactionOptionsProps {
+  onBack: () => void;
+  onSinpe: () => void;
+  onIban: () => void;
+}
+
+export default function TransactionOptions({ onBack, onSinpe, onIban }: TransactionOptionsProps) {
   const router = useRouter();
 
   return (

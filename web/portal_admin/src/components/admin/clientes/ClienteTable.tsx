@@ -17,7 +17,11 @@ type Cliente = {
   tipo_id: string;
 };
 
-const ClienteTable = () => {
+type ClienteTableProps = {
+  onEditCliente: (cliente: Cliente) => void; // Add onEditCliente prop
+};
+
+const ClienteTable = ({ onEditCliente }: ClienteTableProps) => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,6 +43,26 @@ const ClienteTable = () => {
 
     fetchClientes();
   }, []);
+
+  const handleDeleteCliente = async (cliente: Cliente) => {
+    const apiUrl = `${API_ENDPOINT}Clientes?tipo=borrar`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cliente), // Send full client data
+      });
+
+      if (response.ok) {
+        window.location.reload(); // Reload the page on success
+      } else {
+        console.error('Error deleting cliente:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
   if (error) {
     return <div className="alert alert-danger">{error}</div>;
@@ -67,8 +91,18 @@ const ClienteTable = () => {
               <td>{cliente.tipo_id}</td>
               <td>{cliente.usuario}</td>
               <td>
-                <button className="btn btn-sm btn-outline-primary me-2">Editar</button>
-                <button className="btn btn-sm btn-outline-danger">Eliminar</button>
+                <button
+                  className="btn btn-sm btn-outline-primary me-2"
+                  onClick={() => onEditCliente(cliente)} // Pass client to edit
+                >
+                  Editar
+                </button>
+                <button
+                  className="btn btn-sm btn-outline-danger"
+                  onClick={() => handleDeleteCliente(cliente)} // Pass full client data
+                >
+                  Eliminar
+                </button>
               </td>
             </tr>
           ))}

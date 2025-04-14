@@ -1,15 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { API_ENDPOINT } from '@/config/api';
 
-type ClienteFormProps = {
-  onSubmit: () => void; // Define the type for the onSubmit prop
+type Cliente = {
+  tipo_id: string;
+  cedula: string;
+  direccion: string;
+  telefono: string;
+  ingreso_mensual: number;
+  usuario: string;
+  password: string;
+  nombre: string;
+  apellido1: string;
+  apellido2: string;
 };
 
-const ClienteForm = ({ onSubmit }: ClienteFormProps) => {
+type ClienteFormProps = {
+  onSubmit: () => void;
+  editingCliente: Cliente | null; // Add editingCliente prop
+};
+
+const ClienteForm = ({ onSubmit, editingCliente }: ClienteFormProps) => {
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    id_cliente: 0, // Immutable
-    tipo_id: 'FISICO', // Immutable
+  const [formData, setFormData] = useState<Cliente>({
+    tipo_id: 'FISICO',
     cedula: '',
     direccion: '',
     telefono: '',
@@ -21,6 +34,25 @@ const ClienteForm = ({ onSubmit }: ClienteFormProps) => {
     apellido2: '',
   });
 
+  useEffect(() => {
+    if (editingCliente) {
+      setFormData(editingCliente); // Populate form with client data
+    } else {
+      setFormData({
+        tipo_id: 'FISICO',
+        cedula: '',
+        direccion: '',
+        telefono: '',
+        ingreso_mensual: 0,
+        usuario: '',
+        password: '',
+        nombre: '',
+        apellido1: '',
+        apellido2: '',
+      });
+    }
+  }, [editingCliente]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -28,18 +60,21 @@ const ClienteForm = ({ onSubmit }: ClienteFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const tipo = editingCliente ? 'editar' : 'nuevo'; // Determine action type
+    const apiUrl = `${API_ENDPOINT}Clientes?tipo=${tipo}`;
 
     try {
-      const response = await fetch(`${API_ENDPOINT}Clientes/`, {
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
       if (response.ok) {
-        setPopupMessage('Cliente añadido exitosamente.');
+        setPopupMessage(editingCliente ? 'Cliente actualizado exitosamente.' : 'Cliente añadido exitosamente.');
+        onSubmit(); // Notify parent component
       } else {
-        setPopupMessage('Error al añadir el cliente. Inténtelo de nuevo.');
+        setPopupMessage('Error al procesar la solicitud. Inténtelo de nuevo.');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -156,7 +191,7 @@ const ClienteForm = ({ onSubmit }: ClienteFormProps) => {
           </div>
         </div>
         <button type="submit" className="btn btn-primary">
-          Guardar Cliente
+          {editingCliente ? 'Actualizar Cliente' : 'Guardar Cliente'}
         </button>
       </form>
 

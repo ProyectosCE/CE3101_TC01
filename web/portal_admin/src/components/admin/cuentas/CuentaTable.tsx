@@ -1,22 +1,14 @@
 import { useEffect, useState } from 'react';
 import { API_ENDPOINT } from '@/config/api';
+import type { Cuenta } from '@/components/admin/cuentas/CuentaForm'; // Import Cuenta type
 
-interface Cuenta {
-  numero_cuenta: number;
-  descripcion: string;
-  monto: number;
-  id_cliente: number;
-  id_tipo_cuenta: string;
-  id_moneda: string;
-}
-
-const CuentaTable = () => {
+const CuentaTable = ({ onEditCuenta }: { onEditCuenta: (cuenta: Cuenta) => void }) => {
   const [cuentas, setCuentas] = useState<Cuenta[]>([]);
 
   useEffect(() => {
     const fetchCuentas = async () => {
       try {
-        const response = await fetch(`${API_ENDPOINT}Cuenta`);
+        const response = await fetch(`${API_ENDPOINT}Cuenta?tipo=all`);
         if (response.ok) {
           const data: Cuenta[] = await response.json();
           setCuentas(data);
@@ -30,6 +22,23 @@ const CuentaTable = () => {
 
     fetchCuentas();
   }, []);
+
+  const handleDeleteCuenta = async (cuenta: Cuenta) => {
+    try {
+      const response = await fetch(`${API_ENDPOINT}Cuenta/agregarCuenta?tipo=borrar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cuenta),
+      });
+      if (response.ok) {
+        window.location.reload(); // Reload the page on success
+      } else {
+        console.error('Error deleting cuenta:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
   return (
     <div>
@@ -52,12 +61,22 @@ const CuentaTable = () => {
               <td>{cuenta.descripcion}</td>
               <td>{cuenta.id_moneda}</td>
               <td>{cuenta.id_tipo_cuenta}</td>
-              <td>{cuenta.id_cliente}</td>
+              <td>{cuenta.cedula}</td>
               <td>
                 <button className="btn btn-sm btn-outline-success me-2">Depósito</button>
                 <button className="btn btn-sm btn-outline-warning me-2">Retiro</button>
-                <button className="btn btn-sm btn-outline-primary me-2">Editar</button>
-                <button className="btn btn-sm btn-outline-danger">Eliminar</button>
+                <button
+                  className="btn btn-sm btn-outline-primary me-2"
+                  onClick={() => onEditCuenta(cuenta)}
+                >
+                  Editar
+                </button>
+                <button
+                  className="btn btn-sm btn-outline-danger"
+                  onClick={() => handleDeleteCuenta(cuenta)}
+                >
+                  Eliminar
+                </button>
               </td>
             </tr>
           ))}
