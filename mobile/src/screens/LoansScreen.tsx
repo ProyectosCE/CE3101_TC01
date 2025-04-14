@@ -1,10 +1,3 @@
-/**
- * File: LoansScreen.tsx
- * Description: Pantalla para visualizar y gestionar préstamos del cliente.
- * Permite realizar pagos normales (cuotas) y extraordinarios, reflejando los movimientos
- * y actualizando saldos en tiempo real. Incluye confirmaciones visuales.
- */
-
 import React, { useState } from 'react';
 import {
   View,
@@ -14,24 +7,54 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
+  ActivityIndicator
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import { Pago } from '../context/AuthContext';
 
-/**
- * Componente principal de la pantalla de préstamos.
- * Muestra préstamos activos y permite realizar pagos normales o extraordinarios.
- */
+
+interface Prestamo {
+  id: string;
+  monto: number;
+  saldo_pendiente: number;
+  tasa_interes: number;
+  fecha_inicio: string;
+  cuotas: PrestamoCuota[];
+}
+
+interface PrestamoCuota {
+  numero: number;
+  fecha: string;
+  monto: number;
+  estado: 'pendiente' | 'pagado' | 'vencido';
+}
+
+interface Cuenta {
+  id: string;
+  numero: string;
+  tipo: string;
+  saldo: number;
+}
+
+interface Movimiento {
+  fecha: string;
+  descripcion: string;
+  monto: number;
+  tipo: string;
+}
 export default function LoansScreen() {
-  const { cliente, updateAccountBalance, saveTransaction } = useAuth();
+  const { 
+    cliente, 
+    updateAccountBalance, 
+    saveTransaction,
+    saveLoanPayment
+  } = useAuth();
 
-  // Monto del pago extraordinario ingresado por el usuario
   const [montoExtraordinario, setMontoExtraordinario] = useState('');
-  // Cuenta seleccionada para realizar pagos
   const [cuentaSeleccionada, setCuentaSeleccionada] = useState<string | null>(null);
-  // Control de visibilidad de mensaje de éxito
-  const [successMessageVisible, setSuccessMessageVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
-  // Validación de sesión activa
   if (!cliente) {
     return (
       <View style={styles.container}>
@@ -40,98 +63,135 @@ export default function LoansScreen() {
     );
   }
 
-  /**
-   * Muestra el mensaje visual de éxito por 2 segundos.
-   */
-  const mostrarMensajeExito = () => {
-    setSuccessMessageVisible(true);
-    setTimeout(() => setSuccessMessageVisible(false), 2000);
+  const mostrarMensajeExito = (mensaje: string) => {
+    setSuccessMessage(mensaje);
+    setTimeout(() => setSuccessMessage(''), 3000);
   };
 
-  /**
-   * Maneja el pago normal (de cuota) a un préstamo específico.
-   *
-   * @param prestamo - Objeto préstamo al que se paga.
-   * @param cuota - Cuota pendiente a pagar.
-   */
-  const handlePagoNormal = (prestamo: any, cuota: any) => {
-    const cuenta = cliente.cuentas.find(c => c.id === cuentaSeleccionada);
-    if (!cuenta || cuenta.saldo < cuota.monto) {
-      Alert.alert('Error', 'Saldo insuficiente o cuenta no seleccionada');
-      return;
+  const handlePagoNormal = async (prestamo: Prestamo, cuota: PrestamoCuota) => {
+    try {
+      setLoading(true);
+      
+      if (!cuentaSeleccionada) {
+        Alert.alert('Error', 'Seleccione una cuenta para realizar el pago');
+        return;
+      }
+
+      const cuenta = cliente.cuentas.find(c => c.id === cuentaSeleccionada);
+      if (!cuenta || cuenta.saldo < cuota.monto) {
+        Alert.alert('Error', 'Saldo insuficiente en la cuenta seleccionada');
+        return;
+      }
+
+      console.log('[Pago] Enviando pago normal al backend...');
+      
+      const pago: Pago = {
+        id_prestamo: prestamo.id,
+        monto: cuota.monto,
+        id_cuenta: cuenta.id,
+        tipo_pago: "NORMAL"
+      };
+
+      const pagoExitoso = await saveLoanPayment(pago);
+
+      if (!pagoExitoso) {
+        throw new Error('Error al registrar el pago en el backend');
+      }
+
+      console.log('[Pago] Pago normal registrado exitosamente');
+
+      // Actualizar estado local
+      const movimiento: Movimiento = {
+        fecha: new Date().toISOString(),
+        descripcion: `Pago cuota ${cuota.numero} préstamo ${prestamo.id}`,
+        monto: -cuota.monto,
+        tipo: 'Pago de préstamo',
+      };
+
+      saveTransaction(cuenta.id, movimiento);
+      updateAccountBalance(cuenta.id, cuenta.saldo - cuota.monto);
+
+      mostrarMensajeExito(`Pago de cuota ${cuota.numero} realizado`);
+    } catch (error) {
+      console.error('Error en handlePagoNormal:', error);
+      Alert.alert('Error', 'Ocurrió un error al procesar el pago');
+    } finally {
+      setLoading(false);
     }
-
-    cuenta.saldo -= cuota.monto;
-    prestamo.saldo_pendiente -= cuota.monto;
-    if (prestamo.saldo_pendiente < 0) prestamo.saldo_pendiente = 0;
-    cuota.estado = 'pagado';
-
-    updateAccountBalance(cuenta.id, cuenta.saldo);
-
-    const movimiento = {
-      fecha: new Date().toISOString().split('T')[0],
-      descripcion: `Pago cuota préstamo ${prestamo.nombre || prestamo.id}`,
-      monto: -cuota.monto,
-      tipo: 'prestamo',
-    };
-    saveTransaction(cuenta.id, movimiento);
-
-    Alert.alert('Éxito', 'Pago normal realizado');
-    mostrarMensajeExito();
   };
 
-  /**
-   * Maneja el pago extraordinario a un préstamo.
-   *
-   * @param prestamo - Objeto préstamo al que se aplica el pago extraordinario.
-   */
-  const handlePagoExtraordinario = (prestamo: any) => {
-    const monto = parseFloat(montoExtraordinario);
-    if (isNaN(monto) || monto <= 0) {
-      Alert.alert('Error', 'Monto inválido');
-      return;
+  const handlePagoExtraordinario = async (prestamo: Prestamo) => {
+    try {
+      setLoading(true);
+      const monto = parseFloat(montoExtraordinario);
+
+      if (isNaN(monto)) {
+        Alert.alert('Error', 'Ingrese un monto válido');
+        return;
+      }
+
+      if (monto <= 0) {
+        Alert.alert('Error', 'El monto debe ser mayor a cero');
+        return;
+      }
+
+      if (!cuentaSeleccionada) {
+        Alert.alert('Error', 'Seleccione una cuenta para realizar el pago');
+        return;
+      }
+
+      const cuenta = cliente.cuentas.find(c => c.id === cuentaSeleccionada);
+      if (!cuenta || cuenta.saldo < monto) {
+        Alert.alert('Error', 'Saldo insuficiente en la cuenta seleccionada');
+        return;
+      }
+
+      console.log('[Pago] Enviando pago extraordinario al backend...');
+      
+      const pago: Pago = {
+        id_prestamo: prestamo.id,
+        monto: monto,
+        id_cuenta: cuenta.id,
+        tipo_pago: "EXTRAORDINARIO" 
+      };
+
+      const pagoExitoso = await saveLoanPayment(pago);
+
+      if (!pagoExitoso) {
+        throw new Error('Error al registrar el pago en el backend');
+      }
+
+      console.log('[Pago] Pago extraordinario registrado exitosamente');
+
+      // Actualizar estado local
+      const movimiento: Movimiento = {
+        fecha: new Date().toISOString(),
+        descripcion: `Pago extraordinario préstamo ${prestamo.id}`,
+        monto: -monto,
+        tipo: 'Pago de préstamo',
+      };
+
+      saveTransaction(cuenta.id, movimiento);
+      updateAccountBalance(cuenta.id, cuenta.saldo - monto);
+      setMontoExtraordinario('');
+
+      mostrarMensajeExito('Pago extraordinario realizado');
+    } catch (error) {
+      console.error('Error en handlePagoExtraordinario:', error);
+      Alert.alert('Error', 'Ocurrió un error al procesar el pago');
+    } finally {
+      setLoading(false);
     }
-
-    const cuenta = cliente.cuentas.find(c => c.id === cuentaSeleccionada);
-    if (!cuenta || cuenta.saldo < monto) {
-      Alert.alert('Error', 'Saldo insuficiente o cuenta no seleccionada');
-      return;
-    }
-
-    cuenta.saldo -= monto;
-    prestamo.saldo_pendiente -= monto;
-    if (prestamo.saldo_pendiente < 0) prestamo.saldo_pendiente = 0;
-
-    updateAccountBalance(cuenta.id, cuenta.saldo);
-
-    const movimiento = {
-      fecha: new Date().toISOString().split('T')[0],
-      descripcion: `Pago extraordinario préstamo ${prestamo.nombre || prestamo.id}`,
-      monto: -monto,
-      tipo: 'prestamo',
-    };
-    saveTransaction(cuenta.id, movimiento);
-    setMontoExtraordinario('');
-    Alert.alert('Éxito', 'Pago extraordinario realizado');
-    mostrarMensajeExito();
   };
-
-  /**
-   * Renderiza visualmente un préstamo con sus cuotas e inputs de pago.
-   *
-   * @param item - Objeto préstamo.
-   */
-  const renderPrestamo = ({ item: prestamo }: any) => (
+  const renderPrestamo = ({ item: prestamo }: { item: Prestamo }) => (
     <View style={styles.card}>
-      <Text style={styles.label}>
-        {prestamo.nombre ? prestamo.nombre : `Préstamo #${prestamo.id}`}
-      </Text>
+      <Text style={styles.label}>Préstamo #{prestamo.id}</Text>
       <Text style={styles.text}>Saldo pendiente: ₡{prestamo.saldo_pendiente.toLocaleString()}</Text>
       <Text style={styles.text}>Tasa: {prestamo.tasa_interes}%</Text>
       <Text style={styles.subTitle}>Cuotas</Text>
 
-      {prestamo.cuotas.map((cuota: any) => (
-        <View key={cuota.numero} style={styles.cuotaBox}>
+      {prestamo.cuotas.map((cuota: PrestamoCuota) => (
+        <View key={`${prestamo.id}-${cuota.numero}`} style={styles.cuotaBox}>
           <Text style={styles.cuotaText}>
             Cuota #{cuota.numero} - {cuota.estado} - ₡{cuota.monto.toLocaleString()}
           </Text>
@@ -139,6 +199,7 @@ export default function LoansScreen() {
             <TouchableOpacity
               style={styles.btnMini}
               onPress={() => handlePagoNormal(prestamo, cuota)}
+              disabled={loading}
             >
               <Text style={styles.btnText}>Pagar</Text>
             </TouchableOpacity>
@@ -152,14 +213,20 @@ export default function LoansScreen() {
         value={montoExtraordinario}
         onChangeText={setMontoExtraordinario}
         keyboardType="numeric"
+        editable={!loading}
       />
-      <TouchableOpacity style={styles.btn} onPress={() => handlePagoExtraordinario(prestamo)}>
-        <Text style={styles.btnText}>Pago Extraordinario</Text>
+      <TouchableOpacity 
+        style={[styles.btn, loading && styles.disabledBtn]} 
+        onPress={() => handlePagoExtraordinario(prestamo)}
+        disabled={loading}
+      >
+        <Text style={styles.btnText}>
+          {loading ? 'Procesando...' : 'Pago Extraordinario'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
 
-  // Render principal
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Mis Préstamos</Text>
@@ -168,14 +235,15 @@ export default function LoansScreen() {
       <FlatList
         data={cliente.cuentas}
         horizontal
-        keyExtractor={item => item.id}
+        keyExtractor={(item: Cuenta) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={[
               styles.cuentaBox,
               item.id === cuentaSeleccionada && styles.cuentaSeleccionada,
             ]}
-            onPress={() => setCuentaSeleccionada(item.id)}
+            onPress={() => !loading && setCuentaSeleccionada(item.id)}
+            disabled={loading}
           >
             <Text style={styles.label}>{item.tipo} - {item.numero}</Text>
             <Text style={styles.text}>₡{item.saldo.toLocaleString()}</Text>
@@ -183,17 +251,23 @@ export default function LoansScreen() {
         )}
       />
 
-      <FlatList
-        data={cliente.prestamos || []}
-        keyExtractor={item => item.id}
-        renderItem={renderPrestamo}
-        contentContainerStyle={{ paddingBottom: 30 }}
-      />
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#10264D" />
+        </View>
+      ) : (
+        <FlatList
+          data={cliente.prestamos || []}
+          keyExtractor={(item: Prestamo) => item.id}
+          renderItem={renderPrestamo}
+          contentContainerStyle={{ paddingBottom: 30 }}
+        />
+      )}
 
-      {successMessageVisible && (
+      {successMessage && (
         <View style={styles.overlay}>
           <View style={styles.successBox}>
-            <Text style={styles.successText}>✔ Pago realizado correctamente</Text>
+            <Text style={styles.successText}>✔ {successMessage}</Text>
           </View>
         </View>
       )}
@@ -201,9 +275,13 @@ export default function LoansScreen() {
   );
 }
 
-// Estilos y diseño
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FAFAFF', padding: 20 },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -273,6 +351,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 10,
+  },
+  disabledBtn: {
+    backgroundColor: '#7180AC',
   },
   btnText: {
     color: '#fff',
