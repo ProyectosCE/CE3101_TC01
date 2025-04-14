@@ -1,3 +1,29 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Page: RolesPage
+ * Página de administración para la gestión de roles de usuario.
+ *
+ * Estructura:
+ * - Muestra el formulario para agregar/editar roles.
+ * - Muestra la tabla de roles registrados.
+ *
+ * Example:
+ * <RolesPage />
+ */
+
 import { useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import RoleForm from '@/components/admin/roles/RoleForm';

@@ -1,3 +1,44 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: Flex
+ * Componente utilitario para crear contenedores flexibles.
+ *
+ * Props:
+ * - children: Contenido a renderizar.
+ * - direction: Dirección del flex ('row' | 'column').
+ * - justifyContent: Justificación del contenido.
+ * - alignItems: Alineación de los items.
+ * - width, height, padding, margin, backgroundColor, flexGrow: Estilos CSS opcionales.
+ *
+ * Example:
+ * <Flex direction="column" justifyContent="center">{children}</Flex>
+ */
+
+/**
+ * Component: Box
+ * Componente utilitario para crear cajas con estilos personalizados.
+ *
+ * Props:
+ * - children: Contenido a renderizar.
+ * - width, height, padding, margin, backgroundColor, flexGrow: Estilos CSS opcionales.
+ *
+ * Example:
+ * <Box width="100px" backgroundColor="#eee">{children}</Box>
+ */
+
 interface FlexProps {
     children: React.ReactNode;
     direction?: 'row' | 'column'; // Flex direction: row or column

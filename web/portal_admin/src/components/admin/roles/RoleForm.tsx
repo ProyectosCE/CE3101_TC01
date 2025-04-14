@@ -1,3 +1,30 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: RoleForm
+ * Formulario para agregar o editar roles de usuario en el sistema.
+ *
+ * Props:
+ * - onAddRole: Función para agregar un nuevo rol (sin id).
+ * - onUpdateRole: Función para actualizar un rol existente.
+ * - editingRole: Rol que se está editando, o null si es un nuevo rol.
+ *
+ * Example:
+ * <RoleForm onAddRole={fn} onUpdateRole={fn} editingRole={role} />
+ */
+
 import { useEffect, useState } from 'react';
 import { Role } from '@/pages/admin/roles';
 

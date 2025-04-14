@@ -1,3 +1,28 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: CuentaTable
+ * Tabla para mostrar la lista de cuentas bancarias registradas y sus datos principales.
+ *
+ * Props:
+ * - Ninguna (la tabla es estática y no recibe props en esta versión).
+ *
+ * Example:
+ * <CuentaTable />
+ */
+
 const CuentaTable = () => {
     return (
       <div>
@@ -34,4 +59,3 @@ const CuentaTable = () => {
   };
   
   export default CuentaTable;
-  

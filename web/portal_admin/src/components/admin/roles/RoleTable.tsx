@@ -1,3 +1,30 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: RoleTable
+ * Tabla para mostrar la lista de roles registrados y sus descripciones.
+ *
+ * Props:
+ * - roles: Lista de roles a mostrar.
+ * - onDeleteRole: Función para eliminar un rol por id.
+ * - onEditRole: Función para editar un rol.
+ *
+ * Example:
+ * <RoleTable roles={roles} onDeleteRole={fn} onEditRole={fn} />
+ */
+
 import { Role } from '@/pages/admin/roles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';

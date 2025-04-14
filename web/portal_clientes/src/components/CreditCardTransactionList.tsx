@@ -1,3 +1,30 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: CreditCardTransactionList
+ * Muestra la lista de transacciones de una tarjeta de crédito y detalles de la tarjeta.
+ *
+ * Props:
+ * - card: Objeto tarjeta de crédito.
+ * - transactions: Lista de transacciones de la tarjeta.
+ * - onBack: Función para volver a la pantalla anterior.
+ *
+ * Example:
+ * <CreditCardTransactionList card={card} transactions={txs} onBack={fn} />
+ */
+
 import { Table, Button } from "react-bootstrap";
 import styles from "@/styles/client.module.css";
 import { useRouter } from "next/router";

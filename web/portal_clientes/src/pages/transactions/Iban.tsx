@@ -1,3 +1,25 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Page: Iban
+ * Página para el flujo de transferencia IBAN.
+ *
+ * Example:
+ * <Iban />
+ */
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Button, Form } from "react-bootstrap";

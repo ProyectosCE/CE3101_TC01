@@ -1,3 +1,29 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+ /**
+ * Component: CreditCardList
+ * Muestra una tabla con las tarjetas de crédito del cliente y permite seleccionar una para ver detalles.
+ *
+ * Props:
+ * - creditCards: Lista de tarjetas de crédito.
+ * - onCardClick: Función a ejecutar al seleccionar una tarjeta.
+ *
+ * Example:
+ * <CreditCardList creditCards={cards} onCardClick={fn} />
+ */
+
 import { Table, Button } from "react-bootstrap";
 import styles from "@/styles/client.module.css";
 import { useRouter } from "next/router";

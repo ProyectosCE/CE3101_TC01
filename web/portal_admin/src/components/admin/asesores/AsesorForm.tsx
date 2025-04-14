@@ -1,3 +1,28 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: AsesorForm
+ * Formulario para registrar o editar la información de un asesor.
+ *
+ * Props:
+ * - Ninguna (el formulario es estático y no recibe props en esta versión).
+ *
+ * Example:
+ * <AsesorForm />
+ */
+
 const AsesorForm = () => {
     return (
       <form className="mb-4">
@@ -29,4 +54,3 @@ const AsesorForm = () => {
   };
   
   export default AsesorForm;
-  

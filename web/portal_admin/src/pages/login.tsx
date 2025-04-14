@@ -1,3 +1,28 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Page: LoginPage
+ * Página de inicio de sesión para el portal administrativo de TecBank.
+ *
+ * Estructura:
+ * - Formulario para ingresar usuario y contraseña.
+ *
+ * Example:
+ * <LoginPage />
+ */
+
 import React from 'react';
 
 const LoginPage = () => {

@@ -1,3 +1,28 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: Sidebar
+ * Barra lateral de navegación para el panel de administración.
+ *
+ * Props:
+ * - Ninguna (la barra es estática y no recibe props en esta versión).
+ *
+ * Example:
+ * <Sidebar />
+ */
+
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {

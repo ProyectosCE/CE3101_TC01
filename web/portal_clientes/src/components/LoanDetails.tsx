@@ -1,3 +1,30 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: LoanDetails
+ * Muestra los detalles de un préstamo y su historial de pagos.
+ *
+ * Props:
+ * - loan: Objeto con los datos del préstamo.
+ * - payments: Lista de pagos realizados para el préstamo.
+ * - onBack: Función para volver a la pantalla anterior.
+ *
+ * Example:
+ * <LoanDetails loan={loan} payments={payments} onBack={fn} />
+ */
+
 import React from "react";
 import { Button, Table, Container } from "react-bootstrap";
 

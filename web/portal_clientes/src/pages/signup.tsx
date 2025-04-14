@@ -4,6 +4,31 @@ import styles from "@/styles/signup.module.css";
 import { Button, Form } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+
+*/
+/**
+ * Page: Signup
+ * Página de registro de nuevos clientes para el portal de TecBank.
+ *
+ * Estructura:
+ * - Formulario multietapa para datos personales, bancarios y credenciales.
+ *
+ * Example:
+ * <Signup />
+ */
+
 export default function Signup() {
   const [stage, setStage] = useState(1);
 

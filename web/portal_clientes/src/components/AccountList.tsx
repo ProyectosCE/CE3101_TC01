@@ -1,3 +1,29 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: AccountList
+ * Muestra una tabla con las cuentas del cliente y permite seleccionar una para ver detalles.
+ *
+ * Props:
+ * - accounts: Lista de cuentas.
+ * - onAccountClick: Función a ejecutar al seleccionar una cuenta.
+ *
+ * Example:
+ * <AccountList accounts={accounts} onAccountClick={fn} />
+ */
+
 import { Table, Button } from "react-bootstrap";
 import styles from "@/styles/client.module.css";
 import { useRouter } from "next/router";

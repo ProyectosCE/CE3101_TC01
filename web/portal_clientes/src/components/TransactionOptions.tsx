@@ -1,3 +1,30 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: TransactionOptions
+ * Muestra las opciones de envío de dinero: transferencia IBAN o SINPE Móvil.
+ *
+ * Props:
+ * - onBack: Función para volver a la pantalla anterior.
+ * - onSinpe: Función para iniciar el flujo SINPE Móvil.
+ * - onIban: Función para iniciar el flujo de transferencia IBAN.
+ *
+ * Example:
+ * <TransactionOptions onBack={fn} onSinpe={fn} onIban={fn} />
+ */
+
 import { useRouter } from "next/router";
 import { Button, Card, Row, Col } from "react-bootstrap";
 import styles from "@/styles/client.module.css";

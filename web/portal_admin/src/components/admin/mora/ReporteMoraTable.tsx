@@ -1,3 +1,28 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: ReporteMoraTable
+ * Tabla para mostrar el reporte de clientes en mora, incluyendo cuotas vencidas y monto adeudado.
+ *
+ * Props:
+ * - Ninguna (la tabla es estática y no recibe props en esta versión).
+ *
+ * Example:
+ * <ReporteMoraTable />
+ */
+
 const ReporteMoraTable = () => {
     return (
       <div>
@@ -34,4 +59,3 @@ const ReporteMoraTable = () => {
   };
   
   export default ReporteMoraTable;
-  

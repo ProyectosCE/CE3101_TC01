@@ -2,6 +2,33 @@ import { Table, Button } from "react-bootstrap";
 import styles from "@/styles/client.module.css";
 import { useRouter } from "next/router";
 
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: TransactionList
+ * Muestra la lista de transacciones asociadas a una cuenta específica.
+ *
+ * Props:
+ * - account: Objeto cuenta seleccionada.
+ * - transactions: Lista de transacciones de la cuenta.
+ * - handleBack: Función para volver a la pantalla anterior.
+ *
+ * Example:
+ * <TransactionList account={account} transactions={txs} handleBack={fn} />
+ */
+
 export default function TransactionList({ account, transactions, handleBack }) {
   const router = useRouter();
 

@@ -1,3 +1,28 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: TarjetaForm
+ * Formulario para registrar o editar la información de una tarjeta (débito o crédito).
+ *
+ * Props:
+ * - Ninguna (el formulario es estático y no recibe props en esta versión).
+ *
+ * Example:
+ * <TarjetaForm />
+ */
+
 import { useState } from "react";
 
 const TarjetaForm = () => {

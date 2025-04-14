@@ -1,3 +1,28 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Page: AccountList
+ * Página para mostrar la lista de cuentas del cliente y permitir seleccionar una para ver detalles.
+ *
+ * Props:
+ * - accounts: Lista de cuentas a mostrar.
+ *
+ * Example:
+ * <AccountList accounts={accounts} />
+ */
+
 import { Table, Button } from "react-bootstrap";
 import styles from "@/styles/client.module.css";
 import { useRouter } from "next/router";

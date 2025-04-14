@@ -1,3 +1,28 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Page: CreditCardList
+ * Página para mostrar la lista de tarjetas de crédito del cliente y permitir seleccionar una para ver detalles.
+ *
+ * Props:
+ * - creditCards: Lista de tarjetas de crédito a mostrar.
+ *
+ * Example:
+ * <CreditCardList creditCards={cards} />
+ */
+
 import { Table, Button } from "react-bootstrap";
 import styles from "@/styles/client.module.css";
 import { useRouter } from "next/router";

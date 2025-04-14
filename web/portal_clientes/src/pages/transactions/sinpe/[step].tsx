@@ -1,3 +1,28 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Page: Sinpe (Transferencia SINPE Móvil)
+ * Página para el flujo de transferencia por SINPE Móvil, dividida en pasos.
+ *
+ * Props:
+ * - onBack: Función para volver a la pantalla anterior (opcional).
+ *
+ * Example:
+ * <Sinpe onBack={fn} />
+ */
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Button, Form, Card, Modal } from "react-bootstrap";

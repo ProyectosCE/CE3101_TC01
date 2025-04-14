@@ -1,3 +1,28 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: TarjetaTable
+ * Tabla para mostrar la lista de tarjetas registradas y sus datos principales.
+ *
+ * Props:
+ * - Ninguna (la tabla es estática y no recibe props en esta versión).
+ *
+ * Example:
+ * <TarjetaTable />
+ */
+
 const TarjetaTable = () => {
     return (
       <div>
@@ -40,4 +65,3 @@ const TarjetaTable = () => {
   };
   
   export default TarjetaTable;
-  

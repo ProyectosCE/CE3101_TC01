@@ -1,5 +1,30 @@
 import AdminLayout from '@/components/admin/AdminLayout';
 
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Page: AdminHome
+ * Página principal del portal administrativo de TecBank.
+ *
+ * Estructura:
+ * - Muestra mensaje de bienvenida y guía para el uso del menú lateral.
+ *
+ * Example:
+ * <AdminHome />
+ */
+
 const AdminHome = () => {
   return (
     <AdminLayout>

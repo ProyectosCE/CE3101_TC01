@@ -1,3 +1,29 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: IbanFlow
+ * Formulario para realizar transferencias IBAN desde una cuenta de origen a una cuenta destino.
+ *
+ * Props:
+ * - onBack: Función para volver a la pantalla anterior.
+ * - accounts: Lista de cuentas disponibles para seleccionar como origen (opcional, por defecto ejemplo).
+ *
+ * Example:
+ * <IbanFlow onBack={fn} accounts={accounts} />
+ */
+
 import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import styles from "@/styles/client.module.css";

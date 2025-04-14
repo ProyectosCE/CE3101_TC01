@@ -1,3 +1,28 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: PrestamoTable
+ * Tabla para mostrar la lista de préstamos registrados y sus datos principales.
+ *
+ * Props:
+ * - Ninguna (la tabla es estática y no recibe props en esta versión).
+ *
+ * Example:
+ * <PrestamoTable />
+ */
+
 const PrestamoTable = () => {
     return (
       <div>
@@ -31,4 +56,3 @@ const PrestamoTable = () => {
   };
   
   export default PrestamoTable;
-  

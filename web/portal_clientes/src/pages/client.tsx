@@ -16,6 +16,31 @@ import TransactionList from "@/components/TransactionList";
 import LoanList from "@/components/LoanList";
 import LoanDetails from "@/components/LoanDetails";
 
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+
+/**
+ * Page: Client
+ * Página principal del portal de clientes de TecBank.
+ *
+ * Estructura:
+ * - Navegación entre cuentas, tarjetas, préstamos y transferencias.
+ * - Renderiza componentes de listas y detalles según la sección seleccionada.
+ *
+ * Example:
+ * <Client />
+ */
+
 export default function Client() {
   const router = useRouter();
   const { query } = router;

@@ -1,3 +1,28 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: SinpeFlow
+ * Flujo de formulario para realizar transferencias por SINPE Móvil.
+ *
+ * Props:
+ * - onBack: Función para volver a la pantalla anterior.
+ *
+ * Example:
+ * <SinpeFlow onBack={fn} />
+ */
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Button, Form, Card, Modal } from "react-bootstrap";

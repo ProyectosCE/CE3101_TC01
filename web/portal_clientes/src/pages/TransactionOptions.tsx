@@ -1,3 +1,25 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Page: TransactionOptions
+ * Página para mostrar las opciones de transferencia: IBAN o SINPE Móvil.
+ *
+ * Example:
+ * <TransactionOptions />
+ */
+
 import { useRouter } from "next/router";
 import { Button, Card, Row, Col } from "react-bootstrap";
 import styles from "@/styles/client.module.css";
