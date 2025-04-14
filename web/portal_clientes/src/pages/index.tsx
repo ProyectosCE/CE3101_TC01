@@ -5,6 +5,7 @@ import styles from "@/styles/login.module.css";
 import { Button, Container, Row, Col, Form } from 'react-bootstrap'; // Importa componentes de React-Bootstrap
 import  "bootstrap/dist/css/bootstrap.min.css"
 import {Flex,Box} from "@/components/layout"
+import { useRouter } from 'next/router'; // Import useRouter from Next.js
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -12,6 +13,16 @@ const nunito = Nunito({
 })
 
 export default function Home() {
+  const router = useRouter(); // Initialize router
+
+  const handleSignIn = () => {
+    router.push('/client'); // Navigate to /client
+  };
+
+  const handleRegister = () => {
+    router.push('/signup'); // Navigate to /signup
+  };
+
   return (
     <>
       <Head>
@@ -74,7 +85,11 @@ export default function Home() {
               </div>
               
               <div>
-                <Button type="submit" className={styles.submitButton}>
+                <Button 
+                  type="button" 
+                  className={styles.submitButton} 
+                  onClick={handleSignIn} // Add onClick for Sign in
+                >
                   Sign in
                 </Button>
               </div>
@@ -82,7 +97,16 @@ export default function Home() {
             
             <p className={styles.notMember}>
               No tienes cuenta?
-              <a href="#" className={styles.link}> Regístrate aquí</a>
+              <a 
+                href="#" 
+                className={styles.link} 
+                onClick={(e) => {
+                  e.preventDefault(); // Prevent default anchor behavior
+                  handleRegister(); // Call handleRegister
+                }}
+              >
+                Regístrate aquí
+              </a>
             </p>
           </div>
         </div>

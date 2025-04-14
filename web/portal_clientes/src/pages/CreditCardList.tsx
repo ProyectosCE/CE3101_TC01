@@ -3,7 +3,7 @@ import styles from "@/styles/client.module.css";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
-export default function CreditCardList({ creditCards, onCardClick }) {
+export default function CreditCardList({ creditCards }) {
   const router = useRouter();
 
   useEffect(() => {
@@ -17,10 +17,6 @@ export default function CreditCardList({ creditCards, onCardClick }) {
     };
   }, [router]);
 
-  const handleBack = () => {
-    router.back();
-  };
-
   return (
     <div>
       <h1 className={styles.title}>Tarjetas de Crédito</h1>
@@ -33,7 +29,7 @@ export default function CreditCardList({ creditCards, onCardClick }) {
         </thead>
         <tbody>
           {creditCards.map((card) => (
-            <tr key={card.number} onClick={() => onCardClick(card.number)}>
+            <tr key={card.number} onClick={() => router.push(`/credit-card/${card.number}`)}>
               <td>***** {card.number.slice(-4)}</td>
               <td>{card.brand}</td>
             </tr>
