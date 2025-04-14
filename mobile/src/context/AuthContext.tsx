@@ -36,7 +36,7 @@ interface TarjetaCredito {
   movimientos?: Movimiento[];
 }
 
-interface TarjetaDebito {
+export interface TarjetaDebito {
   id: string;
   numero: string;
   tipo: 'Debito';
@@ -94,6 +94,13 @@ interface AuthContextType {
   saveCreditCardMovement: (cardId: string, movimiento: Movimiento, cuentaAsociadaId?: string) => void;
   saveDebitCardMovement: (cardId: string, movimiento: Movimiento, cuentaAsociadaId: string) => void;
   saveLoanPayment: (pago: Pago) => Promise<boolean>;
+  saveTransactionBackend: (transaccion: {
+    monto: number;
+    descripcion: string;
+    numero_tarjeta: string;
+    numero_cuenta: string;
+    id_tipo_transaccion: string;
+  }) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -105,6 +112,9 @@ const AuthContext = createContext<AuthContextType>({
   saveCreditCardMovement: () => {},
   saveDebitCardMovement: () => {},
   saveLoanPayment: async () => false,
+  saveTransactionBackend: async () => false,
+
+
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -216,64 +226,54 @@ const fetchTarjetasParaCliente = async (cuentasCliente: Cuenta[]): Promise<{
   debito: TarjetaDebito[]
 }> => {
   try {
-    console.log('[Tarjetas] Iniciando fetch...');
     const response = await fetch(TARJETAS_URL);
     const tarjetasBackend = await response.json();
-    console.log('[Tarjetas] Respuesta backend:', tarjetasBackend);
+    console.log('[DEBUG] Tarjetas del backend:', JSON.stringify(tarjetasBackend, null, 2)); // <--- ¡Depuración clave!
 
-    // 1. Obtener números de cuenta del cliente (como strings)
+    // 1. Obtener números de cuenta del cliente
     const numerosCuenta = cuentasCliente.map(c => c.numero.toString());
-    console.log('[Tarjetas] Cuentas cliente:', numerosCuenta);
+    console.log('[DEBUG] Números de cuenta cliente:', numerosCuenta);
 
-    // 2. Filtrar y mapear tarjetas
-    const resultado = tarjetasBackend.reduce((acc: any, tarjeta: any) => {
-      // Verificar si el número de tarjeta coincide con alguna cuenta
-      const cuentaAsociada = tarjeta.numero_tarjeta?.toString();
-      const tieneCuentaValida = numerosCuenta.includes(cuentaAsociada);
+    // 2. Filtrar tarjetas válidas
+    const tarjetasCliente = tarjetasBackend.filter((t: any) => {
+      const tieneCuenta = numerosCuenta.includes(t.numero_cuenta?.toString());
+      console.log(`[DEBUG] Tarjeta ${t.numero_tarjeta} - numero_cuenta: ${t.numero_cuenta}, ¿Coincide? ${tieneCuenta}`);
+      return tieneCuenta;
+    });
 
-      if (!tieneCuentaValida) {
-        console.log(`[Tarjetas] Tarjeta ${cuentaAsociada} no coincide con cuentas cliente`);
-        return acc;
-      }
+    console.log('[DEBUG] Tarjetas filtradas:', tarjetasCliente)
 
-      console.log(`[Tarjetas] Procesando tarjeta ${cuentaAsociada}`);
-      
-      const baseCard = {
-        id: tarjeta.id?.toString() || Date.now().toString(),
-        numero: cuentaAsociada,
-        saldo: tarjeta.monto_disponible || tarjeta.saldo_actual || 0,
-        cuenta_asociada: cuentaAsociada,
-        movimientos: []
+    // 3. Mapear tarjetas asegurando cuenta_asociada
+    return tarjetasCliente.reduce((acc: any, tarjeta: any) => {
+      const cuentaAsociada = cuentasCliente.find(
+        c => c.numero.toString() === tarjeta.numero_cuenta.toString()
+      );
+
+      if (!cuentaAsociada) return acc;
+
+      const tarjetaMapeada = {
+        id: tarjeta.numero_tarjeta.toString(),
+        numero: tarjeta.numero_tarjeta.toString(),
+        cuenta_asociada: cuentaAsociada.numero, // <--- ¡Clave!
+        saldo: tarjeta.monto_disponible || cuentaAsociada.saldo,
+        movimientos: [],
+        // ... otros campos según tipo
       };
 
-      // Tipo DEBITO/CREDITO (convertir string a número)
       if (tarjeta.id_tipo_tarjeta === 'CREDITO') {
-        acc.credito.push({
-          ...baseCard,
-          tipo: 'Credito',
-          limite: tarjeta.monto_credito || 0,
-          fecha_vencimiento: tarjeta.fecha_vencimiento,
-          codigo_seguridad: tarjeta.cvc?.toString() || '000'
-        });
+        acc.credito.push({ ...tarjetaMapeada, tipo: 'Credito', limite: tarjeta.monto_credito });
       } else {
-        acc.debito.push({
-          ...baseCard,
-          tipo: 'Debito'
-        });
+        acc.debito.push({ ...tarjetaMapeada, tipo: 'Debito' });
       }
 
       return acc;
     }, { credito: [], debito: [] });
 
-    console.log('[Tarjetas] Resultado final:', resultado);
-    return resultado;
-
   } catch (error) {
-    console.error('[Tarjetas] Error:', error);
+    console.error('Error obteniendo tarjetas:', error);
     return { credito: [], debito: [] };
   }
 };
-
 const fetchMovimientosParaCuenta = async (numeroCuenta: string): Promise<Movimiento[]> => {
   try {
     const response = await fetch(`http://192.168.100.100:5020/api/Transaccion/movimientos/${parseInt(numeroCuenta)}`);
@@ -532,7 +532,53 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  return (
+
+  const saveTransactionBackend = useCallback(async (transaccion: {
+    monto: number;
+    descripcion: string;
+    numero_tarjeta: string;
+    numero_cuenta: string;
+    id_tipo_transaccion: string;
+  }): Promise<boolean> => {
+    try {
+      const requestBody = {
+        monto: transaccion.monto,
+        descripcion: transaccion.descripcion,
+        numero_tarjeta: parseInt(transaccion.numero_tarjeta),
+        numero_cuenta: parseInt(transaccion.numero_cuenta),
+        id_tipo_transaccion: transaccion.id_tipo_transaccion,
+        estado: "completado",
+        moneda: "COLON",
+        fecha_hora: new Date().toISOString(),
+      };
+  
+      const response = await fetch('http://192.168.100.100:5020/api/Transaccion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+      });
+  
+      // Debug: Ver respuesta cruda
+      const responseText = await response.text();
+      console.log('[DEBUG] Respuesta del backend:', response.status, responseText);
+  
+      if (!response.ok) {
+        try {
+          const errorData = JSON.parse(responseText); // Intenta parsear como JSON
+          console.error('Error en el backend:', errorData);
+        } catch {
+          console.error('El backend devolvió un error no JSON:', responseText);
+        }
+        return false;
+      }
+  
+      return true;
+    } catch (error) {
+      console.error('Error de red o conexión:', error);
+      return false;
+    }
+  }, []);
+    return (
     <AuthContext.Provider
       value={{
         cliente,
@@ -543,6 +589,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         saveCreditCardMovement,
         saveDebitCardMovement,
         saveLoanPayment,
+        saveTransactionBackend
       }}
     >
       {children}
