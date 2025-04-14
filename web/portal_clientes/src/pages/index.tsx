@@ -28,11 +28,6 @@ Consulta el archivo LICENSE para más detalles.
  * Example:
  * <Home />
  */
-
-const nunito = Nunito({
-  variable: "--font-nunito",
-  subsets: ["latin"],
-})
 const Index = () => {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
   const [isLoading, setIsLoading] = useState(true);

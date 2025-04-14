@@ -3,6 +3,20 @@ import { useRouter } from "next/router";
 import ClientLayout from "@/components/client/ClientLayout";
 import CreditCardTransactionList from "@/components/CreditCardTransactionList";
 
+interface CreditCard {
+  number: string;
+  currency: "Colones" | "Dolares";
+  limit: number;
+  minPayment: number;
+  cutoffDate: string;
+  paymentDate: string;
+}
+
+interface Transaction {
+  name: string;
+  amount: number;
+}
+
 export default function CardTransactionsPage() {
   const router = useRouter();
   const { cardNumber } = router.query;
@@ -11,16 +25,16 @@ export default function CardTransactionsPage() {
     router.push(`/client/${path}`);
   };
 
-  const card = {
+  const card: CreditCard = {
     number: cardNumber as string,
-    currency: "Dólares",
+    currency: "Dolares",
     limit: 5000,
     minPayment: 100,
     cutoffDate: "2023-10-15",
     paymentDate: "2023-10-30",
   };
 
-  const transactions = [
+  const transactions: Transaction[] = [
     { name: "Compra en Supermercado", amount: -50 },
     { name: "Pago de Servicios", amount: -100 },
     { name: "Devolución", amount: 20 },

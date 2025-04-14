@@ -28,7 +28,17 @@ import styles from "@/styles/client.module.css";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
-export default function AccountList({ accounts }) {
+interface Account {
+  number: string;
+  currency: "Colones" | "Dolares";
+  balance: number;
+}
+
+interface AccountListProps {
+  accounts: Account[];
+}
+
+export default function AccountList({ accounts = [] }: AccountListProps) {
   const router = useRouter();
 
   useEffect(() => {
@@ -68,4 +78,13 @@ export default function AccountList({ accounts }) {
       </Button>
     </div>
   );
+}
+
+// Add static props to provide default data
+export async function getStaticProps() {
+  return {
+    props: {
+      accounts: [] // Default empty array
+    },
+  };
 }

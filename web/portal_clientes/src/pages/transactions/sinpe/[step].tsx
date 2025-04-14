@@ -28,18 +28,33 @@ import { useRouter } from "next/router";
 import { Button, Form, Card, Modal } from "react-bootstrap";
 import styles from "@/styles/client.module.css";
 
-export default function Sinpe({ onBack }) {
-  const [sinpeDetails, setSinpeDetails] = useState({ phone: "", name: "", amount: "", detail: "" });
+interface SinpeProps {
+  onBack?: () => void;
+}
+
+interface SinpeDetails {
+  phone: string;
+  name: string;
+  amount: string;
+  detail: string;
+}
+
+type SinpeDirectory = {
+  [key in "8888" | "7856"]: string;
+};
+
+export default function Sinpe({ onBack }: SinpeProps) {
+  const [sinpeDetails, setSinpeDetails] = useState<SinpeDetails>({ phone: "", name: "", amount: "", detail: "" });
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
   const { step } = router.query;
 
-  const sinpeDirectory = {
+  const sinpeDirectory: SinpeDirectory = {
     "8888": "Francisco Duran",
     "7856": "Catalina Ramirez",
   };
 
-  const currentStep = parseInt(step || "1");
+  const currentStep = parseInt(Array.isArray(step) ? step[0] : step || "1");
 
   useEffect(() => {
     // Redirect to step 1 if accessing a step without completing the previous one
@@ -48,7 +63,9 @@ export default function Sinpe({ onBack }) {
   }, [currentStep, sinpeDetails, router]);
 
   const handleSinpeVerify = () => {
-    const name = sinpeDirectory[sinpeDetails.phone];
+    const name = sinpeDetails.phone in sinpeDirectory 
+      ? sinpeDirectory[sinpeDetails.phone as keyof SinpeDirectory] 
+      : undefined;
     if (name) {
       setSinpeDetails({ ...sinpeDetails, name });
       router.push("/transactions/sinpe/step2");

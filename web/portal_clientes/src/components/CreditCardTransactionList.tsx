@@ -29,7 +29,27 @@ import { Table, Button } from "react-bootstrap";
 import styles from "@/styles/client.module.css";
 import { useRouter } from "next/router";
 
-export default function CreditCardTransactionList({ card, transactions, onBack }) {
+interface CreditCard {
+  number: string;
+  currency: "Colones" | "Dolares";
+  limit: number;
+  minPayment: number;
+  cutoffDate: string;
+  paymentDate: string;
+}
+
+interface Transaction {
+  name: string;
+  amount: number;
+}
+
+interface CreditCardTransactionListProps {
+  card: CreditCard;
+  transactions: Transaction[];
+  onBack: () => void;
+}
+
+export default function CreditCardTransactionList({ card, transactions, onBack }: CreditCardTransactionListProps) {
   const router = useRouter();
   const totalSpent = transactions.reduce((sum, t) => sum + t.amount, 0);
 

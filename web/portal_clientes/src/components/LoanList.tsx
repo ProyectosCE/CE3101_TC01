@@ -28,7 +28,19 @@ Consulta el archivo LICENSE para más detalles.
 import React from "react";
 import { Button, ListGroup, Container } from "react-bootstrap";
 
-export default function LoanList({ loans, onLoanClick, onBack }) {
+interface Loan {
+  id: string;
+  number: string;
+  type: string;
+}
+
+interface LoanListProps {
+  loans: Loan[];
+  onLoanClick: (loan: Loan) => void;
+  onBack: () => void;
+}
+
+export default function LoanList({ loans, onLoanClick, onBack }: LoanListProps) {
   return (
     <Container>
       <h2>Listado de Préstamos</h2>

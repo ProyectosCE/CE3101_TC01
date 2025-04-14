@@ -28,7 +28,28 @@ Consulta el archivo LICENSE para más detalles.
 import React from "react";
 import { Button, Table, Container } from "react-bootstrap";
 
-export default function LoanDetails({ loan, payments, onBack }) {
+interface Loan {
+  startDate: string;
+  term: number;
+  originalAmount: number;
+  paidAmount: number;
+  annualInterest: number;
+}
+
+interface Payment {
+  date: string;
+  paidAmount: number;
+  previousDebt: number;
+  currentDebt: number;
+}
+
+interface LoanDetailsProps {
+  loan: Loan;
+  payments: Payment[];
+  onBack: () => void;
+}
+
+export default function LoanDetails({ loan, payments, onBack }: LoanDetailsProps) {
   return (
     <Container>
       <h2>Detalles del Préstamo</h2>

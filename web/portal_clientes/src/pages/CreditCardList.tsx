@@ -28,7 +28,16 @@ import styles from "@/styles/client.module.css";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
-export default function CreditCardList({ creditCards }) {
+interface CreditCard {
+  number: string;
+  brand: string;
+}
+
+interface CreditCardListProps {
+  creditCards: CreditCard[];
+}
+
+export default function CreditCardList({ creditCards = [] }: CreditCardListProps) {
   const router = useRouter();
 
   useEffect(() => {
@@ -66,4 +75,13 @@ export default function CreditCardList({ creditCards }) {
       </Button>
     </div>
   );
+}
+
+// Add static props to provide default data
+export async function getStaticProps() {
+  return {
+    props: {
+      creditCards: [] // Default empty array
+    },
+  };
 }

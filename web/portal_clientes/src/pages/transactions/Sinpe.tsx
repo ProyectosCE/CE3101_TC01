@@ -25,15 +25,27 @@ import { useRouter } from "next/router";
 import { Button, Form, Card, Modal } from "react-bootstrap";
 import styles from "@/styles/client.module.css";
 
+interface SinpeDetails {
+  phone: string;
+  name: string;
+  amount: string;
+  detail: string;
+}
+
+type SinpeDirectory = {
+  [key in "8888" | "7856"]: string;
+};
+
 export default function Sinpe() {
   const router = useRouter();
   const { query } = router;
   const [step, setStep] = useState(1);
-  const [sinpeDetails, setSinpeDetails] = useState({ phone: "", name: "", amount: "", detail: "" });
+  const [sinpeDetails, setSinpeDetails] = useState<SinpeDetails>({ phone: "", name: "", amount: "", detail: "" });
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const currentStep = parseInt(query.step || "1", 10);
+    const stepQuery = Array.isArray(query.step) ? query.step[0] : query.step;
+    const currentStep = parseInt(stepQuery || "1", 10);
     if (currentStep > step) {
       // Prevent skipping steps
       router.push(`/transactions/Sinpe?step=${step}`);
@@ -42,13 +54,13 @@ export default function Sinpe() {
     }
   }, [query.step, step, router]);
 
-  const handleNextStep = (nextStep) => {
+  const handleNextStep = (nextStep: number) => {
     setStep(nextStep);
     router.push(`/transactions/Sinpe?step=${nextStep}`);
   };
 
   const handleSinpeVerify = () => {
-    const name = sinpeDirectory[sinpeDetails.phone];
+    const name = sinpeDetails.phone in sinpeDirectory ? sinpeDirectory[sinpeDetails.phone as keyof SinpeDirectory] : undefined;
     if (name) {
       setSinpeDetails({ ...sinpeDetails, name });
       handleNextStep(2);
@@ -74,7 +86,7 @@ export default function Sinpe() {
     }
   };
 
-  const sinpeDirectory = {
+  const sinpeDirectory: SinpeDirectory = {
     "8888": "Francisco Duran",
     "7856": "Catalina Ramirez",
   };
