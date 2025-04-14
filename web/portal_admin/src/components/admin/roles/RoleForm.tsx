@@ -2,45 +2,45 @@ import { useEffect, useState } from 'react';
 import { Role } from '@/pages/admin/roles';
 
 interface RoleFormProps {
-  onAddRole: (role: Omit<Role, 'id'>) => void;
+  onAddRole: (role: Role) => void; // Updated to accept a full Role object
   onUpdateRole: (role: Role) => void;
   editingRole: Role | null;
 }
 
 const RoleForm = ({ onAddRole, onUpdateRole, editingRole }: RoleFormProps) => {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [idRol, setIdRol] = useState('');
+  const [descripcion, setDescripcion] = useState('');
 
   useEffect(() => {
     if (editingRole) {
-      setName(editingRole.name);
-      setDescription(editingRole.description);
+      setIdRol(editingRole.id_rol);
+      setDescripcion(editingRole.descripcion);
     } else {
-      setName('');
-      setDescription('');
+      setIdRol('');
+      setDescripcion('');
     }
   }, [editingRole]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingRole) {
-      onUpdateRole({ ...editingRole, name, description });
+      onUpdateRole({ ...editingRole, id_rol: idRol, descripcion });
     } else {
-      onAddRole({ name, description });
+      onAddRole({ id_rol: idRol, descripcion }); // Pass a full Role object
     }
-    setName('');
-    setDescription('');
+    setIdRol('');
+    setDescripcion('');
   };
 
   return (
     <form onSubmit={handleSubmit} className="mb-4">
       <div className="mb-3">
-        <label className="form-label">Nombre del Rol</label>
+        <label className="form-label">ID del Rol</label>
         <input
           type="text"
           className="form-control"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={idRol}
+          onChange={(e) => setIdRol(e.target.value)}
           required
         />
       </div>
@@ -48,8 +48,8 @@ const RoleForm = ({ onAddRole, onUpdateRole, editingRole }: RoleFormProps) => {
         <label className="form-label">Descripción</label>
         <textarea
           className="form-control"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          value={descripcion}
+          onChange={(e) => setDescripcion(e.target.value)}
           rows={2}
           required
         />

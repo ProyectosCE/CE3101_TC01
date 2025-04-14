@@ -1,14 +1,32 @@
-import AdminLayout from '@/components/admin/AdminLayout';
+import { useState, useEffect, createContext } from 'react';
+import LoginPage from './login';
+import AdminHome from './AdminHome';
 
-const AdminHome = () => {
+export const AuthContext = createContext({
+  isLoggedIn: false,
+  setIsLoggedIn: (value: boolean) => {},
+});
+
+const Index = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Nuevo estado para manejar la carga inicial
+
+  useEffect(() => {
+    // Simulate session check (replace with real authentication logic)
+    const session = localStorage.getItem('session');
+    setIsLoggedIn(!!session);
+    setIsLoading(false); // Finaliza la carga una vez que se verifica la sesión
+  }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>; // Mostrar un indicador de carga mientras se verifica la sesión
+  }
+
   return (
-    <AdminLayout>
-      <div className="p-4">
-        <h2>Bienvenido al Portal Administrativo de TecBank</h2>
-        <p>Utiliza el menú lateral para acceder a las secciones de administración.</p>
-      </div>
-    </AdminLayout>
+    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+      {isLoggedIn ? <AdminHome /> : <LoginPage />}
+    </AuthContext.Provider>
   );
 };
 
-export default AdminHome;
+export default Index;
