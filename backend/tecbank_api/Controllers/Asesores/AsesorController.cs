@@ -24,35 +24,68 @@ namespace tecbank_api.Controllers.Asesores
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] Asesor asesor)
+        public IActionResult Post([FromBody] Asesor asesor, [FromQuery] string tipo)
         {
             if (asesor == null)
             {
                 return BadRequest("El asesor no puede ser nulo");
             }
 
-            // Validar existencia del asesor
+            if (string.IsNullOrEmpty(tipo) || (tipo != "nuevo" && tipo != "editar" && tipo != "borrar"))
+            {
+                return BadRequest("El tipo debe ser 'nuevo', 'editar' o 'borrar'");
+            }
+
             var asesores = _asesorService.GetAll();
             var existingAsesor = asesores.FirstOrDefault(a => a.id_asesor == asesor.id_asesor);
-            if (existingAsesor != null)
+
+            if (tipo == "nuevo")
             {
-                return Conflict("El asesor ya existe");
+                if (existingAsesor != null)
+                {
+                    return Conflict("El asesor ya existe");
+                }
+
+                // Validar existencia del rol
+                var roles = _rolService.GetAll();
+                if (!roles.Any(r => r.id_rol == asesor.id_rol))
+                {
+                    return NotFound($"No existe un rol con el ID {asesor.id_rol}");
+                }
+
+                // Agregar datos adicionales
+                asesor.id_asesor = asesores.Any() ? asesores.Max(a => a.id_asesor) + 1 : 1;
+                _asesorService.Add(asesor);
+                return CreatedAtAction(nameof(Post), new { id = asesor.id_asesor }, asesor);
+            }
+            else if (tipo == "editar")
+            {
+                if (existingAsesor == null)
+                {
+                    return NotFound("El asesor no existe para editar");
+                }
+
+                // Actualizar datos del asesor
+                existingAsesor.nombre = asesor.nombre;
+                existingAsesor.cedula = asesor.cedula;
+                existingAsesor.fecha_nacimiento = asesor.fecha_nacimiento;
+                existingAsesor.monto_meta = asesor.monto_meta;
+                existingAsesor.id_rol = asesor.id_rol;
+                _asesorService.Update(existingAsesor);
+                return Ok(existingAsesor);
+            }
+            else if (tipo == "borrar")
+            {
+                if (existingAsesor == null)
+                {
+                    return NotFound("El asesor no existe para borrar");
+                }
+
+                _asesorService.Delete(existingAsesor);
+                return Ok("El asesor ha sido borrado exitosamente");
             }
 
-            // Validar existencia del rol
-            var roles = _rolService.GetAll();
-            var rolExistente = roles.Any(r => r.id_rol == asesor.id_rol);
-            if (!rolExistente)
-            {
-                return NotFound($"No existe un rol con el ID {asesor.id_rol}");
-            }
-
-            // Agregar datos adicionales
-            asesor.id_asesor = asesores.Any() ? asesores.Max(a => a.id_asesor) + 1 : 1; // Incrementar el id_asesor previo
-
-
-            _asesorService.Add(asesor);
-            return CreatedAtAction(nameof(Post), new { id = asesor.id_asesor }, asesor);
+            return BadRequest("Operación no válida");
         }
     }
 }

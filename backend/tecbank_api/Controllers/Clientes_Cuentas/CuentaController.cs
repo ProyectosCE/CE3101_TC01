@@ -231,5 +231,39 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             }
             return Ok(new { saldo = cuenta.monto });
         }
+
+        [HttpGet("Cuentas")]
+        public IActionResult GetCuentas([FromQuery] string cedula)
+        {
+            if (string.IsNullOrEmpty(cedula))
+            {
+                return BadRequest("El número de cédula es requerido");
+            }
+
+            var cuentas = _cuentaService.GetAll()
+                .Where(c => c.cedula == cedula)
+                .ToList();
+
+            if (!cuentas.Any())
+            {
+                return NotFound($"No se encontraron cuentas para la cédula {cedula}");
+            }
+
+            return Ok(cuentas);
+        }
+
+        [HttpGet("cuentaInfo/{numCuenta}")]
+        public IActionResult GetCuentaInfo(int numCuenta)
+        {
+            var cuenta = _cuentaService.GetAll()
+                .FirstOrDefault(c => c.numero_cuenta == numCuenta);
+
+            if (cuenta == null)
+            {
+                return NotFound($"No se encontró la cuenta con número {numCuenta}.");
+            }
+
+            return Ok(cuenta);
+        }
     }
 }

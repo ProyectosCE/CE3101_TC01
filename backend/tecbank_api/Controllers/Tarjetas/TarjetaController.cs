@@ -244,5 +244,23 @@ namespace tecbank_api.Controllers.Tarjetas
 
             return Ok(tarjetas);
         }
+
+        [HttpGet("tarjetas/{numeroCuenta}")]
+        public IActionResult GetTarjetasPorCuenta(int numeroCuenta)
+        {
+            // Verificar si la cuenta existe
+            var cuenta = _cuentaService.GetAll().FirstOrDefault(c => c.numero_cuenta == numeroCuenta);
+            if (cuenta == null)
+            {
+                return NotFound($"No existe una cuenta con el número {numeroCuenta}.");
+            }
+
+            // Obtener todas las tarjetas asociadas a esa cuenta
+            var tarjetas = _tarjetaService.GetAll()
+                .Where(t => t.numero_cuenta == numeroCuenta)
+                .ToList();
+
+            return Ok(tarjetas);
+        }
     }
 }

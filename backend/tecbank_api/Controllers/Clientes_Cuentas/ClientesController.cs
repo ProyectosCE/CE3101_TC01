@@ -11,14 +11,18 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
     Attributes:
         - _clienteService: JsonDataService<Cliente> - Servicio para manejar los datos de los clientes, basado en un archivo JSON.
         - _tipoClienteService: JsonDataService<Tipo_Cliente> - Servicio para manejar los datos de tipo de cliente, basado en un archivo JSON.
+        - _cuentaService: JsonDataService<Cuenta> - Servicio para manejar los datos de las cuentas, basado en un archivo JSON.
 
     Constructor:
-        - ClientesController: Constructor predeterminado que inicializa los servicios `JsonDataService<Cliente>` y `JsonDataService<Tipo_Cliente>` con las rutas a los archivos JSON "Data/clientes.json" y "Data/tipo_clientes.json".
+        - ClientesController: Constructor predeterminado que inicializa los servicios `JsonDataService<Cliente>`, `JsonDataService<Tipo_Cliente>` y `JsonDataService<Cuenta>` con las rutas a los archivos JSON "Data/clientes.json", "Data/tipo_clientes.json" y "Data/cuentas.json".
 
     Methods:
         - Get: Recupera todos los clientes y los tipos de cliente asociados, devolviendo los datos en formato JSON.
         - GetNombreCompleto: Recupera el nombre completo de un cliente por su cédula.
         - Post: Crea un nuevo cliente, validando que la cédula no exista y que el tipo de cliente exista.
+        - Login: Maneja la autenticación de usuarios.
+        - GetUserInfo: Recupera información de un cliente por su nombre de usuario.
+        - GetCuentas: Recupera todas las cuentas asociadas a un cliente por su cédula.
 
     Problems:
         Ningún problema conocido durante la implementación de esta clase.
@@ -30,15 +34,17 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
     [Route("api/[controller]")]
     public class ClientesController : ControllerBase
     {
-        // Datos de los clientes y tipos de cliente
+        // Datos de los clientes, tipos de cliente y cuentas
         private readonly JsonDataService<Cliente> _clienteService;
         private readonly JsonDataService<Tipo_Cliente> _tipoClienteService;
+        private readonly JsonDataService<Cuenta> _cuentaService;
 
         // Constructor
         public ClientesController()
         {
             _clienteService = new JsonDataService<Cliente>("Data/clientes.json");
             _tipoClienteService = new JsonDataService<Tipo_Cliente>("Data/tipo_clientes.json");
+            _cuentaService = new JsonDataService<Cuenta>("Data/cuentas.json");
         }
 
 
@@ -231,5 +237,70 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             return BadRequest("Operación no válida");
         }
 
+        // Create a class for login request
+        public class LoginRequest
+        {
+            public string usuario { get; set; }
+            public string password { get; set; }
+        }
+
+        /* Function: Login
+            Maneja la autenticación de usuarios.
+
+        Params:
+            - loginRequest: LoginRequest - Objeto que contiene el usuario y la contraseña.
+
+        Returns:
+            - IActionResult: Retorna una respuesta HTTP con el código de estado 200 (OK) si la autenticación es válida, o 401 (Unauthorized) si no lo es.
+
+        Restriction:
+            El usuario y la contraseña deben ser proporcionados.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] LoginRequest loginRequest)
+        {
+            if (loginRequest == null || string.IsNullOrEmpty(loginRequest.usuario) || string.IsNullOrEmpty(loginRequest.password))
+            {
+                return BadRequest("Usuario y contraseña son requeridos");
+            }
+
+            var user = _clienteService.GetAll().FirstOrDefault(c => 
+                c.usuario == loginRequest.usuario && 
+                c.password == loginRequest.password);
+
+            if (user != null)
+            {
+                return Ok(new { login = "valid" });
+            }
+
+            return Unauthorized(new { login = "invalid" });
+        }
+
+        [HttpGet("userInfo/{username}")]
+        public IActionResult GetUserInfo(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                return BadRequest("El nombre de usuario es requerido");
+            }
+
+            var cliente = _clienteService.GetAll().FirstOrDefault(c => c.usuario == username);
+
+            if (cliente == null)
+            {
+                return NotFound($"No se encontró usuario con nombre: {username}");
+            }
+
+            return Ok(new { 
+                cedula = cliente.cedula,
+                nombreCompleto = cliente.nombre_completo
+            });
+        }
     }
 }
