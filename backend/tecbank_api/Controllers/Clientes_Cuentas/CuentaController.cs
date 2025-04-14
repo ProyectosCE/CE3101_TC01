@@ -28,8 +28,8 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             return Ok(cuentas);
         }
 
-        [HttpPost]
-        public IActionResult Post([FromBody] Cuenta cuenta)
+        [HttpPost("agregarCuenta")]
+        public IActionResult agregar_cuenta([FromBody] Cuenta cuenta)
         {
             if (cuenta == null)
             {
@@ -68,9 +68,19 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
                 return NotFound($"No existe un tipo de cuenta con el código {cuenta.tipo_cuenta}");
             }
 
-
             _cuentaService.Add(cuenta);
-            return CreatedAtAction(nameof(Post), new { id = cuenta.numero_cuenta }, cuenta);
+            return CreatedAtAction(nameof(agregar_cuenta), new { id = cuenta.numero_cuenta }, cuenta);
+        }
+
+        [HttpGet("saldo/{numeroCuenta}")]
+        public IActionResult obtener_saldo(int numeroCuenta)
+        {
+            var cuenta = _cuentaService.GetAll().FirstOrDefault(c => c.numero_cuenta == numeroCuenta);
+            if (cuenta == null)
+            {
+                return NotFound($"No se encontró la cuenta con número {numeroCuenta}.");
+            }
+            return Ok(new { saldo = cuenta.monto });
         }
     }
 }
