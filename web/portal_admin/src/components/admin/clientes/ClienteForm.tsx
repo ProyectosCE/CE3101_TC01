@@ -3,16 +3,40 @@ const ClienteForm = () => {
       <form className="mb-4">
         <div className="row">
           <div className="col-md-6 mb-3">
-            <label className="form-label">Nombre completo</label>
-            <input type="text" className="form-control" placeholder="Juan Pérez" />
-          </div>
-          <div className="col-md-6 mb-3">
-            <label className="form-label">Cédula</label>
+            <label className="form-label">Número de Cédula</label>
             <input type="text" className="form-control" placeholder="123456789" />
           </div>
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Primer Nombre</label>
+            <input type="text" className="form-control" placeholder="Juan" />
+          </div>
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Segundo Nombre</label>
+            <input type="text" className="form-control" placeholder="Carlos" />
+          </div>
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Primer Apellido</label>
+            <input type="text" className="form-control" placeholder="Pérez" />
+          </div>
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Segundo Apellido</label>
+            <input type="text" className="form-control" placeholder="Gómez" />
+          </div>
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Provincia</label>
+            <input type="text" className="form-control" placeholder="San José" />
+          </div>
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Cantón</label>
+            <input type="text" className="form-control" placeholder="Escazú" />
+          </div>
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Distrito</label>
+            <input type="text" className="form-control" placeholder="San Rafael" />
+          </div>
           <div className="col-md-12 mb-3">
-            <label className="form-label">Dirección</label>
-            <input type="text" className="form-control" placeholder="Dirección completa" />
+            <label className="form-label">Dirección Exacta</label>
+            <input type="text" className="form-control" placeholder="Calle 123, Casa 45" />
           </div>
           <div className="col-md-6 mb-3">
             <label className="form-label">Teléfono</label>
@@ -46,4 +70,3 @@ const ClienteForm = () => {
   };
   
   export default ClienteForm;
-  
