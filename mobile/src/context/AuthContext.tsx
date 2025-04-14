@@ -7,7 +7,7 @@ type Currency = 'Dolares' | 'Colones' | 'Euros';
 type AccountType = 'Credito' | 'Debito';
 type ClientType = 'Fisico' | 'Juridico';
 
-interface Movimiento {
+export interface Movimiento {
   fecha: string;
   descripcion: string;
   monto: number;
@@ -79,6 +79,12 @@ interface Cliente {
   prestamos?: Prestamo[];
 }
 
+export interface Pago {
+  id_prestamo: string;
+  monto: number;
+  id_cuenta: string;
+  tipo_pago: 'NORMAL' | 'EXTRAORDINARIO'; // Usando los valores exactos del backend
+}
 interface AuthContextType {
   cliente: Cliente | null;
   login: (cedula: string, password: string) => Promise<boolean>;
@@ -87,6 +93,7 @@ interface AuthContextType {
   saveTransaction: (accountId: string, movimiento: Movimiento) => void;
   saveCreditCardMovement: (cardId: string, movimiento: Movimiento, cuentaAsociadaId?: string) => void;
   saveDebitCardMovement: (cardId: string, movimiento: Movimiento, cuentaAsociadaId: string) => void;
+  saveLoanPayment: (pago: Pago) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -97,6 +104,7 @@ const AuthContext = createContext<AuthContextType>({
   saveTransaction: () => {},
   saveCreditCardMovement: () => {},
   saveDebitCardMovement: () => {},
+  saveLoanPayment: async () => false,
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -290,6 +298,8 @@ const fetchMovimientosParaCuenta = async (numeroCuenta: string): Promise<Movimie
   }
 };
 
+
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [cliente, setCliente] = useState<Cliente | null>(null);
 
@@ -377,9 +387,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return false;
     }
   }, []);
-
-
- 
 
   const logout = useCallback(() => setCliente(null), []);
 
@@ -483,16 +490,59 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     []
   );
 
+  const saveLoanPayment = useCallback(async (pago: Pago): Promise<boolean> => {
+    console.log('[Pago] ===== INICIANDO PROCESO DE PAGO =====');
+    
+    try {
+      // Validación de datos
+      if (!pago.id_prestamo || pago.monto <= 0 || !pago.id_cuenta || !pago.tipo_pago) {
+        console.error('[Pago] Validación fallida:', pago);
+        return false;
+      }
+  
+      // Estructura requerida por el backend
+      const requestBody = {
+        id_prestamo: parseInt(pago.id_prestamo),
+        monto: pago.monto,
+        id_cuenta: parseInt(pago.id_cuenta),
+        id_tipo_pago: pago.tipo_pago // Usar el string directamente
+      };
+  
+      console.log('[Pago] Enviando al backend:', JSON.stringify(requestBody, null, 2));
+  
+      const response = await fetch('http://192.168.100.100:5020/api/Pago', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+      });
+      
+      console.log('[Pago] Respuesta del backend:', response.status);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('[Pago] Error en el backend:', errorData);
+        return false;
+      }
+  
+      console.log('[Pago] Pago registrado exitosamente');
+      return true;
+    } catch (error) {
+      console.error('[Pago] Error crítico:', error);
+      return false;
+    }
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
         cliente,
         login,
-        logout: () => setCliente(null),
+        logout,
         updateAccountBalance,
         saveTransaction,
         saveCreditCardMovement,
         saveDebitCardMovement,
+        saveLoanPayment,
       }}
     >
       {children}
