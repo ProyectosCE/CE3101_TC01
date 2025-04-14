@@ -178,10 +178,6 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
                     cuenta.monto -= transaccion.monto;
                     _cuentaService.Update(cuenta);
                 }
-                else
-                {
-                    return BadRequest("Tipo de tarjeta no reconocido.");
-                }
             }
 
             // Si es una tarjeta de crédito, se verifica el monto disponible

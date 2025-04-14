@@ -13,10 +13,10 @@ namespace tecbank_api.Models
         public double? monto_disponible { get; set; }
         public double? monto_credito { get; set; }
 
-        // Foreign key to Cuenta
-        public int numero_cuenta { get; set; }
+        // Foreign key to Cliente
+        public int id_cliente { get; set; }
         [JsonIgnore]
-        public Cuenta? cuenta { get; set; }
+        public Cliente? cliente { get; set; }
 
         //Foreign key to Tipo_Tarjeta
         public string id_tipo_tarjeta { get; set; }

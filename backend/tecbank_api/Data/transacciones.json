@@ -58,5 +58,17 @@
     "numero_tarjeta": 87654321,
     "numero_cuenta": 12345678,
     "id_tipo_transaccion": "COMPRA"
+  },
+  {
+    "id_transaccion": 6,
+    "estado": "COMPLETADO",
+    "fecha_hora": "2025-04-14T01:29:18.187Z",
+    "descripcion": "compra Walmart",
+    "monto": 8000,
+    "moneda": "COLON",
+    "cuenta_destino": null,
+    "numero_tarjeta": 12345678,
+    "numero_cuenta": 123321,
+    "id_tipo_transaccion": "COMPRA"
   }
 ]
