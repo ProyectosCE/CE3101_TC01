@@ -26,6 +26,21 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             return Ok(transacciones);
         }
 
+        [HttpGet("cuenta/{numeroCuenta}")]
+        public IActionResult GetTransaccionesPorCuenta(int numeroCuenta)
+        {
+            var cuenta = _cuentaService.GetAll().FirstOrDefault(c => c.numero_cuenta == numeroCuenta);
+            if (cuenta == null)
+                return NotFound($"No se encontró la cuenta con número {numeroCuenta}.");
+
+            var transacciones = _transaccionService.GetAll()
+                .Where(t => t.numero_cuenta == numeroCuenta || t.cuenta_destino == numeroCuenta)
+                .ToList();
+
+            return Ok(transacciones);
+        }
+
+
         [HttpPost("deposito")]
         public IActionResult Deposito([FromBody] Transaccion transaccion)
         {
