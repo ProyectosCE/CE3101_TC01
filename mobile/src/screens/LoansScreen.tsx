@@ -1,3 +1,37 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: LoansScreen
+ * Pantalla para visualizar préstamos del cliente y realizar pagos normales o extraordinarios.
+ *
+ * Context:
+ * - cliente: Objeto con la información del cliente autenticado.
+ * - updateAccountBalance: Función para actualizar el saldo de una cuenta.
+ * - saveTransaction: Función para registrar un movimiento en una cuenta.
+ * - saveLoanPayment: Función para registrar un pago de préstamo.
+ *
+ * State:
+ * - montoExtraordinario: string - Monto ingresado para pago extraordinario.
+ * - cuentaSeleccionada: string | null - ID de la cuenta seleccionada para el pago.
+ * - loading: boolean - Indica si hay una operación en curso.
+ * - successMessage: string - Mensaje de éxito temporal.
+ *
+ * Example:
+ * <LoansScreen />
+ */
+
 import React, { useState } from 'react';
 import {
   View,
@@ -63,11 +97,17 @@ export default function LoansScreen() {
     );
   }
 
+  // Muestra un mensaje de éxito temporal
   const mostrarMensajeExito = (mensaje: string) => {
     setSuccessMessage(mensaje);
     setTimeout(() => setSuccessMessage(''), 3000);
   };
 
+  /**
+   * Maneja el pago normal de una cuota de préstamo.
+   * @param prestamo Préstamo a pagar.
+   * @param cuota Cuota a pagar.
+   */
   const handlePagoNormal = async (prestamo: Prestamo, cuota: PrestamoCuota) => {
     try {
       setLoading(true);
@@ -120,6 +160,10 @@ export default function LoansScreen() {
     }
   };
 
+  /**
+   * Maneja el pago extraordinario de un préstamo.
+   * @param prestamo Préstamo a pagar.
+   */
   const handlePagoExtraordinario = async (prestamo: Prestamo) => {
     try {
       setLoading(true);
@@ -183,6 +227,7 @@ export default function LoansScreen() {
       setLoading(false);
     }
   };
+  // Renderiza la información de un préstamo y sus cuotas
   const renderPrestamo = ({ item: prestamo }: { item: Prestamo }) => (
     <View style={styles.card}>
       <Text style={styles.label}>Préstamo #{prestamo.id}</Text>

@@ -1,3 +1,36 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Context: AuthContext
+ * Proveedor de contexto de autenticación y gestión de datos del cliente para la aplicación móvil TecBank.
+ *
+ * Provee:
+ * - cliente: Cliente autenticado o null.
+ * - login: Función para autenticarse con cédula y contraseña.
+ * - logout: Función para cerrar sesión.
+ * - updateAccountBalance: Actualiza el saldo de una cuenta localmente.
+ * - saveTransaction: Registra un movimiento en una cuenta localmente.
+ * - saveCreditCardMovement: Registra un movimiento en una tarjeta de crédito y su cuenta asociada.
+ * - saveDebitCardMovement: Registra un movimiento en una tarjeta de débito y su cuenta asociada.
+ * - saveLoanPayment: Envía un pago de préstamo al backend.
+ * - saveTransactionBackend: Envía una transacción al backend.
+ *
+ * Ejemplo de uso:
+ *   const { cliente, login, logout } = useAuth();
+ */
+
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import * as FileSystem from 'expo-file-system';
 import rawUsers from '../data/users.json';
@@ -300,9 +333,19 @@ const fetchMovimientosParaCuenta = async (numeroCuenta: string): Promise<Movimie
 
 
 
+/**
+ * Componente proveedor de autenticación.
+ * Maneja la obtención, almacenamiento y actualización de datos del cliente autenticado.
+ */
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [cliente, setCliente] = useState<Cliente | null>(null);
 
+  /**
+   * Inicia sesión del cliente.
+   * @param cedula Cédula del cliente.
+   * @param password Contraseña.
+   * @returns Promise<boolean> true si autenticación exitosa.
+   */
   const login = useCallback(async (cedula: string, password: string): Promise<boolean> => {
     console.log('[AuthProvider] Iniciando proceso de login para cédula:', cedula);
 
@@ -388,8 +431,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
+  /**
+   * Cierra la sesión del cliente.
+   */
   const logout = useCallback(() => setCliente(null), []);
 
+  /**
+   * Actualiza el saldo de una cuenta localmente.
+   */
   const updateAccountBalance = useCallback((accountId: string, newBalance: number) => {
     setCliente(prev => {
       if (!prev) return null;
@@ -402,6 +451,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
   }, []);
 
+  /**
+   * Registra un movimiento en una cuenta localmente.
+   */
   const saveTransaction = useCallback((accountId: string, movimiento: Movimiento) => {
     setCliente(prev => {
       if (!prev) return null;
@@ -416,6 +468,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
   }, []);
 
+  /**
+   * Registra un movimiento en una tarjeta de crédito y su cuenta asociada.
+   */
   const saveCreditCardMovement = useCallback(
     (cardId: string, movimiento: Movimiento, cuentaAsociadaId?: string) => {
       setCliente(prev => {
@@ -455,6 +510,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     []
   );
 
+  /**
+   * Registra un movimiento en una tarjeta de débito y su cuenta asociada.
+   */
   const saveDebitCardMovement = useCallback(
     (cardId: string, movimiento: Movimiento, cuentaAsociadaId: string) => {
       setCliente(prev => {
@@ -490,6 +548,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     []
   );
 
+  /**
+   * Envía un pago de préstamo al backend.
+   * @param pago Detalles del pago.
+   * @returns Promise<boolean> true si el pago fue exitoso.
+   */
   const saveLoanPayment = useCallback(async (pago: Pago): Promise<boolean> => {
     console.log('[Pago] ===== INICIANDO PROCESO DE PAGO =====');
     
@@ -533,6 +596,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
 
+  /**
+   * Envía una transacción al backend.
+   * @param transaccion Detalles de la transacción.
+   * @returns Promise<boolean> true si la transacción fue exitosa.
+   */
   const saveTransactionBackend = useCallback(async (transaccion: {
     monto: number;
     descripcion: string;
@@ -578,7 +646,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return false;
     }
   }, []);
-    return (
+  
+  return (
     <AuthContext.Provider
       value={{
         cliente,

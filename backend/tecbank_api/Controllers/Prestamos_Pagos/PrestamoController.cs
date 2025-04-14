@@ -1,19 +1,61 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+using Microsoft.AspNetCore.Mvc;
 using tecbank_api.Models.Asesores;
 using tecbank_api.Models.Prestamos_Pagos;
 using tecbank_api.Services;
 using tecbank_api.Models.Clientes_Cuentas;
 
+/* Class: PrestamoController
+Controlador API para la gestión de préstamos en el sistema TecBank.
+Permite consultar, crear, simular, aprobar y asignar préstamos a clientes y asesores.
+
+Attributes:
+- _prestamoService: JsonDataService<Prestamo> - Servicio para acceder y manipular los datos de préstamos.
+- _asesorService: JsonDataService<Asesor> - Servicio para validar y consultar asesores.
+- _clienteService: JsonDataService<Cliente> - Servicio para validar y consultar clientes.
+
+Constructor:
+- PrestamoController: Inicializa los servicios de préstamos, asesores y clientes.
+
+Methods:
+- Get: Obtiene la lista de todos los préstamos.
+- Post: Crea un nuevo préstamo validando la existencia de asesor y cliente.
+- consultarPrestamos: Consulta préstamos asociados a una cédula.
+- solicitarPrestamo: Simula un préstamo y calcula la cuota mensual.
+- realizarPrestamo: Registra un préstamo real para un cliente.
+- aprobarPrestamo: Asigna un asesor a un préstamo existente.
+- calcularCuotaMensual: Calcula la cuota mensual de un préstamo (NonAction).
+
+Example:
+    var controller = new PrestamoController();
+    var prestamos = controller.Get();
+    controller.Post(new Prestamo { ... });
+*/
 namespace tecbank_api.Controllers.Prestamos_Pagos
 {
     [ApiController]
     [Route("api/[controller]")]
     public class PrestamoController : ControllerBase
     {
+        // Servicios para préstamos, asesores y clientes
         private readonly JsonDataService<Prestamo> _prestamoService;
         private readonly JsonDataService<Asesor> _asesorService;
         private readonly JsonDataService<Cliente> _clienteService;
 
+        // Constructor: Inicializa los servicios con los archivos JSON.
         public PrestamoController()
         {
             _prestamoService = new JsonDataService<Prestamo>("Data/prestamos.json");
@@ -21,6 +63,18 @@ namespace tecbank_api.Controllers.Prestamos_Pagos
             _clienteService = new JsonDataService<Cliente>("Data/clientes.json");
         }
 
+        /* Function: Get
+        Obtiene la lista de todos los préstamos registrados.
+
+        Params:
+        - Ninguno.
+
+        Returns:
+        - IActionResult: HTTP 200 (OK) con la lista de préstamos.
+
+        Restriction:
+        Solo acepta solicitudes HTTP GET.
+        */
         [HttpGet]
         public IActionResult Get()
         {
@@ -28,6 +82,18 @@ namespace tecbank_api.Controllers.Prestamos_Pagos
             return Ok(prestamos);
         }
 
+        /* Function: Post
+        Crea un nuevo préstamo, validando la existencia del asesor y del cliente.
+
+        Params:
+        - prestamo: Prestamo - Objeto préstamo recibido en el cuerpo de la solicitud.
+
+        Returns:
+        - IActionResult: HTTP 201 (Created) si se crea, 400/404 si hay error.
+
+        Restriction:
+        El asesor y el cliente deben existir.
+        */
         [HttpPost]
         public IActionResult Post([FromBody] Prestamo prestamo)
         {
@@ -58,6 +124,18 @@ namespace tecbank_api.Controllers.Prestamos_Pagos
             return CreatedAtAction(nameof(Post), new { id = prestamo.id_prestamo }, prestamo);
         }
 
+        /* Function: consultarPrestamos
+        Consulta todos los préstamos asociados a una cédula de cliente.
+
+        Params:
+        - cedula: string - Cédula del cliente.
+
+        Returns:
+        - IActionResult: HTTP 200 (OK) con la lista de préstamos.
+
+        Restriction:
+        Ninguna restricción especial.
+        */
         [HttpGet("consultarPrestamos/{cedula}")]
         public IActionResult consultarPrestamos(string cedula)
         {
@@ -68,6 +146,19 @@ namespace tecbank_api.Controllers.Prestamos_Pagos
             return Ok(prestamos);
         }
 
+        /* Function: solicitarPrestamo
+        Simula un préstamo y calcula la cuota mensual y el total a pagar.
+
+        Params:
+        - monto: double - Monto solicitado.
+        - plazoMeses: int - Plazo en meses.
+
+        Returns:
+        - IActionResult: HTTP 200 (OK) con los datos simulados.
+
+        Restriction:
+        Ninguna restricción especial.
+        */
         [HttpPost("solicitarPrestamo")]
         public IActionResult solicitarPrestamo([FromQuery] double monto, [FromQuery] int plazoMeses)
         {
@@ -85,6 +176,20 @@ namespace tecbank_api.Controllers.Prestamos_Pagos
             return Ok(prestamoSimulado);
         }
 
+        /* Function: realizarPrestamo
+        Registra un préstamo real para un cliente existente.
+
+        Params:
+        - cedula: string - Cédula del cliente.
+        - monto: double - Monto solicitado.
+        - plazoMeses: int - Plazo en meses.
+
+        Returns:
+        - IActionResult: HTTP 201 (Created) si se registra, 404 si el cliente no existe.
+
+        Restriction:
+        El cliente debe existir.
+        */
         [HttpPost("realizarPrestamo")]
         public IActionResult realizarPrestamo([FromQuery] string cedula, [FromQuery] double monto, [FromQuery] int plazoMeses)
         {
@@ -111,6 +216,19 @@ namespace tecbank_api.Controllers.Prestamos_Pagos
             return CreatedAtAction(nameof(realizarPrestamo), new { id = nuevoPrestamo.id_prestamo }, nuevoPrestamo);
         }
 
+        /* Function: aprobarPrestamo
+        Asigna un asesor a un préstamo existente.
+
+        Params:
+        - id_prestamo: int - ID del préstamo.
+        - id_asesor: int - ID del asesor.
+
+        Returns:
+        - IActionResult: HTTP 200 (OK) si se asigna, 404 si no existe préstamo o asesor.
+
+        Restriction:
+        El préstamo y el asesor deben existir.
+        */
         [HttpPost("aprobarPrestamo")]
         public IActionResult aprobarPrestamo([FromQuery] int id_prestamo, [FromQuery] int id_asesor)
         {
@@ -129,6 +247,20 @@ namespace tecbank_api.Controllers.Prestamos_Pagos
             return Ok(true);
         }
 
+        /* Function: calcularCuotaMensual
+        Calcula la cuota mensual de un préstamo usando la fórmula de amortización.
+
+        Params:
+        - monto: double - Monto del préstamo.
+        - plazoMeses: int - Plazo en meses.
+        - tasaInteresAnual: double - Tasa de interés anual.
+
+        Returns:
+        - double: Cuota mensual calculada.
+
+        Restriction:
+        Método auxiliar, no expuesto como endpoint.
+        */
         [NonAction]
         public double calcularCuotaMensual(double monto, int plazoMeses, double tasaInteresAnual)
         {

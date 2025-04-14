@@ -1,3 +1,31 @@
+/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+/**
+ * Component: ClientScreen
+ * Pantalla principal para clientes, mostrando accesos rápidos a cuentas, tarjetas, préstamos y transacciones.
+ *
+ * Props:
+ * - navigation: Permite la navegación entre pantallas usando React Navigation.
+ *
+ * Context:
+ * - cliente: Objeto con la información del cliente autenticado.
+ *
+ * Example:
+ * <ClientScreen navigation={navigation} />
+ */
+
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -37,6 +65,10 @@ const options = [
 export default function ClientScreen({ navigation }: Props) {
   const { cliente } = useAuth();
 
+  /**
+   * Navega a la pantalla seleccionada.
+   * @param screen Nombre de la pantalla destino.
+   */
   const handleNavigate = (screen: string) => {
     navigation.navigate(screen as any);
   };

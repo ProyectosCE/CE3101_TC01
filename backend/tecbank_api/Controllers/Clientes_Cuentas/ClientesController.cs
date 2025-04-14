@@ -1,45 +1,56 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*
+================================== LICENCIA ==============
+====================================
+MIT License
+Copyright (c) 2025 José Bernardo Barquero Bonilla,
+Jimmy Feng Feng,
+Alexander Montero Vargas
+Adrian Muñoz Alvarado,
+Diego Salas Ovares.
+Consulta el archivo LICENSE para más detalles.
+=======================================================
+=======================================
+*/
+
+using Microsoft.AspNetCore.Mvc;
 using tecbank_api.Models.Clientes_Cuentas;
 using tecbank_api.Services;
 
+/* Class: ClientesController
+Controlador de API para manejar las solicitudes relacionadas con los clientes. Permite obtener, crear, editar, borrar y autenticar clientes, así como consultar información y cuentas asociadas.
+
+Attributes:
+- _clienteService: JsonDataService<Cliente> - Servicio para manejar los datos de los clientes.
+- _tipoClienteService: JsonDataService<Tipo_Cliente> - Servicio para manejar los datos de tipo de cliente.
+- _cuentaService: JsonDataService<Cuenta> - Servicio para manejar los datos de las cuentas.
+
+Constructor:
+- ClientesController: Inicializa los servicios de clientes, tipos de cliente y cuentas.
+
+Methods:
+- Get: Recupera todos los clientes y los tipos de cliente asociados.
+- GetNombreCompleto: Recupera el nombre completo de un cliente por su cédula.
+- Post: Crea, edita o borra un cliente según el parámetro 'tipo'.
+- Login: Maneja la autenticación de usuarios.
+- GetUserInfo: Recupera información de un cliente por su nombre de usuario.
+
+Example:
+    var controller = new ClientesController();
+    var clientes = controller.Get();
+    controller.Post(new Cliente { ... }, "nuevo");
+*/
 namespace tecbank_api.Controllers.Clientes_Cuentas
 {
-
-    /* Class: ClientesController
-        Controlador de API para manejar las solicitudes relacionadas con los clientes. Permite obtener, crear y actualizar información de los clientes.
-
-    Attributes:
-        - _clienteService: JsonDataService<Cliente> - Servicio para manejar los datos de los clientes, basado en un archivo JSON.
-        - _tipoClienteService: JsonDataService<Tipo_Cliente> - Servicio para manejar los datos de tipo de cliente, basado en un archivo JSON.
-        - _cuentaService: JsonDataService<Cuenta> - Servicio para manejar los datos de las cuentas, basado en un archivo JSON.
-
-    Constructor:
-        - ClientesController: Constructor predeterminado que inicializa los servicios `JsonDataService<Cliente>`, `JsonDataService<Tipo_Cliente>` y `JsonDataService<Cuenta>` con las rutas a los archivos JSON "Data/clientes.json", "Data/tipo_clientes.json" y "Data/cuentas.json".
-
-    Methods:
-        - Get: Recupera todos los clientes y los tipos de cliente asociados, devolviendo los datos en formato JSON.
-        - GetNombreCompleto: Recupera el nombre completo de un cliente por su cédula.
-        - Post: Crea un nuevo cliente, validando que la cédula no exista y que el tipo de cliente exista.
-        - Login: Maneja la autenticación de usuarios.
-        - GetUserInfo: Recupera información de un cliente por su nombre de usuario.
-        - GetCuentas: Recupera todas las cuentas asociadas a un cliente por su cédula.
-
-    Problems:
-        Ningún problema conocido durante la implementación de esta clase.
-
-    References:
-        N/A
-    */
     [ApiController]
     [Route("api/[controller]")]
     public class ClientesController : ControllerBase
     {
-        // Datos de los clientes, tipos de cliente y cuentas
+        // Servicios para clientes, tipos de cliente y cuentas
         private readonly JsonDataService<Cliente> _clienteService;
         private readonly JsonDataService<Tipo_Cliente> _tipoClienteService;
         private readonly JsonDataService<Cuenta> _cuentaService;
 
-        // Constructor
+        // Constructor: Inicializa los servicios con las rutas a los archivos JSON.
         public ClientesController()
         {
             _clienteService = new JsonDataService<Cliente>("Data/clientes.json");
@@ -47,24 +58,17 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             _cuentaService = new JsonDataService<Cuenta>("Data/cuentas.json");
         }
 
-
         /* Function: Get
-            Recupera todos los clientes junto con su tipo de cliente asociado y devuelve los datos en formato JSON.
+        Recupera todos los clientes junto con su tipo de cliente asociado y devuelve los datos en formato JSON.
 
         Params:
-            - N/A
+        - Ninguno.
 
         Returns:
-            - IActionResult: Retorna una respuesta HTTP con el código de estado 200 (OK) y los datos de los clientes en formato JSON.
+        - IActionResult: Respuesta HTTP 200 (OK) con los datos de los clientes.
 
         Restriction:
-            Depende de los servicios `JsonDataService<Cliente>` y `JsonDataService<Tipo_Cliente>` para recuperar los datos desde los archivos JSON.
-
-        Problems:
-            Ningún problema conocido durante la implementación de este método.
-
-        References:
-            N/A
+        Depende de los servicios de clientes y tipos de cliente.
         */
         [HttpGet]
         public IActionResult Get()
@@ -97,63 +101,45 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             return Ok(resultado);
         }
 
-
         /* Function: GetNombreCompleto
-            Recupera el nombre completo de un cliente dado su cédula.
+        Recupera el nombre completo de un cliente dado su cédula.
 
         Params:
-            - cedula: string - Cédula del cliente cuyo nombre completo se desea obtener.
+        - cedula: string - Cédula del cliente.
 
         Returns:
-            - IActionResult: Retorna una respuesta HTTP con el código de estado 200 (OK) y el nombre completo del cliente.
+        - IActionResult: HTTP 200 (OK) con el nombre completo, o 404 si no existe.
 
         Restriction:
-            Si el cliente con la cédula proporcionada no existe, se retorna una respuesta HTTP 404 (Not Found).
-
-        Problems:
-            Ningún problema conocido durante la implementación de este método.
-
-        References:
-            N/A
+        El cliente debe existir.
         */
         [HttpGet("nombreCompleto/{cedula}")]
         public IActionResult GetNombreCompleto(string cedula)
         {
-            // Obtener el cliente por cédula
             var cliente = _clienteService.GetAll().FirstOrDefault(c => c.cedula == cedula);
 
-            // Verificar si el cliente existe
             if (cliente == null)
             {
                 return NotFound($"Cliente con cédula {cedula} no encontrado.");
             }
 
-            // Obtener el nombre completo
             var nombreCompleto = cliente.nombre_completo;
 
             return Ok(new { nombreCompleto });
         }
 
-
         /* Function: Post
-            Maneja las operaciones de creación, edición y eliminación de clientes.
+        Maneja las operaciones de creación, edición y eliminación de clientes.
 
         Params:
-            - new_Cliente: Cliente - El cliente a crear, editar o borrar, proporcionado en el cuerpo de la solicitud (FromBody).
-            - tipo: string - Tipo de operación a realizar ("nuevo", "editar", "borrar").
+        - new_Cliente: Cliente - El cliente a crear, editar o borrar.
+        - tipo: string - Tipo de operación: "nuevo", "editar", "borrar".
 
         Returns:
-            - IActionResult: Retorna una respuesta HTTP con el código de estado correspondiente según la operación realizada.
+        - IActionResult: Respuesta HTTP según la operación realizada.
 
         Restriction:
-            La cédula proporcionada debe ser única para las operaciones de creación.
-            El cliente debe existir para las operaciones de edición y eliminación.
-
-        Problems:
-            Ningún problema conocido durante la implementación de este método.
-
-        References:
-            N/A
+        La cédula debe ser única para crear; el cliente debe existir para editar/borrar.
         */
         [HttpPost]
         public IActionResult Post([FromBody] Cliente new_Cliente, [FromQuery] string tipo)
@@ -188,7 +174,6 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
                 }
                 new_Cliente.tipo_cliente = tipoEncontrado;
 
-                // Guardar el cliente
                 _clienteService.Add(new_Cliente);
                 return CreatedAtAction(nameof(Get), new { cedula = new_Cliente.cedula }, new_Cliente);
             }
@@ -237,7 +222,7 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             return BadRequest("Operación no válida");
         }
 
-        // Create a class for login request
+        // Clase auxiliar para solicitudes de login
         public class LoginRequest
         {
             public string usuario { get; set; }
@@ -245,22 +230,16 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
         }
 
         /* Function: Login
-            Maneja la autenticación de usuarios.
+        Maneja la autenticación de usuarios.
 
         Params:
-            - loginRequest: LoginRequest - Objeto que contiene el usuario y la contraseña.
+        - loginRequest: LoginRequest - Objeto con usuario y contraseña.
 
         Returns:
-            - IActionResult: Retorna una respuesta HTTP con el código de estado 200 (OK) si la autenticación es válida, o 401 (Unauthorized) si no lo es.
+        - IActionResult: HTTP 200 (OK) si la autenticación es válida, 401 si no.
 
         Restriction:
-            El usuario y la contraseña deben ser proporcionados.
-
-        Problems:
-            Ningún problema conocido durante la implementación de este método.
-
-        References:
-            N/A
+        Usuario y contraseña deben ser proporcionados.
         */
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest loginRequest)
@@ -270,8 +249,8 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
                 return BadRequest("Usuario y contraseña son requeridos");
             }
 
-            var user = _clienteService.GetAll().FirstOrDefault(c => 
-                c.usuario == loginRequest.usuario && 
+            var user = _clienteService.GetAll().FirstOrDefault(c =>
+                c.usuario == loginRequest.usuario &&
                 c.password == loginRequest.password);
 
             if (user != null)
@@ -282,6 +261,18 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             return Unauthorized(new { login = "invalid" });
         }
 
+        /* Function: GetUserInfo
+        Recupera información básica de un cliente por su nombre de usuario.
+
+        Params:
+        - username: string - Nombre de usuario.
+
+        Returns:
+        - IActionResult: HTTP 200 (OK) con cédula y nombre completo, o 404 si no existe.
+
+        Restriction:
+        El usuario debe existir.
+        */
         [HttpGet("userInfo/{username}")]
         public IActionResult GetUserInfo(string username)
         {
@@ -297,7 +288,8 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
                 return NotFound($"No se encontró usuario con nombre: {username}");
             }
 
-            return Ok(new { 
+            return Ok(new
+            {
                 cedula = cliente.cedula,
                 nombreCompleto = cliente.nombre_completo
             });
