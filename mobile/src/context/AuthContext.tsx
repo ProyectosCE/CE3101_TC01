@@ -2,24 +2,11 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 import * as FileSystem from 'expo-file-system';
 import rawUsers from '../data/users.json';
 
-/** 
- * Enum de tipos de moneda.
- */
+// Types
 type Currency = 'Dolares' | 'Colones' | 'Euros';
-
-/** 
- * Enum de tipos de cuenta.
- */
 type AccountType = 'Credito' | 'Debito';
-
-/** 
- * Enum de tipos de cliente.
- */
 type ClientType = 'Fisico' | 'Juridico';
 
-/**
- * Estructura que representa un movimiento financiero.
- */
 interface Movimiento {
   fecha: string;
   descripcion: string;
@@ -27,9 +14,6 @@ interface Movimiento {
   tipo: string;
 }
 
-/**
- * Estructura que representa una cuenta bancaria.
- */
 interface Cuenta {
   id: string;
   currency: Currency;
@@ -40,9 +24,6 @@ interface Cuenta {
   movimientos?: Movimiento[];
 }
 
-/**
- * Estructura que representa una tarjeta de crédito.
- */
 interface TarjetaCredito {
   id: string;
   numero: string;
@@ -55,9 +36,6 @@ interface TarjetaCredito {
   movimientos?: Movimiento[];
 }
 
-/**
- * Estructura que representa una tarjeta de débito.
- */
 interface TarjetaDebito {
   id: string;
   numero: string;
@@ -67,9 +45,6 @@ interface TarjetaDebito {
   movimientos?: Movimiento[];
 }
 
-/**
- * Estructura que representa una cuota de préstamo.
- */
 interface PrestamoCuota {
   numero: number;
   fecha: string;
@@ -77,9 +52,6 @@ interface PrestamoCuota {
   estado: 'pendiente' | 'pagado' | 'vencido';
 }
 
-/**
- * Estructura que representa un préstamo.
- */
 interface Prestamo {
   id: string;
   monto: number;
@@ -89,9 +61,6 @@ interface Prestamo {
   cuotas: PrestamoCuota[];
 }
 
-/**
- * Estructura que representa a un cliente autenticado.
- */
 interface Cliente {
   id_cliente: string;
   Nombre_Completo: string;
@@ -110,9 +79,6 @@ interface Cliente {
   prestamos?: Prestamo[];
 }
 
-/**
- * Interface para el contexto de autenticación.
- */
 interface AuthContextType {
   cliente: Cliente | null;
   login: (cedula: string, password: string) => Promise<boolean>;
@@ -135,18 +101,16 @@ const AuthContext = createContext<AuthContextType>({
 
 export const useAuth = () => useContext(AuthContext);
 
-// Carga inicial de usuarios desde el archivo JSON incluido en el bundle.
 const defaultUsers = rawUsers as Cliente[];
-
-// Ruta para guardar el archivo actualizado de usuarios en el filesystem.
 const USERS_FILE_PATH = FileSystem.documentDirectory + 'users.json';
-
-// URL del backend para obtener los datos actualizados de clientes.
 const BACKEND_URL = 'http://192.168.100.100:5020/api/clientes';
+const CUENTAS_URL = 'http://192.168.100.100:5020/api/cuenta';
+const mapCurrency = (id_moneda: number): Currency =>
+  id_moneda === 1 ? 'Colones' : id_moneda === 2 ? 'Dolares' : 'Euros';
 
-/**
- * Transforma los datos del backend al formato de la interfaz Cliente
- */
+const mapAccountType = (id_tipo: number): AccountType =>
+  id_tipo === 1 ? 'Debito' : 'Credito';
+
 const transformBackendData = (backendData: any[]): Cliente[] => {
   return backendData.map(user => ({
     id_cliente: user.id_cliente?.toString() || '',
@@ -158,7 +122,7 @@ const transformBackendData = (backendData: any[]): Cliente[] => {
     tipo_cliente: (user.tipo_id === 'FISICO' ? 'Fisico' : 'Juridico') as ClientType,
     usuario: user.usuario || '',
     password: user.password || '',
-    cuentas: user.cuentas || [],
+    cuentas: [], // se llena luego
     tarjetas: {
       credito: user.tarjetas?.credito || [],
       debito: user.tarjetas?.debito || []
@@ -167,9 +131,6 @@ const transformBackendData = (backendData: any[]): Cliente[] => {
   }));
 };
 
-/**
- * Carga usuarios desde el archivo local o devuelve los por defecto
- */
 const loadLocalUsers = async (): Promise<Cliente[]> => {
   try {
     const fileInfo = await FileSystem.getInfoAsync(USERS_FILE_PATH);
@@ -184,52 +145,63 @@ const loadLocalUsers = async (): Promise<Cliente[]> => {
   return defaultUsers;
 };
 
+const fetchCuentasParaCliente = async (idCliente: string): Promise<Cuenta[]> => {
+  try {
+    const url = `${CUENTAS_URL}?idCliente=${idCliente}`;
+    console.log('Llamando a:', url);
+    const response = await fetch(url);
+    const json = await response.json();
+
+    console.log('Respuesta de /api/cuentas:', json);
+
+    if (response.ok && Array.isArray(json)) {
+      return json.map((cuenta: any, index: number) => ({
+        id: cuenta.numero_cuenta?.toString() || index.toString(),
+        currency: mapCurrency(cuenta.id_moneda),
+        tipo: mapAccountType(cuenta.id_tipo_cuenta),
+        numero: cuenta.numero_cuenta?.toString() || '',
+        saldo: cuenta.monto || 0,
+        movimientos: cuenta.movimientos || [],
+      }));
+    } else {
+      console.warn('Respuesta inesperada en /api/cuentas:', json);
+    }
+  } catch (err) {
+    console.error('Error al cargar cuentas desde backend:', err);
+  }
+
+  return [];
+};
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [cliente, setCliente] = useState<Cliente | null>(null);
 
   const login = useCallback(async (cedula: string, password: string): Promise<boolean> => {
     try {
       let users: Cliente[] = [];
-      
-      // Intentar obtener datos del backend
+
       try {
-        console.log('Intentando conectar al backend...');
         const response = await fetch(BACKEND_URL);
-        console.log('Respuesta del backend recibida. Status:', response.status);
-        
         if (response.ok) {
           const backendData = await response.json();
-          console.log('Datos crudos del backend:', backendData);
-          
           users = transformBackendData(backendData);
-          console.log('Datos transformados:', users);
-          
           await FileSystem.writeAsStringAsync(USERS_FILE_PATH, JSON.stringify(backendData));
-          console.log('Datos guardados en archivo local');
         } else {
-          console.warn('El backend respondió con error. Usando datos locales...');
           users = await loadLocalUsers();
         }
       } catch (backendError) {
-        console.error('Error al conectar al backend:', backendError);
         users = await loadLocalUsers();
       }
 
-      console.log('Usuarios disponibles para login:', users.map(u => ({
-        cedula: u.Cedula,
-        nombre: u.Nombre_Completo
-      })));
-      
-      // Buscar usuario (usando los campos transformados)
       const found = users.find(u => u.Cedula === cedula && u.password === password);
-      
+
       if (found) {
-        console.log('Usuario encontrado:', found.Nombre_Completo);
-        setCliente(found);
+        const cuentas = await fetchCuentasParaCliente(found.id_cliente);
+        const clienteConCuentas = { ...found, cuentas };
+        setCliente(clienteConCuentas);
         return true;
       }
-      
-      console.log('Usuario no encontrado. Credenciales proporcionadas:', { cedula, password });
+
       return false;
     } catch (error) {
       console.error('Error crítico durante login:', error);
