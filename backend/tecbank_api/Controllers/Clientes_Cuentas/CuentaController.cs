@@ -17,12 +17,12 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
         - CuentaController: Inicializa los servicios con los archivos JSON correspondientes.
 
     Methods:
-        - Get():
-            Retorna la lista de todas las cuentas disponibles.
+        - Get([FromQuery] string tipo):
+            Retorna la lista de todas las cuentas disponibles o las cuentas asociadas a una cédula específica.
             Endpoint: GET /api/cuenta
 
-        - agregar_cuenta([FromBody] Cuenta cuenta):
-            Permite agregar una nueva cuenta, validando la existencia del cliente, tipo de cuenta y moneda.
+        - agregar_cuenta([FromBody] Cuenta cuenta, [FromQuery] string tipo):
+            Permite agregar, editar o borrar una cuenta, validando la existencia del cliente, tipo de cuenta y moneda.
             Endpoint: POST /api/cuenta/agregarCuenta
 
         - obtener_saldo(int numeroCuenta):
@@ -51,13 +51,14 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
         }
 
         /* Function: Get
-            Recupera todas las cuentas bancarias disponibles y devuelve los datos en formato JSON.
+            Recupera todas las cuentas bancarias disponibles o las cuentas asociadas a una cédula específica.
 
         Params:
-            - N/A
+            - [FromQuery] string tipo: Parámetro de consulta que puede ser "all" para obtener todas las cuentas o una cédula para obtener cuentas asociadas.
 
         Returns:
             - IActionResult: Retorna una respuesta HTTP con el código de estado 200 (OK) y los datos de las cuentas en formato JSON.
+                Si no se encuentran cuentas para una cédula específica, retorna 404 (NotFound).
 
         Restriction:
             Depende del servicio `JsonDataService<Cuenta>` para recuperar los datos desde el archivo JSON de cuentas.
@@ -69,23 +70,39 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             N/A
         */
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get([FromQuery] string tipo)
         {
-            var cuentas = _cuentaService.GetAll();
-            return Ok(cuentas);
+            if (tipo == "all")
+            {
+                var cuentas = _cuentaService.GetAll();
+                return Ok(cuentas);
+            }
+
+            var cuentasPorCedula = _cuentaService.GetAll()
+                .Where(c => c.cedula == tipo)
+                .ToList();
+
+            if (!cuentasPorCedula.Any())
+            {
+                return NotFound($"No se encontraron cuentas para la cédula {tipo}.");
+            }
+
+            return Ok(cuentasPorCedula);
         }
 
         /* Function: agregar_cuenta
-            Permite agregar una nueva cuenta bancaria, validando la existencia del cliente, la moneda y el tipo de cuenta.
+            Permite agregar, editar o borrar una cuenta bancaria, validando la existencia del cliente, la moneda y el tipo de cuenta.
 
         Params:
-            - [FromBody] Cuenta cuenta: Objeto que representa la cuenta a ser agregada.
+            - [FromBody] Cuenta cuenta: Objeto que representa la cuenta a ser gestionada.
+            - [FromQuery] string tipo: Tipo de operación a realizar ("nuevo", "editar", "borrar").
 
         Returns:
             - IActionResult: Retorna una respuesta HTTP que puede ser:
                 - 201 (Created) si la cuenta se agrega correctamente.
-                - 400 (BadRequest) si la cuenta es nula.
-                - 404 (NotFound) si no existe un cliente, tipo de cuenta o moneda válidos.
+                - 200 (OK) si la cuenta se edita o borra correctamente.
+                - 400 (BadRequest) si la cuenta es nula o el tipo de operación es inválido.
+                - 404 (NotFound) si no existe un cliente, tipo de cuenta, moneda válidos o la cuenta no existe.
                 - 409 (Conflict) si la cuenta ya existe.
 
         Restriction:
@@ -98,47 +115,91 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             N/A
         */
         [HttpPost("agregarCuenta")]
-        public IActionResult agregar_cuenta([FromBody] Cuenta cuenta)
+        public IActionResult agregar_cuenta([FromBody] Cuenta cuenta, [FromQuery] string tipo)
         {
             if (cuenta == null)
             {
                 return BadRequest("La cuenta no puede ser nula");
             }
 
-            // Validar existencia del cliente
-            var clientes = _clienteService.GetAll();
-            var clienteExistente = clientes.Any(c => c.id_cliente == cuenta.id_cliente);
-            if (!clienteExistente)
+            if (string.IsNullOrEmpty(tipo) || (tipo != "nuevo" && tipo != "editar" && tipo != "borrar"))
             {
-                return NotFound($"No existe un cliente con id_cliente = {cuenta.id_cliente}");
+                return BadRequest("El tipo debe ser 'nuevo', 'editar' o 'borrar'");
             }
 
-            // Validar si ya existe la cuenta
             var cuentas = _cuentaService.GetAll();
             var existingAccount = cuentas.FirstOrDefault(c => c.numero_cuenta == cuenta.numero_cuenta);
-            if (existingAccount != null)
+
+            if (tipo == "nuevo")
             {
-                return Conflict("La cuenta ya existe");
+                if (existingAccount != null)
+                {
+                    return Conflict("La cuenta ya existe");
+                }
+
+                // Generate a unique 8-digit account number if numero_cuenta is 0
+                if (cuenta.numero_cuenta == 0)
+                {
+                    var random = new Random();
+                    do
+                    {
+                        cuenta.numero_cuenta = random.Next(10000000, 99999999); // Generate 8-digit number
+                    } while (cuentas.Any(c => c.numero_cuenta == cuenta.numero_cuenta));
+                }
+
+                // Validar existencia del cliente
+                var clientes = _clienteService.GetAll();
+                var clienteExistente = clientes.Any(c => c.cedula == cuenta.cedula);
+                if (!clienteExistente)
+                {
+                    return NotFound($"No existe un cliente con cédula = {cuenta.cedula}");
+                }
+
+                // Validar existencia de la moneda
+                var monedas = _monedaService.GetAll();
+                var monedaExistente = monedas.Any(m => m.moneda == cuenta.id_moneda);
+                if (!monedaExistente)
+                {
+                    return NotFound($"No existe una moneda con el código {cuenta.id_moneda}");
+                }
+
+                // Validar existencia del tipo de cuenta
+                var tiposCuentas = _tipoCuentaService.GetAll();
+                var tipoCuentaExistente = tiposCuentas.Any(tc => tc.tipo_cuenta == cuenta.id_tipo_cuenta);
+                if (!tipoCuentaExistente)
+                {
+                    return NotFound($"No existe un tipo de cuenta con el código {cuenta.id_tipo_cuenta}");
+                }
+
+                _cuentaService.Add(cuenta);
+                return CreatedAtAction(nameof(agregar_cuenta), new { id = cuenta.numero_cuenta }, cuenta);
+            }
+            else if (tipo == "editar")
+            {
+                if (existingAccount == null)
+                {
+                    return NotFound("La cuenta no existe para editar");
+                }
+
+                existingAccount.descripcion = cuenta.descripcion;
+                existingAccount.monto = cuenta.monto;
+                existingAccount.id_tipo_cuenta = cuenta.id_tipo_cuenta;
+                existingAccount.id_moneda = cuenta.id_moneda;
+                _cuentaService.Update(existingAccount);
+                return Ok(existingAccount);
+            }
+            else if (tipo == "borrar")
+            {
+                if (existingAccount == null)
+                {
+                    return NotFound("La cuenta no existe para borrar");
+                }
+
+                _cuentaService.Delete(existingAccount);
+                return Ok("La cuenta ha sido borrada exitosamente");
             }
 
-            // Validar existencia de la moneda
-            var monedas = _monedaService.GetAll();
-            var monedaExistente = monedas.Any(m => m.moneda == cuenta.id_moneda);
-            if (!monedaExistente)
-            {
-                return NotFound($"No existe una moneda con el código {cuenta.moneda}");
-            }
-
-            // Validar existencia del tipo de cuenta
-            var tiposCuentas = _tipoCuentaService.GetAll();
-            var tipoCuentaExistente = tiposCuentas.Any(tc => tc.tipo_cuenta == cuenta.id_tipo_cuenta);
-            if (!tipoCuentaExistente)
-            {
-                return NotFound($"No existe un tipo de cuenta con el código {cuenta.tipo_cuenta}");
-            }
-
-            _cuentaService.Add(cuenta);
-            return CreatedAtAction(nameof(agregar_cuenta), new { id = cuenta.numero_cuenta }, cuenta);
+            return BadRequest("Operación no válida");
         }
 
         /* Function: obtener_saldo
@@ -169,6 +230,40 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
                 return NotFound($"No se encontró la cuenta con número {numeroCuenta}.");
             }
             return Ok(new { saldo = cuenta.monto });
+        }
+
+        [HttpGet("Cuentas")]
+        public IActionResult GetCuentas([FromQuery] string cedula)
+        {
+            if (string.IsNullOrEmpty(cedula))
+            {
+                return BadRequest("El número de cédula es requerido");
+            }
+
+            var cuentas = _cuentaService.GetAll()
+                .Where(c => c.cedula == cedula)
+                .ToList();
+
+            if (!cuentas.Any())
+            {
+                return NotFound($"No se encontraron cuentas para la cédula {cedula}");
+            }
+
+            return Ok(cuentas);
+        }
+
+        [HttpGet("cuentaInfo/{numCuenta}")]
+        public IActionResult GetCuentaInfo(int numCuenta)
+        {
+            var cuenta = _cuentaService.GetAll()
+                .FirstOrDefault(c => c.numero_cuenta == numCuenta);
+
+            if (cuenta == null)
+            {
+                return NotFound($"No se encontró la cuenta con número {numCuenta}.");
+            }
+
+            return Ok(cuenta);
         }
     }
 }
