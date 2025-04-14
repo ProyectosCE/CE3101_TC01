@@ -145,5 +145,35 @@ namespace tecbank_api.Controllers.Prestamos_Pagos
             _moraService.Add(mora);
             return CreatedAtAction(nameof(Post), new { id = mora.id_mora }, mora);
         }
+
+        /* Function: GetMorasByPrestamo
+            Recupera todas las moras asociadas a un préstamo específico.
+
+        Params:
+            - id_prestamo: int - ID del préstamo para el cual se desean obtener las moras.
+
+        Returns:
+            - IActionResult: Retorna una respuesta HTTP con el código de estado 200 (OK) y las moras asociadas al préstamo en formato JSON, o un código de error (NotFound) si no se encuentran moras para el préstamo especificado.
+
+        Restriction:
+            Depende del servicio `JsonDataService<Mora>` para recuperar los datos desde el archivo JSON de moras.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
+        [HttpGet("{id_prestamo}")]
+        public IActionResult GetMorasByPrestamo(int id_prestamo)
+        {
+            var moras = _moraService.GetAll();
+            var morasPrestamo = moras.Where(m => m.id_prestamo == id_prestamo).ToList();
+            if (morasPrestamo.Count == 0)
+            {
+                return NotFound($"No se encontraron moras para el prestamo con ID {id_prestamo}");
+            }
+            return Ok(morasPrestamo);
+        }
     }
 }
