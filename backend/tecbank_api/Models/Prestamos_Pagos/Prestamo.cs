@@ -54,6 +54,7 @@ namespace tecbank_api.Models.Prestamos_Pagos
         public DateOnly fecha_final { get; set; }
         public double monto_original { get; set; }
         public double saldo { get; set; }
+        public string estado { get; set; } = "Pendiente";
 
         // Foreign key to Cliente
         public int id_cliente { get; set; }
