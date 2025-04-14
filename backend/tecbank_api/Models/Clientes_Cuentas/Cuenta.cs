@@ -3,6 +3,42 @@ using System.Text.Json.Serialization;
 
 namespace tecbank_api.Models.Clientes_Cuentas
 {
+    /* 
+    Class: Cuenta
+        Representa una cuenta bancaria asociada a un cliente dentro del sistema.
+
+    Attributes:
+        - numero_cuenta: int 
+            Identificador único de la cuenta (número de cuenta).
+        - descripcion: string 
+            Descripción o nombre personalizado para la cuenta.
+        - monto: double 
+            Monto actual disponible en la cuenta.
+        - id_cliente: int 
+            Clave foránea que hace referencia al cliente propietario de la cuenta.
+        - cliente: Cliente? 
+            Objeto cliente asociado a esta cuenta. Se ignora en la serialización JSON.
+        - id_tipo_cuenta: string 
+            Clave foránea que indica el tipo de cuenta (ej. ahorro, corriente).
+        - tipo_cuenta: Tipo_Cuenta? 
+            Objeto del tipo de cuenta asociado. Se ignora en la serialización JSON.
+        - id_moneda: string 
+            Clave foránea que indica la moneda asociada a la cuenta (ej. COLON, DOLAR).
+        - moneda: Moneda? 
+            Objeto moneda asociado a la cuenta. Se ignora en la serialización JSON.
+        - transacciones: List<Transaccion> 
+            Lista de transacciones asociadas a esta cuenta. Se ignora en la serialización JSON.
+
+    Constructor:
+        - Cuenta() 
+            Constructor predeterminado que inicializa la lista de transacciones como vacía.
+
+    Problems:
+        No se han identificado problemas durante la implementación de esta clase.
+
+    References:
+        N/A
+    */
     public class Cuenta
     {
         [Key]
