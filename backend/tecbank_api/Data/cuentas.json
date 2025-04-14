@@ -3,7 +3,7 @@
     "numero_cuenta": 12345678,
     "descripcion": "Cuenta corriente",
     "monto": 0,
-    "id_cliente": 1,
+    "cedula": "407893654",
     "id_tipo_cuenta": "CORRIENTE",
     "id_moneda": "COLON"
   },
@@ -11,7 +11,7 @@
     "numero_cuenta": 87654321,
     "descripcion": "Cuenta ahorros",
     "monto": 0,
-    "id_cliente": 2,
+    "cedula": "119780236",
     "id_tipo_cuenta": "AHORROS",
     "id_moneda": "DOLAR"
   },
@@ -19,16 +19,24 @@
     "numero_cuenta": 1239876,
     "descripcion": "Cuenta corriente",
     "monto": 0,
-    "id_cliente": 3,
+    "cedula": "118745239",
     "id_tipo_cuenta": "CORRIENTE",
     "id_moneda": "EURO"
   },
   {
     "numero_cuenta": 123321,
-    "descripcion": "Cuenta corriente",
+    "descripcion": "Cuenta ahorros",
     "monto": 1500,
-    "id_cliente": 1,
-    "id_tipo_cuenta": "CORRIENTE",
+    "cedula": "407893654",
+    "id_tipo_cuenta": "AHORROS",
     "id_moneda": "COLON"
+  },
+  {
+    "numero_cuenta": 98765432,
+    "descripcion": "Cuenta de crédito",
+    "monto": 5000,
+    "cedula": "123456789",
+    "id_tipo_cuenta": "TCREDITO",
+    "id_moneda": "DOLAR"
   }
 ]

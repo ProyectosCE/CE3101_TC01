@@ -130,10 +130,10 @@ namespace tecbank_api.Controllers.Prestamos_Pagos
 
             // Validar existencia del cliente
             var clientes = _clienteService.GetAll();
-            var clienteExistente = clientes.FirstOrDefault(c => c.id_cliente == prestamoExistente.id_cliente);
+            var clienteExistente = clientes.FirstOrDefault(c => c.cedula == prestamoExistente.cedula);
             if (clienteExistente == null)
             {
-                return NotFound($"No existe un cliente con el ID {prestamoExistente.id_cliente}");
+                return NotFound($"No existe un cliente con la cédula {prestamoExistente.cedula}");
             }
 
             // Agregar datos adicionales
@@ -174,6 +174,34 @@ namespace tecbank_api.Controllers.Prestamos_Pagos
                 return NotFound($"No se encontraron moras para el prestamo con ID {id_prestamo}");
             }
             return Ok(morasPrestamo);
+        }
+
+        /* Function: GetMorasByCliente
+            Recupera todas las moras asociadas a un cliente específico.
+
+        Params:
+            - cedula: string - Cédula del cliente para el cual se desean obtener las moras.
+
+        Returns:
+            - IActionResult: Retorna una respuesta HTTP con el código de estado 200 (OK) y las moras asociadas al cliente en formato JSON.
+
+        Restriction:
+            Depende del servicio `JsonDataService<Mora>` para recuperar los datos desde el archivo JSON de moras.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
+        [HttpGet("ConsultarMorasPorCliente/{cedula}")]
+        public IActionResult ConsultarMorasPorCliente(string cedula)
+        {
+            var moras = _moraService.GetAll()
+                .Where(m => m.cedula == cedula)
+                .ToList();
+
+            return Ok(moras);
         }
     }
 }

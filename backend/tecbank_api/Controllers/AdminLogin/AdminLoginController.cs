@@ -8,15 +8,15 @@ namespace tecbank_api.Controllers.AdminLogin
     [Route("api/[controller]")]
     public class AdminLoginController : ControllerBase
     {
-        private readonly JsonDataService<AdminLogin> _adminService;
+        private readonly JsonDataService<AdminLoginModel> _adminService;
 
         public AdminLoginController()
         {
-            _adminService = new JsonDataService<AdminLogin>("Data/admins.json");
+            _adminService = new JsonDataService<AdminLoginModel>("Data/admins.json");
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] AdminLogin loginRequest)
+        public IActionResult Login([FromBody] AdminLoginModel loginRequest)
         {
             var admins = _adminService.GetAll();
             var admin = admins.FirstOrDefault(a => a.Username == loginRequest.Username && a.Password == loginRequest.Password);

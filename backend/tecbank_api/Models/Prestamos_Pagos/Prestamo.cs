@@ -22,8 +22,8 @@ namespace tecbank_api.Models.Prestamos_Pagos
             Monto original solicitado en el préstamo.
         - saldo: double 
             Saldo restante por pagar en el préstamo.
-        - id_cliente: int 
-            Clave foránea que hace referencia al cliente que solicitó el préstamo.
+        - cedula: string 
+            Cédula del cliente que solicitó el préstamo.
         - cliente: Cliente? 
             Objeto cliente relacionado al préstamo. Se ignora en la serialización JSON.
         - id_asesor: int 
@@ -56,8 +56,8 @@ namespace tecbank_api.Models.Prestamos_Pagos
         public double saldo { get; set; }
         public string estado { get; set; } = "Pendiente";
 
-        // Foreign key to Cliente
-        public int id_cliente { get; set; }
+        // Reemplazar id_cliente por cedula
+        public string cedula { get; set; }
         [JsonIgnore]
         public Cliente? cliente { get; set; }
 

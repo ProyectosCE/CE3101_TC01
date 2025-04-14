@@ -330,7 +330,7 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
         [HttpPost("compra")]
         public IActionResult Compra([FromBody] Transaccion transaccion)
         {
-            var tarjeta = _tarjetaService.GetAll().FirstOrDefault(t => t.numero_tarjeta == transaccion.numero_tarjeta);
+            var tarjeta = _tarjetaService.GetAll().FirstOrDefault(t => t.numero_tarjeta == transaccion.numero_tarjeta.ToString());
             if (tarjeta == null)
                 return NotFound($"No se encontró la tarjeta con número {transaccion.numero_tarjeta}.");
 
