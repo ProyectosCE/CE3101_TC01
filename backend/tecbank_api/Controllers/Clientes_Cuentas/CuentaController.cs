@@ -4,6 +4,35 @@ using tecbank_api.Models.Clientes_Cuentas;
 
 namespace tecbank_api.Controllers.Clientes_Cuentas
 {
+    /* Class: CuentaController
+        Controlador para la gestión de cuentas bancarias, que permite obtener, agregar cuentas y consultar el saldo de una cuenta.
+
+    Attributes:
+        - _cuentaService: JsonDataService<Cuenta> - Servicio para acceder a las cuentas bancarias almacenadas.
+        - _clienteService: JsonDataService<Cliente> - Servicio para acceder a los clientes.
+        - _monedaService: JsonDataService<Moneda> - Servicio para acceder a las monedas.
+        - _tipoCuentaService: JsonDataService<Tipo_Cuenta> - Servicio para acceder a los tipos de cuentas.
+
+    Constructor:
+        - CuentaController: Inicializa los servicios con los archivos JSON correspondientes.
+
+    Methods:
+        - Get():
+            Retorna la lista de todas las cuentas disponibles.
+            Endpoint: GET /api/cuenta
+
+        - agregar_cuenta([FromBody] Cuenta cuenta):
+            Permite agregar una nueva cuenta, validando la existencia del cliente, tipo de cuenta y moneda.
+            Endpoint: POST /api/cuenta/agregarCuenta
+
+        - obtener_saldo(int numeroCuenta):
+            Retorna el saldo de una cuenta específica.
+            Endpoint: GET /api/cuenta/saldo/{numeroCuenta}
+
+    References:
+        - N/A
+    */
+
     [ApiController]
     [Route("api/[controller]")]
     public class CuentaController : ControllerBase
@@ -21,6 +50,24 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             _tipoCuentaService = new JsonDataService<Tipo_Cuenta>("Data/tipo_cuentas.json");
         }
 
+        /* Function: Get
+            Recupera todas las cuentas bancarias disponibles y devuelve los datos en formato JSON.
+
+        Params:
+            - N/A
+
+        Returns:
+            - IActionResult: Retorna una respuesta HTTP con el código de estado 200 (OK) y los datos de las cuentas en formato JSON.
+
+        Restriction:
+            Depende del servicio `JsonDataService<Cuenta>` para recuperar los datos desde el archivo JSON de cuentas.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
         [HttpGet]
         public IActionResult Get()
         {
@@ -28,6 +75,28 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             return Ok(cuentas);
         }
 
+        /* Function: agregar_cuenta
+            Permite agregar una nueva cuenta bancaria, validando la existencia del cliente, la moneda y el tipo de cuenta.
+
+        Params:
+            - [FromBody] Cuenta cuenta: Objeto que representa la cuenta a ser agregada.
+
+        Returns:
+            - IActionResult: Retorna una respuesta HTTP que puede ser:
+                - 201 (Created) si la cuenta se agrega correctamente.
+                - 400 (BadRequest) si la cuenta es nula.
+                - 404 (NotFound) si no existe un cliente, tipo de cuenta o moneda válidos.
+                - 409 (Conflict) si la cuenta ya existe.
+
+        Restriction:
+            Depende de los servicios `JsonDataService<Cliente>`, `JsonDataService<Moneda>` y `JsonDataService<Tipo_Cuenta>` para validar la existencia de los datos necesarios.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
         [HttpPost("agregarCuenta")]
         public IActionResult agregar_cuenta([FromBody] Cuenta cuenta)
         {
@@ -72,6 +141,25 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             return CreatedAtAction(nameof(agregar_cuenta), new { id = cuenta.numero_cuenta }, cuenta);
         }
 
+        /* Function: obtener_saldo
+            Recupera el saldo de una cuenta bancaria específica.
+
+        Params:
+            - int numeroCuenta: El número de la cuenta cuyo saldo se desea consultar.
+
+        Returns:
+            - IActionResult: Retorna una respuesta HTTP con el código de estado 200 (OK) y el saldo de la cuenta en formato JSON.
+                Si la cuenta no existe, retorna 404 (NotFound).
+
+        Restriction:
+            Depende del servicio `JsonDataService<Cuenta>` para recuperar los datos de la cuenta desde el archivo JSON de cuentas.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
         [HttpGet("saldo/{numeroCuenta}")]
         public IActionResult obtener_saldo(int numeroCuenta)
         {

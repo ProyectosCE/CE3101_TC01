@@ -5,6 +5,60 @@ using tecbank_api.Services;
 
 namespace tecbank_api.Controllers.Clientes_Cuentas
 {
+    /* Class: TransaccionController
+        Controlador para gestionar transacciones bancarias dentro del sistema, como depósitos, retiros, transferencias y compras con tarjeta. Permite consultar movimientos por cuenta y clasificados por tipo.
+
+    Attributes:
+        - _transaccionService: JsonDataService<Transaccion> - Servicio para manipular datos de transacciones.
+        - _cuentaService: JsonDataService<Cuenta> - Servicio para obtener y actualizar cuentas.
+        - _tipoTransaccionService: JsonDataService<Tipo_Transaccion> - Servicio para validar tipos de transacción.
+        - _tarjetaService: JsonDataService<Tarjeta> - Servicio para obtener y actualizar tarjetas.
+        - _tipoTarjetaService: JsonDataService<Tipo_Tarjeta> - Servicio para validar el tipo de tarjeta.
+
+    Constructor:
+        - TransaccionController: Inicializa los servicios requeridos desde archivos JSON.
+
+    Methods:
+        - Get():
+            Retorna todas las transacciones registradas.
+            Endpoint: GET /api/transaccion
+
+        - GetTransaccionesPorCuenta(int numeroCuenta):
+            Retorna todas las transacciones asociadas a una cuenta (origen o destino).
+            Endpoint: GET /api/transaccion/movimientos/{numeroCuenta}
+
+        - GetComprasPorCuenta(int numeroCuenta):
+            Retorna todas las transacciones de tipo "COMPRA" asociadas a una cuenta.
+            Endpoint: GET /api/transaccion/compras/{numeroCuenta}
+
+        - Deposito(Transaccion transaccion):
+            Procesa un depósito a una cuenta.
+            Endpoint: POST /api/transaccion/deposito
+
+        - Retiro(Transaccion transaccion):
+            Procesa un retiro desde una cuenta.
+            Endpoint: POST /api/transaccion/retiro
+
+        - Transferencia(Transaccion transaccion):
+            Procesa una transferencia entre dos cuentas.
+            Endpoint: POST /api/transaccion/transferencia
+
+        - Compra(Transaccion transaccion):
+            Procesa una compra con tarjeta (débito o crédito).
+            Endpoint: POST /api/transaccion/compra
+
+        - ValidarTransaccion(Transaccion transaccion):
+            Método auxiliar para validar existencia de cuenta, tipo de transacción y coincidencia de moneda.
+
+    Problems:
+        - No se valida si la tarjeta está vencida, bloqueada o con PIN incorrecto.
+        - No se maneja la reversión de transacciones.
+        - No se controla concurrencia para evitar condiciones de carrera en saldos.
+
+    References:
+        - N/A
+    */
+
     [ApiController]
     [Route("api/[controller]")]
     public class TransaccionController : ControllerBase
@@ -24,6 +78,24 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             _tipoTarjetaService = new JsonDataService<Tipo_Tarjeta>("Data/tipo_tarjetas.json");
         }
 
+        /* Function: Get
+            Recupera todas las transacciones realizadas y las devuelve en formato JSON.
+
+        Params:
+            - N/A
+
+        Returns:
+            - IActionResult: Retorna una respuesta HTTP con el código de estado 200 (OK) y los datos de las transacciones en formato JSON.
+
+        Restriction:
+            Depende del servicio `JsonDataService<Transaccion>` para recuperar los datos desde el archivo JSON de transacciones.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
         [HttpGet]
         public IActionResult Get()
         {
@@ -31,6 +103,24 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             return Ok(transacciones);
         }
 
+        /* Function: GetTransaccionesPorCuenta
+            Recupera las transacciones asociadas a una cuenta específica. Se pueden obtener transacciones relacionadas con la cuenta de origen o destino.
+
+        Params:
+            - numeroCuenta: El número de cuenta de la cual se desean obtener las transacciones.
+
+        Returns:
+            - IActionResult: Retorna una respuesta HTTP con el código de estado 200 (OK) y las transacciones asociadas a la cuenta en formato JSON, o un código 404 (NotFound) si no se encuentra la cuenta.
+
+        Restriction:
+            Depende del servicio `JsonDataService<Cuenta>` para validar la existencia de la cuenta y `JsonDataService<Transaccion>` para recuperar las transacciones.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
         [HttpGet("movimientos/{numeroCuenta}")]
         public IActionResult GetTransaccionesPorCuenta(int numeroCuenta)
         {
@@ -45,6 +135,24 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             return Ok(transacciones);
         }
 
+        /* Function: GetComprasPorCuenta
+            Recupera las transacciones de tipo "COMPRA" asociadas a una cuenta específica.
+
+        Params:
+            - numeroCuenta: El número de cuenta de la cual se desean obtener las compras.
+
+        Returns:
+            - IActionResult: Retorna una respuesta HTTP con el código de estado 200 (OK) y las compras asociadas a la cuenta en formato JSON, o un código 404 (NotFound) si no se encuentra la cuenta.
+
+        Restriction:
+            Depende del servicio `JsonDataService<Cuenta>` para validar la existencia de la cuenta y `JsonDataService<Transaccion>` para recuperar las transacciones de tipo "COMPRA".
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
         [HttpGet("compras/{numeroCuenta}")]
         public IActionResult GetComprasPorCuenta(int numeroCuenta)
         {
@@ -57,7 +165,24 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             return Ok(compras);
         }
 
+        /* Function: Deposito
+            Realiza un depósito en una cuenta. Valida que la transacción sea de tipo "DEPOSITO" y actualiza el saldo de la cuenta si la transacción se marca como "COMPLETADO".
 
+        Params:
+            - transaccion: Objeto `Transaccion` que contiene la información de la transacción a realizar.
+
+        Returns:
+            - IActionResult: Retorna una respuesta HTTP con el código de estado 201 (Created) si la transacción es exitosa, o un código de error correspondiente si hay un problema.
+
+        Restriction:
+            Depende del servicio `JsonDataService<Cuenta>` para actualizar el saldo de la cuenta y `JsonDataService<Transaccion>` para agregar la transacción.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
         [HttpPost("deposito")]
         public IActionResult Deposito([FromBody] Transaccion transaccion)
         {
@@ -80,6 +205,24 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             return CreatedAtAction(nameof(Get), new { id = transaccion.id_transaccion }, transaccion);
         }
 
+        /* Function: Retiro
+            Realiza un retiro de una cuenta. Valida que la transacción sea de tipo "RETIRO" y que la cuenta tenga fondos suficientes para realizar el retiro.
+
+        Params:
+            - transaccion: Objeto `Transaccion` que contiene la información de la transacción a realizar.
+
+        Returns:
+            - IActionResult: Retorna una respuesta HTTP con el código de estado 201 (Created) si la transacción es exitosa, o un código de error correspondiente si hay un problema.
+
+        Restriction:
+            Depende del servicio `JsonDataService<Cuenta>` para actualizar el saldo de la cuenta y `JsonDataService<Transaccion>` para agregar la transacción.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
         [HttpPost("retiro")]
         public IActionResult Retiro([FromBody] Transaccion transaccion)
         {
@@ -105,6 +248,24 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             return CreatedAtAction(nameof(Get), new { id = transaccion.id_transaccion }, transaccion);
         }
 
+        /* Function: Transferencia
+            Realiza una transferencia entre dos cuentas. Valida que las cuentas de origen y destino existan, que tengan la misma moneda y que la cuenta de origen tenga fondos suficientes.
+
+        Params:
+            - transaccion: Objeto `Transaccion` que contiene la información de la transacción a realizar.
+
+        Returns:
+            - IActionResult: Retorna una respuesta HTTP con el código de estado 201 (Created) si la transacción es exitosa, o un código de error correspondiente si hay un problema.
+
+        Restriction:
+            Depende del servicio `JsonDataService<Cuenta>` para actualizar el saldo de las cuentas y `JsonDataService<Transaccion>` para agregar la transacción.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
         [HttpPost("transferencia")]
         public IActionResult Transferencia([FromBody] Transaccion transaccion)
         {
@@ -148,6 +309,24 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             return CreatedAtAction(nameof(Get), new { id = transaccion.id_transaccion }, transaccion);
         }
 
+        /* Function: Compra
+            Realiza una compra utilizando una tarjeta. Si la tarjeta es de débito, valida que la cuenta tenga fondos suficientes. Si es de crédito, valida que el crédito disponible sea suficiente.
+
+        Params:
+            - transaccion: Objeto `Transaccion` que contiene la información de la transacción a realizar.
+
+        Returns:
+            - IActionResult: Retorna una respuesta HTTP con el código de estado 201 (Created) si la transacción es exitosa, o un código de error correspondiente si hay un problema.
+
+        Restriction:
+            Depende del servicio `JsonDataService<Tarjeta>` para verificar la tarjeta y el tipo de tarjeta, y `JsonDataService<Cuenta>` para actualizar el saldo de la cuenta y `JsonDataService<Transaccion>` para agregar la transacción.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
         [HttpPost("compra")]
         public IActionResult Compra([FromBody] Transaccion transaccion)
         {
@@ -194,6 +373,24 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             return CreatedAtAction(nameof(Get), new { id = transaccion.id_transaccion }, transaccion);
         }
 
+        /* Function: ValidarTransaccion
+            Valida los detalles de una transacción, asegurando que la cuenta y el tipo de transacción sean válidos, y que la moneda de la cuenta coincida con la moneda de la transacción.
+
+        Params:
+            - transaccion: Objeto `Transaccion` que contiene los datos de la transacción a validar.
+
+        Returns:
+            - Tuple: Retorna una tupla con tres elementos: la cuenta asociada a la transacción, el tipo de transacción y un mensaje de error (si aplica).
+
+        Restriction:
+            Depende del servicio `JsonDataService<Cuenta>` y `JsonDataService<Tipo_Transaccion>` para validar las transacciones.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
         private (Cuenta cuenta, Tipo_Transaccion tipo, string error) ValidarTransaccion(Transaccion transaccion)
         {
             var cuenta = _cuentaService.GetAll().FirstOrDefault(c => c.numero_cuenta == transaccion.numero_cuenta);

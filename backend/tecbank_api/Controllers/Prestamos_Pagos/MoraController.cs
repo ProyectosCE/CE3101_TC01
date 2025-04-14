@@ -6,6 +6,45 @@ using tecbank_api.Services;
 
 namespace tecbank_api.Controllers.Prestamos_Pagos
 {
+    /* Class: MoraController
+    Controlador de API encargado de gestionar las moras asociadas a los préstamos. Permite consultar y registrar nuevas moras con validaciones de existencia de préstamos y clientes.
+
+    Attributes:
+        - _moraService: JsonDataService<Mora> - Servicio para manejar los datos de moras.
+        - _prestamoService: JsonDataService<Prestamo> - Servicio para acceder a préstamos existentes.
+        - _clienteService: JsonDataService<Cliente> - Servicio para acceder a clientes existentes.
+
+    Constructor:
+        - MoraController: Constructor que inicializa los servicios para acceder y gestionar moras, préstamos y clientes.
+
+    Methods:
+        - Get: Método que maneja solicitudes GET para obtener todas las moras registradas.
+          Tipo: IActionResult  
+          Descripción: Retorna la lista completa de moras almacenadas.
+
+        - Post: Método que maneja solicitudes POST para registrar una nueva mora.
+          Tipo: IActionResult  
+          Parámetro: [FromBody] Mora mora - Objeto mora enviado en el cuerpo de la solicitud.
+          Descripción:
+            - Verifica si la mora ya existe según su `id_mora`.
+            - Valida la existencia del préstamo referenciado por `id_prestamo`.
+            - Valida la existencia del cliente relacionado al préstamo.
+            - Agrega los datos del cliente (cédula, nombre completo) al objeto de mora antes de guardarlo.
+            - Asigna un nuevo `id_mora` incremental.
+
+    Example:
+        // Registrar nueva mora
+        POST /api/mora
+
+    Problems:
+        - No se verifica si la mora ya fue pagada o compensada.
+        - No hay verificación de fechas duplicadas para un mismo préstamo.
+        - No se notifica automáticamente al cliente o al sistema sobre la mora registrada.
+
+    References:
+        N/A
+    */
+
     [ApiController]
     [Route("api/[controller]")]
     public class MoraController : ControllerBase
@@ -22,6 +61,24 @@ namespace tecbank_api.Controllers.Prestamos_Pagos
 
         }
 
+        /* Function: Get
+            Recupera todas las moras registradas y las devuelve en formato JSON.
+
+        Params:
+            - N/A
+
+        Returns:
+            - IActionResult: Retorna una respuesta HTTP con el código de estado 200 (OK) y las moras en formato JSON.
+
+        Restriction:
+            Depende del servicio `JsonDataService<Mora>` para recuperar los datos desde el archivo JSON de moras.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
         [HttpGet]
         public IActionResult Get()
         {
@@ -29,6 +86,24 @@ namespace tecbank_api.Controllers.Prestamos_Pagos
             return Ok(moras);
         }
 
+        /* Function: Post
+            Crea una nueva mora. Valida que la mora no sea nula, que no exista una mora con el mismo ID, que el préstamo asociado exista, y que el cliente asociado al préstamo exista. Luego, agrega la mora a la lista y la guarda.
+
+        Params:
+            - mora: Objeto `Mora` que contiene los datos de la mora a crear.
+
+        Returns:
+            - IActionResult: Retorna una respuesta HTTP con el código de estado 201 (Created) si la mora se creó correctamente, o un código de error (BadRequest, Conflict, NotFound) si se encuentra algún problema con los datos proporcionados.
+
+        Restriction:
+            Depende del servicio `JsonDataService<Mora>` para agregar la mora a la lista, `JsonDataService<Prestamo>` para validar la existencia del préstamo, y `JsonDataService<Cliente>` para validar la existencia del cliente.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
         [HttpPost]
         public IActionResult Post([FromBody] Mora mora)
         {
