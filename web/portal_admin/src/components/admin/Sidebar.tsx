@@ -48,7 +48,7 @@ const Sidebar = () => {
         <li className="nav-item">
           <Link href="/admin/prestamos" className="nav-link text-white">
             <FontAwesomeIcon icon={faHandHoldingUsd} className="me-2" />
-            Pr\u00e9stamos
+            Préstamos
           </Link>
         </li>
         <li className="nav-item">
