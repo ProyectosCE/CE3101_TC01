@@ -265,24 +265,49 @@ const fetchTarjetasParaCliente = async (cuentasCliente: Cuenta[]): Promise<{
     return { credito: [], debito: [] };
   }
 };
+
+const fetchMovimientosParaCuenta = async (numeroCuenta: string): Promise<Movimiento[]> => {
+  try {
+    const response = await fetch(`http://192.168.100.100:5020/api/Transaccion/movimientos/${parseInt(numeroCuenta)}`);
+    
+    if (!response.ok) {
+      console.warn('Error obteniendo movimientos para cuenta:', numeroCuenta, response.status);
+      return [];
+    }
+
+    const transacciones = await response.json();
+    
+    return transacciones.map((transaccion: any) => ({
+      fecha: transaccion.fecha,
+      descripcion: transaccion.id_tipo_transaccion, // Ajustar según datos reales
+      monto: transaccion.monto,
+      tipo: transaccion.id_tipo_transaccion,
+    }));
+
+  } catch (error) {
+    console.error('Error fetching movimientos:', error);
+    return [];
+  }
+};
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [cliente, setCliente] = useState<Cliente | null>(null);
 
   const login = useCallback(async (cedula: string, password: string): Promise<boolean> => {
     console.log('[AuthProvider] Iniciando proceso de login para cédula:', cedula);
-    
+
     try {
       // 1. Obtener datos de usuarios
       let users: Cliente[] = [];
       try {
         console.log('[AuthProvider] Intentando obtener usuarios del backend...');
         const response = await fetch(BACKEND_URL);
-        
+
         if (response.ok) {
           const backendData = await response.json();
           console.log('[AuthProvider] Datos crudos del backend:', backendData);
           users = transformBackendData(backendData);
-          
+
           try {
             await FileSystem.writeAsStringAsync(USERS_FILE_PATH, JSON.stringify(backendData));
             console.log('[AuthProvider] Datos guardados localmente');
@@ -304,26 +329,35 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (found) {
         console.log('[AuthProvider] Usuario encontrado, ID:', found.id_cliente);
-        
-        // 3. Obtener datos adicionales en paralelo
+
+        // 3. Obtener cuentas y préstamos en paralelo
         console.log('[AuthProvider] Obteniendo cuentas y préstamos...');
         const [cuentas, prestamos] = await Promise.all([
           fetchCuentasParaCliente(found.id_cliente),
           fetchPrestamosParaCliente(found.id_cliente)
         ]);
-        
+
         console.log('[AuthProvider] Cuentas obtenidas:', cuentas.length);
         console.log('[AuthProvider] Préstamos obtenidos:', prestamos?.length || 0);
 
-        // 4. Obtener tarjetas basadas en cuentas
+        // 4. Obtener movimientos para cada cuenta
+        console.log('[AuthProvider] Obteniendo movimientos para cada cuenta...');
+        const cuentasConMovimientos = await Promise.all(
+          cuentas.map(async (cuenta) => ({
+            ...cuenta,
+            movimientos: await fetchMovimientosParaCuenta(cuenta.numero)
+          }))
+        );
+
+        // 5. Obtener tarjetas basadas en cuentas
         console.log('[AuthProvider] Obteniendo tarjetas...');
-        const tarjetas = await fetchTarjetasParaCliente(cuentas);
+        const tarjetas = await fetchTarjetasParaCliente(cuentasConMovimientos);
         console.log('[AuthProvider] Tarjetas obtenidas - Crédito:', tarjetas.credito.length, 'Débito:', tarjetas.debito.length);
 
-        // 5. Construir objeto cliente completo
+        // 6. Construir objeto cliente completo
         const clienteCompleto: Cliente = {
           ...found,
-          cuentas,
+          cuentas: cuentasConMovimientos,
           prestamos: prestamos || [],
           tarjetas: {
             credito: tarjetas.credito,
