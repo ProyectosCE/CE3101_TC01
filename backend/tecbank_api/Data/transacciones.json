@@ -1,0 +1,74 @@
+[
+  {
+    "id_transaccion": 1,
+    "estado": "COMPLETADO",
+    "fecha_hora": "2025-04-13T22:40:41.217Z",
+    "descripcion": "deposito",
+    "monto": 1000,
+    "moneda": "COLON",
+    "cuenta_destino": null,
+    "numero_tarjeta": null,
+    "numero_cuenta": 12345678,
+    "id_tipo_transaccion": "DEPOSITO"
+  },
+  {
+    "id_transaccion": 2,
+    "estado": "COMPLETADO",
+    "fecha_hora": "2025-04-13T22:44:30.221Z",
+    "descripcion": "retiro",
+    "monto": 500,
+    "moneda": "COLON",
+    "cuenta_destino": null,
+    "numero_tarjeta": null,
+    "numero_cuenta": 12345678,
+    "id_tipo_transaccion": "RETIRO"
+  },
+  {
+    "id_transaccion": 3,
+    "estado": "COMPLETADO",
+    "fecha_hora": "2025-04-14T00:17:02.172Z",
+    "descripcion": "Transferencia de dinero",
+    "monto": 500,
+    "moneda": "COLON",
+    "cuenta_destino": 123321,
+    "numero_tarjeta": null,
+    "numero_cuenta": 12345678,
+    "id_tipo_transaccion": "TRANSFERENCIA"
+  },
+  {
+    "id_transaccion": 4,
+    "estado": "COMPLETADO",
+    "fecha_hora": "2025-04-14T01:01:17.395Z",
+    "descripcion": "pago spotify",
+    "monto": 1000,
+    "moneda": "COLON",
+    "cuenta_destino": null,
+    "numero_tarjeta": 12345678,
+    "numero_cuenta": 123321,
+    "id_tipo_transaccion": "COMPRA"
+  },
+  {
+    "id_transaccion": 5,
+    "estado": "PENDIENTE",
+    "fecha_hora": "2025-04-14T01:09:45.851Z",
+    "descripcion": "compra del diario semanal",
+    "monto": 1000,
+    "moneda": "COLON",
+    "cuenta_destino": null,
+    "numero_tarjeta": 87654321,
+    "numero_cuenta": 12345678,
+    "id_tipo_transaccion": "COMPRA"
+  },
+  {
+    "id_transaccion": 6,
+    "estado": "COMPLETADO",
+    "fecha_hora": "2025-04-14T01:29:18.187Z",
+    "descripcion": "compra Walmart",
+    "monto": 8000,
+    "moneda": "COLON",
+    "cuenta_destino": null,
+    "numero_tarjeta": 12345678,
+    "numero_cuenta": 123321,
+    "id_tipo_transaccion": "COMPRA"
+  }
+]

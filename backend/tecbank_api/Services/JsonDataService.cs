@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 
 namespace tecbank_api.Services
 {
@@ -17,6 +18,8 @@ namespace tecbank_api.Services
         - GetAll: Recupera todos los elementos del archivo JSON y los deserializa en una lista de tipo T.
         - SaveAll: Guarda una lista de elementos de tipo T en el archivo JSON.
         - Add: Añade un nuevo elemento de tipo T al archivo JSON.
+        - Remove: Elimina un elemento de tipo T del archivo JSON.
+        - Update: Actualiza un elemento de tipo T en el archivo JSON.
 
     Problems:
         Ningún problema conocido durante la implementación de esta clase.
@@ -108,5 +111,78 @@ namespace tecbank_api.Services
             items.Add(item);
             SaveAll(items);
         }
+
+        /* Function: Remove
+            Elimina un elemento de tipo T del archivo JSON.
+
+        Params:
+            - item: T - El elemento de tipo T a eliminar.
+
+        Returns:
+            - void: No retorna ningún valor.
+
+        Restriction:
+            Depende de la existencia del archivo JSON. Si el archivo no existe, se crea automáticamente.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
+        public void Remove(T item)
+        {
+            var items = GetAll();
+            items.Remove(item);
+            SaveAll(items);
+        }
+
+        /* Function: Update
+            Actualiza un elemento de tipo T en el archivo JSON.
+
+        Params:
+            - item: T - El elemento de tipo T a actualizar.
+
+        Returns:
+            - void: No retorna ningún valor.
+
+        Restriction:
+            Depende de la existencia del archivo JSON. Si el archivo no existe, se crea automáticamente.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
+        public void Update(T item)
+        {
+            var items = GetAll();
+
+            // Buscar la propiedad marcada con [Key]
+            var keyProperty = typeof(T).GetProperties()
+                .FirstOrDefault(prop => Attribute.IsDefined(prop, typeof(KeyAttribute)));
+
+            if (keyProperty == null)
+                throw new InvalidOperationException($"La clase {typeof(T).Name} no tiene una propiedad marcada con [Key].");
+
+            var itemKey = keyProperty.GetValue(item);
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                var existingKey = keyProperty.GetValue(items[i]);
+                if (Equals(existingKey, itemKey))
+                {
+                    items[i] = item;
+                    SaveAll(items);
+                    return;
+                }
+            }
+
+            throw new InvalidOperationException("No se encontró el elemento a actualizar.");
+        }
+
+
+
     }
 }

@@ -1,4 +1,8 @@
-﻿namespace tecbank_api.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using tecbank_api.Models.Prestamos_Pagos;
+
+namespace tecbank_api.Models.Clientes_Cuentas
 {
 
     /* Class: Cliente
@@ -17,6 +21,12 @@
         - apellido2: string - Segundo apellido del cliente.
         - tipo_id: string - Identificador del tipo de cliente (clave foránea).
         - tipo_cliente: Tipo_Cliente? - Tipo de cliente asociado (opcional).
+        - prestamos: List<Prestamo> 
+            Lista de préstamos asociados al cliente. Ignorado en la serialización JSON.
+        - tarjetas: List<Tarjeta> 
+            Lista de tarjetas asociadas al cliente. Ignorado en la serialización JSON.
+        - cuentas: List<Cuenta> 
+            Lista de cuentas bancarias asociadas al cliente. Ignorado en la serialización JSON.
 
     Constructor:
         - Cliente: Constructor predeterminado de la clase Cliente. No recibe parámetros y asigna valores por defecto.
@@ -35,6 +45,7 @@
 
     public class Cliente
     {
+        [Key]
         public int id_cliente { get; set; }
         public string cedula { get; set; }
         public string direccion { get; set; }
@@ -50,7 +61,17 @@
 
         // Foreign key to Tipo_Cliente
         public string tipo_id { get; set; }
+        [JsonIgnore]
         public Tipo_Cliente? tipo_cliente { get; set;}
 
+
+        [JsonIgnore]
+        public List<Prestamo> prestamos { get; set; } = new();
+
+        [JsonIgnore]
+        public List<Tarjeta> tarjetas { get; set; } = new();
+
+        [JsonIgnore]
+        public List<Cuenta> cuentas { get; set; } = new();
     }
 }

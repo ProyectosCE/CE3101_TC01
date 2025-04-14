@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using tecbank_api.Models;
+using tecbank_api.Models.Clientes_Cuentas;
 using tecbank_api.Services;
 
-namespace tecbank_api.Controllers
+namespace tecbank_api.Controllers.Clientes_Cuentas
 {
 
     /* Class: TipoClienteController
@@ -22,11 +22,6 @@ namespace tecbank_api.Controllers
     Example:
         // Envío de una solicitud GET a la ruta /api/tipocliente
         GET /api/tipocliente
-        Respuesta:
-        [
-        { "tipo": "FISICO", "descripcion": "Persona fisica con cedula nacional" },
-        { "tipo": "JURIDICO", "descripcion": "Entidad juridica como empresa o sociedad" }
-        ]
 
     Problems:
         Ningún problema conocido durante la implementación de este controlador.

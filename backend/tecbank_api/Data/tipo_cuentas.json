@@ -1,0 +1,10 @@
+[
+  {
+    "tipo_cuenta": "AHORROS",
+    "descripcion": "Cuenta de ahorro"
+  },
+  {
+    "tipo_cuenta": "CORRIENTE",
+    "descripcion": "Cuenta corriente"
+  }
+]

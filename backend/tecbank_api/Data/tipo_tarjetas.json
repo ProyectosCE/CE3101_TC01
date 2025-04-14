@@ -1,0 +1,10 @@
+[
+  {
+    "tipo_tarjeta": "CREDITO",
+    "descripcion": "Tarjeta de credito"
+  },
+  {
+    "tipo_tarjeta": "DEBITO",
+    "descripcion": "Tarjeta de debito"
+  }
+]
