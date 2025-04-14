@@ -179,12 +179,12 @@ const PRESTAMOS_URL = 'http://192.168.100.100:5020/api/prestamo';
 
 const fetchPrestamosParaCliente = async (idCliente: string): Promise<Prestamo[]> => {
   try {
-    const response = await fetch(`${PRESTAMOS_URL}/consultarPrestamos/${idCliente}`);
-    const json = await response.json();
+    const response = await fetch(`http://192.168.100.100:5020/api/Prestamo/consultarPrestamos/${idCliente}`);
+    if (response.ok) {
+      const json = await response.json();
 
-    if (response.ok && Array.isArray(json)) {
-      return json.map((prestamo: any, index: number) => ({
-        id: prestamo.id_prestamo?.toString() || index.toString(),
+      return json.map((prestamo: any) => ({
+        id: prestamo.id_prestamo?.toString() || '',
         monto: prestamo.monto_original,
         saldo_pendiente: prestamo.saldo,
         tasa_interes: prestamo.tasa_interes,
@@ -192,53 +192,160 @@ const fetchPrestamosParaCliente = async (idCliente: string): Promise<Prestamo[]>
         cuotas: prestamo.cuotas || [],
       }));
     } else {
-      console.warn('Respuesta inesperada en /consultarPrestamos:', json);
+      console.warn('No se pudieron obtener los préstamos:', response.statusText);
     }
-  } catch (err) {
-    console.error('Error al cargar préstamos desde backend:', err);
+  } catch (error) {
+    console.error('Error al obtener préstamos del backend:', error);
   }
 
   return [];
 };
 
+const TARJETAS_URL = 'http://192.168.100.100:5020/api/Tarjeta';
 
+const fetchTarjetasParaCliente = async (cuentasCliente: Cuenta[]): Promise<{
+  credito: TarjetaCredito[],
+  debito: TarjetaDebito[]
+}> => {
+  try {
+    console.log('[Tarjetas] Iniciando fetch...');
+    const response = await fetch(TARJETAS_URL);
+    const tarjetasBackend = await response.json();
+    console.log('[Tarjetas] Respuesta backend:', tarjetasBackend);
+
+    // 1. Obtener números de cuenta del cliente (como strings)
+    const numerosCuenta = cuentasCliente.map(c => c.numero.toString());
+    console.log('[Tarjetas] Cuentas cliente:', numerosCuenta);
+
+    // 2. Filtrar y mapear tarjetas
+    const resultado = tarjetasBackend.reduce((acc: any, tarjeta: any) => {
+      // Verificar si el número de tarjeta coincide con alguna cuenta
+      const cuentaAsociada = tarjeta.numero_tarjeta?.toString();
+      const tieneCuentaValida = numerosCuenta.includes(cuentaAsociada);
+
+      if (!tieneCuentaValida) {
+        console.log(`[Tarjetas] Tarjeta ${cuentaAsociada} no coincide con cuentas cliente`);
+        return acc;
+      }
+
+      console.log(`[Tarjetas] Procesando tarjeta ${cuentaAsociada}`);
+      
+      const baseCard = {
+        id: tarjeta.id?.toString() || Date.now().toString(),
+        numero: cuentaAsociada,
+        saldo: tarjeta.monto_disponible || tarjeta.saldo_actual || 0,
+        cuenta_asociada: cuentaAsociada,
+        movimientos: []
+      };
+
+      // Tipo DEBITO/CREDITO (convertir string a número)
+      if (tarjeta.id_tipo_tarjeta === 'CREDITO') {
+        acc.credito.push({
+          ...baseCard,
+          tipo: 'Credito',
+          limite: tarjeta.monto_credito || 0,
+          fecha_vencimiento: tarjeta.fecha_vencimiento,
+          codigo_seguridad: tarjeta.cvc?.toString() || '000'
+        });
+      } else {
+        acc.debito.push({
+          ...baseCard,
+          tipo: 'Debito'
+        });
+      }
+
+      return acc;
+    }, { credito: [], debito: [] });
+
+    console.log('[Tarjetas] Resultado final:', resultado);
+    return resultado;
+
+  } catch (error) {
+    console.error('[Tarjetas] Error:', error);
+    return { credito: [], debito: [] };
+  }
+};
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [cliente, setCliente] = useState<Cliente | null>(null);
 
   const login = useCallback(async (cedula: string, password: string): Promise<boolean> => {
+    console.log('[AuthProvider] Iniciando proceso de login para cédula:', cedula);
+    
     try {
+      // 1. Obtener datos de usuarios
       let users: Cliente[] = [];
-
       try {
+        console.log('[AuthProvider] Intentando obtener usuarios del backend...');
         const response = await fetch(BACKEND_URL);
+        
         if (response.ok) {
           const backendData = await response.json();
+          console.log('[AuthProvider] Datos crudos del backend:', backendData);
           users = transformBackendData(backendData);
-          await FileSystem.writeAsStringAsync(USERS_FILE_PATH, JSON.stringify(backendData));
+          
+          try {
+            await FileSystem.writeAsStringAsync(USERS_FILE_PATH, JSON.stringify(backendData));
+            console.log('[AuthProvider] Datos guardados localmente');
+          } catch (fileError) {
+            console.warn('[AuthProvider] Error al guardar datos locales:', fileError);
+          }
         } else {
+          console.warn('[AuthProvider] Falló respuesta del backend, usando datos locales');
           users = await loadLocalUsers();
         }
       } catch (backendError) {
+        console.error('[AuthProvider] Error al conectar con backend:', backendError);
         users = await loadLocalUsers();
       }
 
+      // 2. Buscar usuario
+      console.log('[AuthProvider] Buscando usuario...');
       const found = users.find(u => u.Cedula === cedula && u.password === password);
 
       if (found) {
-        const cuentas = await fetchCuentasParaCliente(found.id_cliente);
-        const prestamos = await fetchPrestamosParaCliente(found.id_cliente);
-        const clienteConCuentasYPrestamos = { ...found, cuentas, prestamos };
-        setCliente(clienteConCuentasYPrestamos);
+        console.log('[AuthProvider] Usuario encontrado, ID:', found.id_cliente);
         
+        // 3. Obtener datos adicionales en paralelo
+        console.log('[AuthProvider] Obteniendo cuentas y préstamos...');
+        const [cuentas, prestamos] = await Promise.all([
+          fetchCuentasParaCliente(found.id_cliente),
+          fetchPrestamosParaCliente(found.id_cliente)
+        ]);
+        
+        console.log('[AuthProvider] Cuentas obtenidas:', cuentas.length);
+        console.log('[AuthProvider] Préstamos obtenidos:', prestamos?.length || 0);
+
+        // 4. Obtener tarjetas basadas en cuentas
+        console.log('[AuthProvider] Obteniendo tarjetas...');
+        const tarjetas = await fetchTarjetasParaCliente(cuentas);
+        console.log('[AuthProvider] Tarjetas obtenidas - Crédito:', tarjetas.credito.length, 'Débito:', tarjetas.debito.length);
+
+        // 5. Construir objeto cliente completo
+        const clienteCompleto: Cliente = {
+          ...found,
+          cuentas,
+          prestamos: prestamos || [],
+          tarjetas: {
+            credito: tarjetas.credito,
+            debito: tarjetas.debito
+          }
+        };
+
+        console.log('[AuthProvider] Cliente completo construido:', clienteCompleto);
+        setCliente(clienteCompleto);
         return true;
       }
 
+      console.warn('[AuthProvider] Usuario no encontrado o credenciales incorrectas');
       return false;
     } catch (error) {
-      console.error('Error crítico durante login:', error);
+      console.error('[AuthProvider] Error crítico durante login:', error);
       return false;
     }
   }, []);
+
+
+ 
 
   const logout = useCallback(() => setCliente(null), []);
 
@@ -283,17 +390,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             : tarjeta
         );
 
-        const cuentasActualizadas = prev.cuentas.map(cuenta => {
-          if (cuenta.id === cuentaAsociadaId) {
-            const nuevoSaldo = cuenta.saldo + movimiento.monto;
-            return {
-              ...cuenta,
-              saldo: nuevoSaldo,
-              movimientos: [...(cuenta.movimientos || []), movimiento],
-            };
-          }
-          return cuenta;
-        });
+        const cuentasActualizadas = cuentaAsociadaId 
+          ? prev.cuentas.map(cuenta => {
+              if (cuenta.id === cuentaAsociadaId) {
+                const nuevoSaldo = cuenta.saldo + movimiento.monto;
+                return {
+                  ...cuenta,
+                  saldo: nuevoSaldo,
+                  movimientos: [...(cuenta.movimientos || []), movimiento],
+                };
+              }
+              return cuenta;
+            })
+          : prev.cuentas;
 
         return {
           ...prev,
@@ -322,7 +431,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         const cuentasActualizadas = prev.cuentas.map(cuenta =>
           cuenta.id === cuentaAsociadaId
-            ? { ...cuenta, movimientos: [...(cuenta.movimientos || []), movimiento] }
+            ? { 
+                ...cuenta, 
+                movimientos: [...(cuenta.movimientos || []), movimiento],
+                saldo: cuenta.saldo + movimiento.monto
+              }
             : cuenta
         );
 
@@ -341,7 +454,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         cliente,
         login,
-        logout,
+        logout: () => setCliente(null),
         updateAccountBalance,
         saveTransaction,
         saveCreditCardMovement,
