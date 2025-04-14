@@ -25,6 +25,7 @@ Consulta el archivo LICENSE para más detalles.
 
 import { useEffect, useState } from 'react';
 import { API_ENDPOINT } from '@/config/api';
+import jsPDF from 'jspdf';
 
 // Define the Mora type
 type Mora = {
@@ -58,13 +59,55 @@ const ReporteMoraTable = () => {
     fetchMoras();
   }, []);
 
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    
+    // Add title
+    doc.setFontSize(18);
+    doc.text('Reporte de Clientes en Mora', 14, 20);
+    
+    // Add date
+    doc.setFontSize(12);
+    doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 14, 30);
+    
+    // Table headers
+    const headers = ['Cliente', 'Cédula', 'Préstamo', 'Cuotas', 'Monto'];
+    let y = 40;
+    
+    // Add headers
+    doc.setFontSize(10);
+    headers.forEach((header, i) => {
+      doc.text(header, 14 + (i * 35), y);
+    });
+    
+    // Add data rows
+    moras.forEach((mora, index) => {
+      y += 10;
+      if (y > 280) { // Add new page if near bottom
+        doc.addPage();
+        y = 20;
+      }
+      
+      doc.text(mora.nombre_completo.substring(0, 18), 14, y);
+      doc.text(mora.cedula, 49, y);
+      doc.text(`#${mora.id_prestamo}`, 84, y);
+      doc.text(mora.cuotas_vencidas.toString(), 119, y);
+      doc.text(`₡${mora.monto_adeudado.toLocaleString()}`, 154, y);
+    });
+    
+    // Save PDF
+    doc.save('reporte-mora.pdf');
+  };
+
   if (error) {
     return <div className="alert alert-danger">{error}</div>;
   }
 
   return (
     <div>
-      <button className="btn btn-outline-info mb-3">Generar Reporte</button>
+      <button className="btn btn-outline-info mb-3" onClick={generatePDF}>
+        Generar Reporte
+      </button>
       <table className="table table-bordered">
         <thead className="table-light">
           <tr>

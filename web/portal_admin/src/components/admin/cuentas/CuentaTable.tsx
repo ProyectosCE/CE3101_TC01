@@ -1,11 +1,3 @@
- */
- * <CuentaTable />
- * Example:
- *
- * - Ninguna (la tabla es estática y no recibe props en esta versión).
- *
- * Tabla para mostrar la lista de cuentas bancarias registradas y sus datos principales.
- * Component: CuentaTable
 /**
  * Props:
 /*
