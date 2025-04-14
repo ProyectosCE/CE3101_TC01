@@ -14,6 +14,7 @@ namespace tecbank_api.Models.Clientes_Cuentas
         public string moneda { get; set; }
 
         public int? cuenta_destino { get; set; } // Para transferencias
+        public int? numero_tarjeta { get; set; } // Para compras con tarjeta
 
         // Foreign key to Cuenta
         public int numero_cuenta { get; set; }

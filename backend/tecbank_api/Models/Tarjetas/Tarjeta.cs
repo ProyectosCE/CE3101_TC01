@@ -10,12 +10,13 @@ namespace tecbank_api.Models
         public int numero_tarjeta { get; set; } // id
         public int cvc { get; set; }
         public DateOnly fecha_vencimiento { get; set; }
-        public double monto_disponible { get; set; }
+        public double? monto_disponible { get; set; }
+        public double? monto_credito { get; set; }
 
-        // Foreign key to Cliente
-        public int id_cliente { get; set; }
+        // Foreign key to Cuenta
+        public int numero_cuenta { get; set; }
         [JsonIgnore]
-        public Cliente? cliente { get; set; }
+        public Cuenta? cuenta { get; set; }
 
         //Foreign key to Tipo_Tarjeta
         public string id_tipo_tarjeta { get; set; }

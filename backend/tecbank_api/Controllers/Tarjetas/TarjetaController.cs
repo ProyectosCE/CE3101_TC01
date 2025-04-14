@@ -10,12 +10,12 @@ namespace tecbank_api.Controllers.Tarjetas
     public class TarjetaController : ControllerBase
     {
         private readonly JsonDataService<Tarjeta> _tarjetaService;
-        private readonly JsonDataService<Cliente> _clienteService;
+        private readonly JsonDataService<Cuenta> _cuentaService;
         private readonly JsonDataService<Tipo_Tarjeta> _tipoTarjetaService;
         public TarjetaController()
         {
             _tarjetaService = new JsonDataService<Tarjeta>("Data/tarjetas.json");
-            _clienteService = new JsonDataService<Cliente>("Data/clientes.json");
+            _cuentaService = new JsonDataService<Cuenta>("Data/cuentas.json");
             _tipoTarjetaService = new JsonDataService<Tipo_Tarjeta>("Data/tipo_tarjetas.json");
         }
 
@@ -33,12 +33,12 @@ namespace tecbank_api.Controllers.Tarjetas
             {
                 return BadRequest("La tarjeta no puede ser nula");
             }
-            // Validar existencia del cliente
-            var clientes = _clienteService.GetAll();
-            var clienteExistente = clientes.Any(c => c.id_cliente == tarjeta.id_cliente);
-            if (!clienteExistente)
+            // Validar existencia de la cuenta
+            var cuentas = _cuentaService.GetAll();
+            var cuentaExistente = cuentas.Any(c => c.numero_cuenta == tarjeta.numero_cuenta);
+            if (!cuentaExistente)
             {
-                return NotFound($"No existe un cliente con id_cliente = {tarjeta.id_cliente}");
+                return NotFound($"No existe una cuenta con numero de cuenta = {tarjeta.numero_cuenta}");
             }
             // Validar existencia del tipo de tarjeta
             var tiposTarjeta = _tipoTarjetaService.GetAll();
