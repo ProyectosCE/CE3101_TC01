@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace tecbank_api.Models.Clientes_Cuentas
@@ -14,8 +15,8 @@ namespace tecbank_api.Models.Clientes_Cuentas
             Descripción o nombre personalizado para la cuenta.
         - monto: double 
             Monto actual disponible en la cuenta.
-        - id_cliente: int 
-            Clave foránea que hace referencia al cliente propietario de la cuenta.
+        - cedula: string 
+            Cédula del cliente propietario de la cuenta.
         - cliente: Cliente? 
             Objeto cliente asociado a esta cuenta. Se ignora en la serialización JSON.
         - id_tipo_cuenta: string 
@@ -28,6 +29,8 @@ namespace tecbank_api.Models.Clientes_Cuentas
             Objeto moneda asociado a la cuenta. Se ignora en la serialización JSON.
         - transacciones: List<Transaccion> 
             Lista de transacciones asociadas a esta cuenta. Se ignora en la serialización JSON.
+        - tipo: string 
+            Tipo de cuenta (e.g., "AHORROS", "CORRIENTE", "TCREDITO").
 
     Constructor:
         - Cuenta() 
@@ -46,8 +49,8 @@ namespace tecbank_api.Models.Clientes_Cuentas
         public string descripcion { get; set; }
         public double monto { get; set; }
 
-        // Foreign key to Cliente
-        public int id_cliente { get; set; }
+        // Reemplazar id_cliente por cedula
+        public string cedula { get; set; }
         [JsonIgnore]
         public Cliente? cliente { get; set; }
 
@@ -63,5 +66,7 @@ namespace tecbank_api.Models.Clientes_Cuentas
 
         [JsonIgnore]
         public List<Transaccion> transacciones { get; set; } = new();
+
+        public string tipo { get; set; } // Tipo de cuenta (e.g., "AHORROS", "CORRIENTE", "TCREDITO")
     }
 }

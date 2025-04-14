@@ -7,7 +7,7 @@
     "monto_original": 100,
     "saldo": 50,
     "estado": null,
-    "id_cliente": 1,
+    "cedula": 1,
     "id_asesor": 1
   },
   {
@@ -18,7 +18,7 @@
     "monto_original": 200,
     "saldo": 100,
     "estado": null,
-    "id_cliente": 3,
+    "cedula": 3,
     "id_asesor": 1
   },
   {
@@ -29,7 +29,7 @@
     "monto_original": 200,
     "saldo": 200,
     "estado": null,
-    "id_cliente": 2,
+    "cedula": 2,
     "id_asesor": 1
   }
 ]
