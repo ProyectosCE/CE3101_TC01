@@ -10,5 +10,9 @@
   {
     "tipo_transaccion": "TRANSFERENCIA",
     "descripcion": "Transferencia de dinero"
+  },
+  {
+    "tipo_transaccion": "COMPRA",
+    "descripcion": "Compra de bienes o servicios"
   }
 ]

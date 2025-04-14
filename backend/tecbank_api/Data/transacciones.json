@@ -6,6 +6,7 @@
     "descripcion": "deposito",
     "monto": 1000,
     "moneda": "COLON",
+    "cuenta_destino": null,
     "numero_cuenta": 12345678,
     "id_tipo_transaccion": "DEPOSITO"
   },
@@ -16,7 +17,19 @@
     "descripcion": "retiro",
     "monto": 500,
     "moneda": "COLON",
+    "cuenta_destino": null,
     "numero_cuenta": 12345678,
     "id_tipo_transaccion": "RETIRO"
+  },
+  {
+    "id_transaccion": 3,
+    "estado": "COMPLETADO",
+    "fecha_hora": "2025-04-14T00:17:02.172Z",
+    "descripcion": "Transferencia de dinero",
+    "monto": 500,
+    "moneda": "COLON",
+    "cuenta_destino": 123321,
+    "numero_cuenta": 12345678,
+    "id_tipo_transaccion": "TRANSFERENCIA"
   }
 ]

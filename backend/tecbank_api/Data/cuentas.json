@@ -2,7 +2,7 @@
   {
     "numero_cuenta": 12345678,
     "descripcion": "Cuenta corriente",
-    "monto": 500,
+    "monto": 0,
     "id_cliente": 1,
     "id_tipo_cuenta": "CORRIENTE",
     "id_moneda": "COLON"
@@ -22,5 +22,13 @@
     "id_cliente": 3,
     "id_tipo_cuenta": "CORRIENTE",
     "id_moneda": "EURO"
+  },
+  {
+    "numero_cuenta": 123321,
+    "descripcion": "Cuenta corriente",
+    "monto": 10500,
+    "id_cliente": 1,
+    "id_tipo_cuenta": "CORRIENTE",
+    "id_moneda": "COLON"
   }
 ]

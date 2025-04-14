@@ -73,6 +73,49 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             return CreatedAtAction(nameof(Get), new { id = transaccion.id_transaccion }, transaccion);
         }
 
+        [HttpPost("transferencia")]
+        public IActionResult Transferencia([FromBody] Transaccion transaccion)
+        {
+            var (cuentaOrigen, tipo, error) = ValidarTransaccion(transaccion);
+            if (error != null) return BadRequest(error);
+
+            if (tipo.tipo_transaccion != "TRANSFERENCIA")
+                return BadRequest("El tipo de transacción no es válido para este endpoint.");
+
+            if (!transaccion.cuenta_destino.HasValue)
+                return BadRequest("Debe especificar la cuenta destino para una transferencia.");
+
+            if (transaccion.cuenta_destino == transaccion.numero_cuenta)
+                return BadRequest("La cuenta destino no puede ser igual a la cuenta de origen.");
+
+            var cuentaDestino = _cuentaService.GetAll().FirstOrDefault(c => c.numero_cuenta == transaccion.cuenta_destino.Value);
+            if (cuentaDestino == null)
+                return NotFound($"No se encontró la cuenta destino con número {transaccion.cuenta_destino}.");
+
+            if (cuentaOrigen.id_moneda != cuentaDestino.id_moneda)
+                return BadRequest("Las cuentas origen y destino deben usar la misma moneda.");
+
+            if (cuentaOrigen.monto < transaccion.monto)
+                return BadRequest("Fondos insuficientes para realizar la transferencia.");
+
+            transaccion.id_transaccion = _transaccionService.GetAll().Any()
+                ? _transaccionService.GetAll().Max(t => t.id_transaccion) + 1
+                : 1;
+
+            if (transaccion.estado == "COMPLETADO")
+            {
+                cuentaOrigen.monto -= transaccion.monto;
+                cuentaDestino.monto += transaccion.monto;
+
+                _cuentaService.Update(cuentaOrigen);
+                _cuentaService.Update(cuentaDestino);
+            }
+
+            _transaccionService.Add(transaccion);
+
+            return CreatedAtAction(nameof(Get), new { id = transaccion.id_transaccion }, transaccion);
+        }
+
 
         private (Cuenta cuenta, Tipo_Transaccion tipo, string error) ValidarTransaccion(Transaccion transaccion)
         {
