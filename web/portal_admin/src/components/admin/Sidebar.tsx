@@ -9,7 +9,6 @@ import {
   faHandHoldingUsd,
   faExclamationTriangle,
 } from '@fortawesome/free-solid-svg-icons';
-import '../../style/admin.css';
 
 const Sidebar = () => {
   return (

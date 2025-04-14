@@ -1,18 +1,14 @@
-import Head from "next/head";
+import AdminLayout from '@/components/admin/AdminLayout';
 
-export default function Home() {
+const AdminHome = () => {
   return (
-    <>
-      <Head>
-        <title>Portal Administrativo - TecBank</title>
-        <meta name="description" content="TecBank Admin Portal" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main style={{ padding: "2rem" }}>
-        <h1>Bienvenido al Portal Administrativo de TecBank</h1>
-        <p>Por favor accede a <code>/admin</code> para comenzar a administrar.</p>
-      </main>
-    </>
+    <AdminLayout>
+      <div className="p-4">
+        <h2>Bienvenido al Portal Administrativo de TecBank</h2>
+        <p>Utiliza el menú lateral para acceder a las secciones de administración.</p>
+      </div>
+    </AdminLayout>
   );
-}
+};
+
+export default AdminHome;

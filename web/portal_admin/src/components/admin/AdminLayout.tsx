@@ -1,7 +1,6 @@
 import React, { ReactNode } from 'react';
 import Sidebar from './Sidebar';
 import AdminHeader from './AdminHeader';
-import '../../style/admin.css';
 
 type Props = {
   children: ReactNode;
