@@ -1,0 +1,49 @@
+const ClienteForm = () => {
+    return (
+      <form className="mb-4">
+        <div className="row">
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Nombre completo</label>
+            <input type="text" className="form-control" placeholder="Juan Pérez" />
+          </div>
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Cédula</label>
+            <input type="text" className="form-control" placeholder="123456789" />
+          </div>
+          <div className="col-md-12 mb-3">
+            <label className="form-label">Dirección</label>
+            <input type="text" className="form-control" placeholder="Dirección completa" />
+          </div>
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Teléfono</label>
+            <input type="text" className="form-control" placeholder="8888-8888" />
+          </div>
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Ingreso mensual</label>
+            <input type="number" className="form-control" placeholder="₡0.00" />
+          </div>
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Tipo de Cliente</label>
+            <select className="form-select">
+              <option>Físico</option>
+              <option>Jurídico</option>
+            </select>
+          </div>
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Usuario</label>
+            <input type="text" className="form-control" placeholder="usuario123" />
+          </div>
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Contraseña</label>
+            <input type="password" className="form-control" />
+          </div>
+        </div>
+        <button type="submit" className="btn btn-primary">
+          Guardar Cliente
+        </button>
+      </form>
+    );
+  };
+  
+  export default ClienteForm;
+  
