@@ -3,10 +3,6 @@ const CuentaForm = () => {
       <form className="mb-4">
         <div className="row">
           <div className="col-md-6 mb-3">
-            <label className="form-label">Número de cuenta</label>
-            <input type="text" className="form-control" placeholder="000-1234567890" />
-          </div>
-          <div className="col-md-6 mb-3">
             <label className="form-label">Descripción</label>
             <input type="text" className="form-control" placeholder="Cuenta de ahorro personal" />
           </div>
@@ -26,8 +22,8 @@ const CuentaForm = () => {
             </select>
           </div>
           <div className="col-md-4 mb-3">
-            <label className="form-label">Cliente</label>
-            <input type="text" className="form-control" placeholder="Juan Pérez" />
+            <label className="form-label">Identificación del Cliente</label>
+            <input type="text" className="form-control" placeholder="123456789" />
           </div>
         </div>
         <button type="submit" className="btn btn-primary">Guardar Cuenta</button>
@@ -36,4 +32,3 @@ const CuentaForm = () => {
   };
   
   export default CuentaForm;
-  

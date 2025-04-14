@@ -3,8 +3,8 @@ const PrestamoForm = () => {
       <form className="mb-4">
         <div className="row">
           <div className="col-md-4 mb-3">
-            <label className="form-label">Cliente</label>
-            <input type="text" className="form-control" placeholder="Juan Pérez" />
+            <label className="form-label">Cédula de Cliente</label>
+            <input type="number" className="form-control" placeholder="123456789" />
           </div>
           <div className="col-md-4 mb-3">
             <label className="form-label">Monto del préstamo</label>
