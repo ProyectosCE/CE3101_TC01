@@ -24,31 +24,63 @@ Consulta el archivo LICENSE para más detalles.
  * <RolesPage />
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import RoleForm from '@/components/admin/roles/RoleForm';
 import RoleTable from '@/components/admin/roles/RoleTable';
+import { API_ENDPOINT } from '@/config/api';
 
 export interface Role {
-  id: number;
-  name: string;
-  description: string;
+  id_rol: string; // Updated to match the API response
+  descripcion: string; // Updated to match the API response
 }
 
 const RolesPage = () => {
   const [roles, setRoles] = useState<Role[]>([]);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleAddRole = (role: Omit<Role, 'id'>) => {
-    const newRole: Role = {
-      id: Date.now(),
-      ...role,
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const response = await fetch(`${API_ENDPOINT}RolCrontroller`, { method: 'GET' });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: Role[] = await response.json();
+        setRoles(data); // Directly set the API response as it matches the updated Role interface
+      } catch (error) {
+        console.error('Error fetching roles:', error);
+        setError('Failed to fetch roles. Please try again later.');
+      }
     };
-    setRoles([...roles, newRole]);
+
+    fetchRoles();
+  }, []);
+
+  const handleAddRole = (role: Role) => {
+    setRoles([...roles, role]); // Directly add the full Role object
   };
 
-  const handleDeleteRole = (id: number) => {
-    setRoles(roles.filter((r) => r.id !== id));
+  const handleDeleteRole = async (id_rol: string, descripcion: string) => {
+    const apiUrl = `${API_ENDPOINT}RolCrontroller?tipo=borrar`;
+    const roleData = { id_rol, descripcion };
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(roleData),
+      });
+
+      if (response.ok) {
+        window.location.reload(); // Reload the page on success
+      } else {
+        console.error('Error deleting role:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   const handleEditRole = (role: Role) => {
@@ -56,13 +88,14 @@ const RolesPage = () => {
   };
 
   const handleUpdateRole = (updatedRole: Role) => {
-    setRoles(roles.map((r) => (r.id === updatedRole.id ? updatedRole : r)));
+    setRoles(roles.map((r) => (r.id_rol === updatedRole.id_rol ? updatedRole : r)));
     setEditingRole(null);
   };
 
   return (
     <AdminLayout>
       <h2>Gestión de Roles</h2>
+      {error && <p className="text-danger">{error}</p>}
       <RoleForm
         onAddRole={handleAddRole}
         onUpdateRole={handleUpdateRole}

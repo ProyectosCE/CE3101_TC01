@@ -128,7 +128,7 @@
 }
 
 .backButton {
-  margin-top: 1rem;
+  margin-top: 0; /* Remove top margin to align with other buttons */
   background-color: var(--primary-color);
   color: #fff;
   border: none;
@@ -149,4 +149,97 @@
 .table tbody tr:hover {
   cursor: pointer;
   background-color: var(--hover-bg);
+}
+
+.profileSection {
+  position: relative;
+}
+
+.profileButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  padding: 5px;
+}
+
+.profileDrawer {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: #2c3e50;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  padding: 1.5rem;
+  min-width: 200px;
+  z-index: 1000;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  text-align: center;
+  color: white;
+}
+
+.username {
+  color: #bdc3c7;
+  font-size: 0.9rem;
+}
+
+.logoutButtonDrawer {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.7rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+  width: 100%;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.logoutButtonDrawer:hover {
+  background: #c0392b;
+}
+
+.accountHeader {
+  margin-bottom: 2rem;
+}
+
+.accountInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.currency {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.cardButton {
+  margin-left: auto;
+}
+
+.cardsList {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+}
+
+.cardsList ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+}
+
+.cardsList li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #dee2e6;
 }

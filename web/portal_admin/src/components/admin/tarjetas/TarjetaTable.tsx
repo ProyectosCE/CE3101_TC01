@@ -23,45 +23,88 @@ Consulta el archivo LICENSE para más detalles.
  * <TarjetaTable />
  */
 
+import { useEffect, useState } from 'react';
+import { API_ENDPOINT } from '@/config/api';
+
+interface Tarjeta {
+  numero_tarjeta: number;
+  cvc: number;
+  fecha_vencimiento: string;
+  monto_disponible: number | null;
+  monto_credito: number | null;
+  id_cliente: number;
+  tipo: string;
+  marca: string;
+  numero_cuenta: number;
+  cedula: string;
+}
+
 const TarjetaTable = () => {
-    return (
-      <div>
-        <h5>Tarjetas registradas</h5>
-        <table className="table table-bordered">
-          <thead className="table-light">
-            <tr>
-              <th>Número</th>
-              <th>Tipo</th>
-              <th>Expira</th>
-              <th>Saldo/Crédito</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1234-5678-9012-3456</td>
-              <td>Débito</td>
-              <td>12/2026</td>
-              <td>₡150,000.00</td>
+  const [tarjetas, setTarjetas] = useState<Tarjeta[]>([]);
+
+  useEffect(() => {
+    const fetchTarjetas = async () => {
+      try {
+        const response = await fetch(`${API_ENDPOINT}Tarjeta`);
+        if (response.ok) {
+          const data: Tarjeta[] = await response.json();
+          setTarjetas(data);
+        } else {
+          console.error('Error fetching tarjetas');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    fetchTarjetas();
+  }, []);
+
+  return (
+    <div>
+      <h5>Tarjetas registradas</h5>
+      <table className="table table-bordered">
+        <thead className="table-light">
+          <tr>
+            <th>Número</th>
+            <th>Tipo</th>
+            <th>Marca</th>
+            <th>Cuenta Asociada</th>
+            <th>Cliente</th>
+            <th>Expira</th>
+            <th>Saldo/Crédito</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tarjetas.map((tarjeta) => (
+            <tr key={tarjeta.numero_tarjeta}>
+              <td>{tarjeta.numero_tarjeta}</td>
+              <td>{tarjeta.tipo}</td>
+              <td>{tarjeta.marca}</td>
+              <td>
+                {tarjeta.tipo === 'DEBITO'
+                  ? `${tarjeta.numero_cuenta}`
+                  : `N/A`}
+    
+              </td>
+              <td>{tarjeta.cedula}</td>
+              <td>{tarjeta.fecha_vencimiento}</td>
+              <td>
+                {tarjeta.tipo === 'DEBITO'
+                  ? `₡${tarjeta.monto_disponible?.toLocaleString() || '0.00'}`
+                  : `₡${tarjeta.monto_credito?.toLocaleString() || '0.00'}`}
+              </td>
               <td>
                 <button className="btn btn-sm btn-outline-primary me-2">Editar</button>
                 <button className="btn btn-sm btn-outline-danger">Eliminar</button>
               </td>
             </tr>
-            <tr>
-              <td>4321-8765-2109-6543</td>
-              <td>Crédito</td>
-              <td>08/2025</td>
-              <td>₡0.00</td>
-              <td>
-                <button className="btn btn-sm btn-outline-primary me-2">Editar</button>
-                <button className="btn btn-sm btn-outline-danger">Eliminar</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    );
-  };
-  
-  export default TarjetaTable;
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default TarjetaTable;
