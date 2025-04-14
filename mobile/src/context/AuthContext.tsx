@@ -1,17 +1,18 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
+import * as FileSystem from 'expo-file-system';
 import rawUsers from '../data/users.json';
 
-/**
+/** 
  * Enum de tipos de moneda.
  */
 type Currency = 'Dolares' | 'Colones' | 'Euros';
 
-/**
+/** 
  * Enum de tipos de cuenta.
  */
 type AccountType = 'Credito' | 'Debito';
 
-/**
+/** 
  * Enum de tipos de cliente.
  */
 type ClientType = 'Fisico' | 'Juridico';
@@ -122,9 +123,6 @@ interface AuthContextType {
   saveDebitCardMovement: (cardId: string, movimiento: Movimiento, cuentaAsociadaId: string) => void;
 }
 
-/**
- * Contexto de autenticación de la app.
- */
 const AuthContext = createContext<AuthContextType>({
   cliente: null,
   login: async () => false,
@@ -135,52 +133,112 @@ const AuthContext = createContext<AuthContextType>({
   saveDebitCardMovement: () => {},
 });
 
-/**
- * Hook para acceder al contexto de autenticación.
- *
- * @returns El contexto de autenticación.
- */
 export const useAuth = () => useContext(AuthContext);
 
-// Carga inicial de usuarios desde el archivo JSON.
-const users = rawUsers as Cliente[];
+// Carga inicial de usuarios desde el archivo JSON incluido en el bundle.
+const defaultUsers = rawUsers as Cliente[];
+
+// Ruta para guardar el archivo actualizado de usuarios en el filesystem.
+const USERS_FILE_PATH = FileSystem.documentDirectory + 'users.json';
+
+// URL del backend para obtener los datos actualizados de clientes.
+const BACKEND_URL = 'http://192.168.100.100:5020/api/clientes';
 
 /**
- * Proveedor de contexto para autenticación y gestión de datos del cliente.
- *
- * @param children Componentes hijos.
+ * Transforma los datos del backend al formato de la interfaz Cliente
  */
+const transformBackendData = (backendData: any[]): Cliente[] => {
+  return backendData.map(user => ({
+    id_cliente: user.id_cliente?.toString() || '',
+    Nombre_Completo: user.nombreCompleto || `${user.nombre} ${user.apellido1} ${user.apellido2 || ''}`.trim(),
+    Cedula: user.cedula || '',
+    direccion: user.direccion || '',
+    telefono: user.telefono || '',
+    ingreso_mensual: user.ingreso_mensual || 0,
+    tipo_cliente: (user.tipo_id === 'FISICO' ? 'Fisico' : 'Juridico') as ClientType,
+    usuario: user.usuario || '',
+    password: user.password || '',
+    cuentas: user.cuentas || [],
+    tarjetas: {
+      credito: user.tarjetas?.credito || [],
+      debito: user.tarjetas?.debito || []
+    },
+    prestamos: user.prestamos || []
+  }));
+};
+
+/**
+ * Carga usuarios desde el archivo local o devuelve los por defecto
+ */
+const loadLocalUsers = async (): Promise<Cliente[]> => {
+  try {
+    const fileInfo = await FileSystem.getInfoAsync(USERS_FILE_PATH);
+    if (fileInfo.exists) {
+      const fileContent = await FileSystem.readAsStringAsync(USERS_FILE_PATH);
+      const localUsers = JSON.parse(fileContent);
+      return transformBackendData(localUsers);
+    }
+  } catch (error) {
+    console.warn('Error al leer archivo local:', error);
+  }
+  return defaultUsers;
+};
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [cliente, setCliente] = useState<Cliente | null>(null);
 
-  /**
-   * Realiza el inicio de sesión del cliente por cédula y contraseña.
-   *
-   * @param cedula Cédula del cliente.
-   * @param password Contraseña del cliente.
-   * @returns true si las credenciales son válidas.
-   */
   const login = useCallback(async (cedula: string, password: string): Promise<boolean> => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    const found = users.find(u => u.Cedula === cedula && u.password === password);
-    if (found) {
-      setCliente(found);
-      return true;
+    try {
+      let users: Cliente[] = [];
+      
+      // Intentar obtener datos del backend
+      try {
+        console.log('Intentando conectar al backend...');
+        const response = await fetch(BACKEND_URL);
+        console.log('Respuesta del backend recibida. Status:', response.status);
+        
+        if (response.ok) {
+          const backendData = await response.json();
+          console.log('Datos crudos del backend:', backendData);
+          
+          users = transformBackendData(backendData);
+          console.log('Datos transformados:', users);
+          
+          await FileSystem.writeAsStringAsync(USERS_FILE_PATH, JSON.stringify(backendData));
+          console.log('Datos guardados en archivo local');
+        } else {
+          console.warn('El backend respondió con error. Usando datos locales...');
+          users = await loadLocalUsers();
+        }
+      } catch (backendError) {
+        console.error('Error al conectar al backend:', backendError);
+        users = await loadLocalUsers();
+      }
+
+      console.log('Usuarios disponibles para login:', users.map(u => ({
+        cedula: u.Cedula,
+        nombre: u.Nombre_Completo
+      })));
+      
+      // Buscar usuario (usando los campos transformados)
+      const found = users.find(u => u.Cedula === cedula && u.password === password);
+      
+      if (found) {
+        console.log('Usuario encontrado:', found.Nombre_Completo);
+        setCliente(found);
+        return true;
+      }
+      
+      console.log('Usuario no encontrado. Credenciales proporcionadas:', { cedula, password });
+      return false;
+    } catch (error) {
+      console.error('Error crítico durante login:', error);
+      return false;
     }
-    return false;
   }, []);
 
-  /**
-   * Cierra la sesión del cliente actual.
-   */
   const logout = useCallback(() => setCliente(null), []);
 
-  /**
-   * Actualiza el saldo de una cuenta específica del cliente.
-   *
-   * @param accountId ID de la cuenta.
-   * @param newBalance Nuevo saldo.
-   */
   const updateAccountBalance = useCallback((accountId: string, newBalance: number) => {
     setCliente(prev => {
       if (!prev) return null;
@@ -193,12 +251,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
   }, []);
 
-  /**
-   * Guarda un movimiento en una cuenta específica.
-   *
-   * @param accountId ID de la cuenta.
-   * @param movimiento Detalles del movimiento.
-   */
   const saveTransaction = useCallback((accountId: string, movimiento: Movimiento) => {
     setCliente(prev => {
       if (!prev) return null;
@@ -206,23 +258,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         ...prev,
         cuentas: prev.cuentas.map(account =>
           account.id === accountId
-            ? {
-                ...account,
-                movimientos: [...(account.movimientos || []), movimiento],
-              }
+            ? { ...account, movimientos: [...(account.movimientos || []), movimiento] }
             : account
         ),
       };
     });
   }, []);
 
-  /**
-   * Guarda un movimiento en una tarjeta de crédito y actualiza la cuenta asociada.
-   *
-   * @param cardId ID de la tarjeta de crédito.
-   * @param movimiento Movimiento a registrar.
-   * @param cuentaAsociadaId ID de la cuenta vinculada.
-   */
   const saveCreditCardMovement = useCallback(
     (cardId: string, movimiento: Movimiento, cuentaAsociadaId?: string) => {
       setCliente(prev => {
@@ -260,13 +302,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     []
   );
 
-  /**
-   * Guarda un movimiento en una tarjeta de débito y la cuenta vinculada.
-   *
-   * @param cardId ID de la tarjeta de débito.
-   * @param movimiento Movimiento a registrar.
-   * @param cuentaAsociadaId ID de la cuenta vinculada.
-   */
   const saveDebitCardMovement = useCallback(
     (cardId: string, movimiento: Movimiento, cuentaAsociadaId: string) => {
       setCliente(prev => {
@@ -284,10 +319,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         const cuentasActualizadas = prev.cuentas.map(cuenta =>
           cuenta.id === cuentaAsociadaId
-            ? {
-                ...cuenta,
-                movimientos: [...(cuenta.movimientos || []), movimiento],
-              }
+            ? { ...cuenta, movimientos: [...(cuenta.movimientos || []), movimiento] }
             : cuenta
         );
 
