@@ -13,6 +13,8 @@ import TransactionOptions from "@/components/TransactionOptions";
 import SinpeFlow from "@/components/SinpeFlow";
 import IbanFlow from "@/components/IbanFlow";
 import TransactionList from "@/components/TransactionList";
+import LoanList from "@/components/LoanList";
+import LoanDetails from "@/components/LoanDetails";
 
 export default function Client() {
   const router = useRouter();
@@ -36,6 +38,8 @@ export default function Client() {
       handleNavigation("cuentas");
     } else if (query.type === "sinpe" || query.type === "iban") {
       handleNavigation("transferencias");
+    } else if (query.loanId) {
+      handleNavigation("prestamos");
     } else {
       router.push(`/client?page=principal`);
     }
@@ -219,6 +223,35 @@ export default function Client() {
 
         {query.type === "iban" && (
           <IbanFlow onBack={handleBack} />
+        )}
+
+        {activePage === "prestamos" && !query.loanId && (
+          <LoanList
+            loans={[
+              { id: "1", number: "PR-001", type: "Hipotecario" },
+              { id: "2", number: "PR-002", type: "Personal" },
+            ]} // Replace with actual loan data
+            onLoanClick={(loan) => handleNavigation("prestamos", { loanId: loan.id })}
+            onBack={handleBack}
+          />
+        )}
+
+        {query.loanId && (
+          <LoanDetails
+            loan={{
+              id: query.loanId,
+              startDate: "2023-01-01",
+              term: 24,
+              originalAmount: 100000,
+              paidAmount: 40000,
+              annualInterest: 5.5,
+            }} // Replace with actual loan data
+            payments={[
+              { date: "2023-02-01", paidAmount: 5000, previousDebt: 100000, currentDebt: 95000 },
+              { date: "2023-03-01", paidAmount: 5000, previousDebt: 95000, currentDebt: 90000 },
+            ]} // Replace with actual payment data
+            onBack={handleBack}
+          />
         )}
       </div>
     </>
