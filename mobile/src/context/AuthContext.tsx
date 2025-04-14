@@ -175,6 +175,33 @@ const fetchCuentasParaCliente = async (idCliente: string): Promise<Cuenta[]> => 
   return [];
 };
 
+const PRESTAMOS_URL = 'http://192.168.100.100:5020/api/prestamo';
+
+const fetchPrestamosParaCliente = async (idCliente: string): Promise<Prestamo[]> => {
+  try {
+    const response = await fetch(`${PRESTAMOS_URL}/consultarPrestamos/${idCliente}`);
+    const json = await response.json();
+
+    if (response.ok && Array.isArray(json)) {
+      return json.map((prestamo: any, index: number) => ({
+        id: prestamo.id_prestamo?.toString() || index.toString(),
+        monto: prestamo.monto_original,
+        saldo_pendiente: prestamo.saldo,
+        tasa_interes: prestamo.tasa_interes,
+        fecha_inicio: prestamo.fecha_inicio,
+        cuotas: prestamo.cuotas || [],
+      }));
+    } else {
+      console.warn('Respuesta inesperada en /consultarPrestamos:', json);
+    }
+  } catch (err) {
+    console.error('Error al cargar préstamos desde backend:', err);
+  }
+
+  return [];
+};
+
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [cliente, setCliente] = useState<Cliente | null>(null);
 
@@ -199,8 +226,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (found) {
         const cuentas = await fetchCuentasParaCliente(found.id_cliente);
-        const clienteConCuentas = { ...found, cuentas };
-        setCliente(clienteConCuentas);
+        const prestamos = await fetchPrestamosParaCliente(found.id_cliente);
+        const clienteConCuentasYPrestamos = { ...found, cuentas, prestamos };
+        setCliente(clienteConCuentasYPrestamos);
+        
         return true;
       }
 
