@@ -53,5 +53,41 @@ namespace tecbank_api.Controllers.Prestamos_Pagos
 
             return CreatedAtAction(nameof(Post), pago);
         }
+
+        [HttpPost("realizarPago")]
+        public IActionResult RealizarPago([FromQuery] int id_prestamo, [FromQuery] double monto,
+            [FromQuery] string tipo)
+        {
+            var prestamos = _prestamoService.GetAll();
+            var prestamo = prestamos.FirstOrDefault(p => p.id_prestamo == id_prestamo);
+
+            if (prestamo == null)
+            {
+                return NotFound($"No existe un préstamo con el ID {id_prestamo}");
+            }
+
+            // Validar tipo de pago
+            var tiposPagos = _tipoPagoService.GetAll();
+            var tipoPagoValido = tiposPagos.Any(tp => tp.tipo_pago == tipo);
+            if (!tipoPagoValido)
+            {
+                return NotFound($"No existe un tipo de pago con ID '{tipo}'");
+            }
+
+            // Crear pago
+            var nuevoPago = new Pago
+            {
+                id_prestamo = id_prestamo,
+                monto = monto,
+                fecha = DateOnly.FromDateTime(DateTime.Today),
+                id_tipo_pago = tipo
+            };
+
+            // Guardar el pago
+            _pagoService.Add(nuevoPago);
+
+            return CreatedAtAction(nameof(RealizarPago), new { id_prestamo = id_prestamo, fecha = nuevoPago.fecha }, nuevoPago);
+        }
+
     }
 }
