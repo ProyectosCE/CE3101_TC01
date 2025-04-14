@@ -147,15 +147,17 @@ const loadLocalUsers = async (): Promise<Cliente[]> => {
 
 const fetchCuentasParaCliente = async (idCliente: string): Promise<Cuenta[]> => {
   try {
-    const url = `${CUENTAS_URL}?idCliente=${idCliente}`;
+    const url = CUENTAS_URL; // ya no usamos el parámetro en la URL
     console.log('Llamando a:', url);
     const response = await fetch(url);
     const json = await response.json();
 
-    console.log('Respuesta de /api/cuentas:', json);
+    console.log('Respuesta de /api/cuenta:', json);
 
     if (response.ok && Array.isArray(json)) {
-      return json.map((cuenta: any, index: number) => ({
+      const cuentasFiltradas = json.filter((cuenta: any) => cuenta.id_cliente?.toString() === idCliente);
+
+      return cuentasFiltradas.map((cuenta: any, index: number) => ({
         id: cuenta.numero_cuenta?.toString() || index.toString(),
         currency: mapCurrency(cuenta.id_moneda),
         tipo: mapAccountType(cuenta.id_tipo_cuenta),
@@ -164,7 +166,7 @@ const fetchCuentasParaCliente = async (idCliente: string): Promise<Cuenta[]> => 
         movimientos: cuenta.movimientos || [],
       }));
     } else {
-      console.warn('Respuesta inesperada en /api/cuentas:', json);
+      console.warn('Respuesta inesperada en /api/cuenta:', json);
     }
   } catch (err) {
     console.error('Error al cargar cuentas desde backend:', err);
