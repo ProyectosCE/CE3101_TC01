@@ -6,5 +6,13 @@
     "fecha_nacimiento": "2004-08-16",
     "monto_meta": 8000,
     "id_rol": "ASESOR"
+  },
+  {
+    "id_asesor": 2,
+    "nombre": "string",
+    "cedula": "97867564534",
+    "fecha_nacimiento": "2025-05-04",
+    "monto_meta": 39897,
+    "id_rol": "ASESOR"
   }
 ]

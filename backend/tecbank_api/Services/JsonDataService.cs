@@ -20,6 +20,7 @@ namespace tecbank_api.Services
         - Add: Añade un nuevo elemento de tipo T al archivo JSON.
         - Remove: Elimina un elemento de tipo T del archivo JSON.
         - Update: Actualiza un elemento de tipo T en el archivo JSON.
+        - Delete: Elimina un elemento de tipo T del archivo JSON por referencia.
 
     Problems:
         Ningún problema conocido durante la implementación de esta clase.
@@ -182,7 +183,54 @@ namespace tecbank_api.Services
             throw new InvalidOperationException("No se encontró el elemento a actualizar.");
         }
 
+        /* Function: Delete
+            Elimina un elemento de tipo T del archivo JSON por referencia.
 
+        Params:
+            - item: T - El elemento de tipo T a eliminar.
 
+        Returns:
+            - void: No retorna ningún valor.
+
+        Restriction:
+            Depende de la existencia del archivo JSON. Si el archivo no existe, se crea automáticamente.
+
+        Problems:
+            Ningún problema conocido durante la implementación de este método.
+
+        References:
+            N/A
+        */
+        public void Delete(T item)
+        {
+            var items = GetAll();
+
+            // Verificar si el tipo T tiene propiedades
+            var properties = typeof(T).GetProperties();
+            if (properties.Length == 0)
+            {
+                throw new InvalidOperationException($"El tipo {typeof(T).Name} no tiene propiedades definidas.");
+            }
+
+            // Buscar la propiedad marcada con [Key]
+            var keyProperty = properties.FirstOrDefault(prop => Attribute.IsDefined(prop, typeof(KeyAttribute)));
+
+            if (keyProperty == null)
+            {
+                throw new InvalidOperationException($"La clase {typeof(T).Name} no tiene una propiedad marcada con [Key].");
+            }
+
+            var itemKey = keyProperty.GetValue(item);
+
+            // Buscar y eliminar el elemento con la misma clave
+            var itemToRemove = items.FirstOrDefault(existingItem =>
+                Equals(keyProperty.GetValue(existingItem), itemKey));
+
+            if (itemToRemove != null)
+            {
+                items.Remove(itemToRemove);
+                SaveAll(items);
+            }
+        }
     }
 }

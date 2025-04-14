@@ -54,7 +54,9 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
         [HttpGet]
         public IActionResult Get()
         {
-            var tiposCuenta = _tipoCuentaService.GetAll();
+            var tiposCuenta = _tipoCuentaService.GetAll()
+                .Where(tc => tc.tipo_cuenta != "TCREDITO") // Exclude "TCREDITO"
+                .ToList();
             return Ok(tiposCuenta);
         }
     }

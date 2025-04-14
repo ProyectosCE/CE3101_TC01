@@ -103,6 +103,20 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
             return Ok(transacciones);
         }
 
+        [HttpGet("transacciones/{cuenta}")]
+        public IActionResult GetTransaccionesCuenta(int cuenta)
+        {
+            var cuentaExistente = _cuentaService.GetAll().FirstOrDefault(c => c.numero_cuenta == cuenta);
+            if (cuentaExistente == null)
+                return NotFound($"No se encontró la cuenta con número {cuenta}.");
+
+            var transacciones = _transaccionService.GetAll()
+                .Where(t => t.numero_cuenta == cuenta || t.cuenta_destino == cuenta)
+                .ToList();
+
+            return Ok(transacciones);
+        }
+
         /* Function: GetTransaccionesPorCuenta
             Recupera las transacciones asociadas a una cuenta específica. Se pueden obtener transacciones relacionadas con la cuenta de origen o destino.
 
@@ -330,7 +344,7 @@ namespace tecbank_api.Controllers.Clientes_Cuentas
         [HttpPost("compra")]
         public IActionResult Compra([FromBody] Transaccion transaccion)
         {
-            var tarjeta = _tarjetaService.GetAll().FirstOrDefault(t => t.numero_tarjeta == transaccion.numero_tarjeta);
+            var tarjeta = _tarjetaService.GetAll().FirstOrDefault(t => t.numero_tarjeta == transaccion.numero_tarjeta.ToString());
             if (tarjeta == null)
                 return NotFound($"No se encontró la tarjeta con número {transaccion.numero_tarjeta}.");
 

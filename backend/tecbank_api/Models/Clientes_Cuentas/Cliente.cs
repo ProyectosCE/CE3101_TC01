@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema; // Agregar este espacio de nombres
 using System.Text.Json.Serialization;
 using tecbank_api.Models.Prestamos_Pagos;
 
@@ -9,7 +10,6 @@ namespace tecbank_api.Models.Clientes_Cuentas
         Representa a un cliente en el sistema con sus detalles personales y de contacto.
 
     Attributes:
-        - id_cliente: int - Identificador único del cliente.
         - cedula: string - Cédula de identidad del cliente.
         - direccion: string - Dirección física del cliente.
         - telefono: string - Número de teléfono del cliente.
@@ -46,8 +46,16 @@ namespace tecbank_api.Models.Clientes_Cuentas
     public class Cliente
     {
         [Key]
-        public int id_cliente { get; set; }
-        public string cedula { get; set; }
+        [JsonPropertyName("cedula")]
+        public string cedula { get; set; } // Ensure cedula is always treated as a string
+
+        [JsonIgnore]
+        public string CedulaRaw
+        {
+            get => cedula;
+            set => cedula = value.ToString();
+        }
+
         public string direccion { get; set; }
         public string telefono { get; set; }
         public double ingreso_mensual { get; set; }
@@ -62,8 +70,7 @@ namespace tecbank_api.Models.Clientes_Cuentas
         // Foreign key to Tipo_Cliente
         public string tipo_id { get; set; }
         [JsonIgnore]
-        public Tipo_Cliente? tipo_cliente { get; set;}
-
+        public Tipo_Cliente? tipo_cliente { get; set; }
 
         [JsonIgnore]
         public List<Prestamo> prestamos { get; set; } = new();
@@ -73,5 +80,8 @@ namespace tecbank_api.Models.Clientes_Cuentas
 
         [JsonIgnore]
         public List<Cuenta> cuentas { get; set; } = new();
+
+        [NotMapped]
+        public string id_cliente => cedula;
     }
 }
