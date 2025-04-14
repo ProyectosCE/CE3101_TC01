@@ -28,20 +28,25 @@ import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import styles from "@/styles/client.module.css";
 
-const exampleAccounts = [
-  { number: "123456789", currency: "Colones", balance: 50000 },
-  { number: "987654321", currency: "Dólares", balance: 200 },
-];
+interface IbanFlowProps {
+  onBack: () => void;
+  accounts: { number: string; currency: string }[];
+}
 
-export default function IbanFlow({ onBack, accounts = exampleAccounts }) {
+export default function IbanFlow({ onBack, accounts }: IbanFlowProps) {
   const [ibanDetails, setIbanDetails] = useState({ origin: "", iban: "", amount: "", detail: "" });
 
   const handleIbanSubmit = () => {
+    if (!ibanDetails.origin || !ibanDetails.iban || !ibanDetails.amount || ibanDetails.detail.length < 20) {
+      alert("Por favor complete todos los campos correctamente.");
+      return;
+    }
     console.log("IBAN Transaction:", ibanDetails);
+    alert("Transacción procesada exitosamente.");
   };
 
   return (
-    <div>
+    <div className={styles.formContainer}>
       <h1 className={styles.title}>Transferencia IBAN</h1>
       <Form>
         <Form.Group>
@@ -85,7 +90,9 @@ export default function IbanFlow({ onBack, accounts = exampleAccounts }) {
             onChange={(e) => setIbanDetails({ ...ibanDetails, detail: e.target.value })}
           />
         </Form.Group>
-        <Button onClick={handleIbanSubmit}>Procesar Transacción</Button>
+        <Button className={styles.submitButton} onClick={handleIbanSubmit}>
+          Procesar Transacción
+        </Button>
       </Form>
       <Button className={styles.backButton} onClick={onBack}>
         Volver

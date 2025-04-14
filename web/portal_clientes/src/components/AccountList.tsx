@@ -28,7 +28,18 @@ import { Table, Button } from "react-bootstrap";
 import styles from "@/styles/client.module.css";
 import { useRouter } from "next/router";
 
-export default function AccountList({ accounts, onAccountClick }) {
+interface Account {
+  number: string;
+  currency: string;
+  balance: number;
+}
+
+interface AccountListProps {
+  accounts: Account[];
+  onAccountClick: (account: Account) => void;
+}
+
+export default function AccountList({ accounts, onAccountClick }: AccountListProps) {
   const router = useRouter();
 
   return (
