@@ -1,0 +1,44 @@
+[
+  {
+    "id_cliente": 1,
+    "cedula": "407893654",
+    "direccion": "Cartago",
+    "telefono": "87654321",
+    "ingreso_mensual": 8000,
+    "usuario": "jcampos",
+    "password": "12345678",
+    "nombre": "Jose",
+    "apellido1": "Eduardo",
+    "apellido2": "Campos",
+    "nombre_completo": "Jose Eduardo Campos",
+    "tipo_id": "FISICO"
+  },
+  {
+    "id_cliente": 2,
+    "cedula": "119780236",
+    "direccion": "San Jose",
+    "telefono": "87654321",
+    "ingreso_mensual": 5000,
+    "usuario": "kZhang",
+    "password": "12345678",
+    "nombre": "Kevin",
+    "apellido1": "Zhang",
+    "apellido2": "Xie",
+    "nombre_completo": "Kevin Zhang Xie",
+    "tipo_id": "FISICO"
+  },
+  {
+    "id_cliente": 3,
+    "cedula": "118745239",
+    "direccion": "San Jose",
+    "telefono": "87654321",
+    "ingreso_mensual": 10000,
+    "usuario": "aLiang",
+    "password": "12345678",
+    "nombre": "Alex",
+    "apellido1": "Liang",
+    "apellido2": "Feng",
+    "nombre_completo": "Alex Liang Feng",
+    "tipo_id": "JURIDICO"
+  }
+]

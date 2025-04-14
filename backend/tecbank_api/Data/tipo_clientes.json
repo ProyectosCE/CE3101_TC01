@@ -1,0 +1,10 @@
+[
+  {
+    "tipo": "FISICO",
+    "descripcion": "Persona fisica con cedula nacional"
+  },
+  {
+    "tipo": "JURIDICO",
+    "descripcion": "Entidad juridica como empresa o sociedad"
+  }
+]

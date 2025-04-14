@@ -1,0 +1,18 @@
+[
+  {
+    "tipo_transaccion": "RETIRO",
+    "descripcion": "Retiro de dinero"
+  },
+  {
+    "tipo_transaccion": "DEPOSITO",
+    "descripcion": "Deposito de dinero"
+  },
+  {
+    "tipo_transaccion": "TRANSFERENCIA",
+    "descripcion": "Transferencia de dinero"
+  },
+  {
+    "tipo_transaccion": "COMPRA",
+    "descripcion": "Compra de bienes o servicios"
+  }
+]

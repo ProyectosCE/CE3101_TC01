@@ -1,0 +1,20 @@
+[
+  {
+    "numero_tarjeta": 12345678,
+    "cvc": 151,
+    "fecha_vencimiento": "2025-04-14",
+    "monto_disponible": null,
+    "monto_credito": null,
+    "numero_cuenta": 123321,
+    "id_tipo_tarjeta": "DEBITO"
+  },
+  {
+    "numero_tarjeta": 87654321,
+    "cvc": 159,
+    "fecha_vencimiento": "2025-04-14",
+    "monto_disponible": 9000,
+    "monto_credito": 10000,
+    "numero_cuenta": 12345678,
+    "id_tipo_tarjeta": "CREDITO"
+  }
+]

@@ -1,0 +1,10 @@
+[
+  {
+    "tipo_pago": "EXTRAORDINARIO",
+    "descripcion": "Pago extraordinario"
+  },
+  {
+    "tipo_pago": "NORMAL",
+    "descripcion": "Pago normal"
+  }
+]

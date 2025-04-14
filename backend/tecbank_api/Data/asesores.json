@@ -1,0 +1,10 @@
+[
+  {
+    "id_asesor": 1,
+    "nombre": "Jimmy",
+    "cedula": "119130537",
+    "fecha_nacimiento": "2004-08-16",
+    "monto_meta": 8000,
+    "id_rol": "ASESOR"
+  }
+]
